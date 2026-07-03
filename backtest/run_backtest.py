@@ -349,7 +349,10 @@ def main(argv: list[str] | None = None) -> Path:
     parser = argparse.ArgumentParser(description="回測：比較三種合併策略（規格 6.3）")
     parser.add_argument("--mode", choices=["synthetic", "finmind"], default="synthetic")
     parser.add_argument("--config", default=str(PROJECT_ROOT / "config" / "tickers.yaml"))
-    parser.add_argument("--output-dir", default=str(PROJECT_ROOT / "reports"))
+    parser.add_argument(
+        "--output-dir", default=None,
+        help="輸出目錄，預設 reports/<mode>（synthetic → reports/synthetic）",
+    )
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--n-dates", type=int, default=60, help="synthetic 模式的預測時點數")
     parser.add_argument("--start-date", default=None, help="覆寫 config 的回測起日（控制 API 額度用）")
@@ -374,7 +377,7 @@ def main(argv: list[str] | None = None) -> Path:
     if args.step_days:
         config["backtest"]["prediction_step_days"] = args.step_days
     arb = config["arbitrator"]
-    output_dir = Path(args.output_dir)
+    output_dir = Path(args.output_dir) if args.output_dir else PROJECT_ROOT / "reports" / args.mode
     output_dir.mkdir(parents=True, exist_ok=True)
 
     if args.mode == "synthetic":
