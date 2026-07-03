@@ -1,4 +1,4 @@
-# 精度加權多智能體投資研究系統
+# 多代理人精度加權投資研究系統
 
 **Precision-Weighted Multi-Agent Investment Research System**
 
