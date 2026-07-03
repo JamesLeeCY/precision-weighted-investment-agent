@@ -1,0 +1,44 @@
+{
+  "fundamentals_agent|2327.TW": {
+    "agent_id": "fundamentals_agent",
+    "ticker": "2327.TW",
+    "n_predictions": 14,
+    "brier_score_ema": 0.30310614878450615,
+    "precision": 3.1938050526380604
+  },
+  "news_agent|2327.TW": {
+    "agent_id": "news_agent",
+    "ticker": "2327.TW",
+    "n_predictions": 13,
+    "brier_score_ema": 0.279251409565866,
+    "precision": 3.457200092821978
+  },
+  "fundamentals_agent|2492.TW": {
+    "agent_id": "fundamentals_agent",
+    "ticker": "2492.TW",
+    "n_predictions": 15,
+    "brier_score_ema": 0.2346788890761807,
+    "precision": 4.086989293500716
+  },
+  "news_agent|2492.TW": {
+    "agent_id": "news_agent",
+    "ticker": "2492.TW",
+    "n_predictions": 15,
+    "brier_score_ema": 0.2616826669086569,
+    "precision": 3.6807648105729633
+  },
+  "fundamentals_agent|3026.TW": {
+    "agent_id": "fundamentals_agent",
+    "ticker": "3026.TW",
+    "n_predictions": 15,
+    "brier_score_ema": 0.27502594285867843,
+    "precision": 3.508452563898087
+  },
+  "news_agent|3026.TW": {
+    "agent_id": "news_agent",
+    "ticker": "3026.TW",
+    "n_predictions": 15,
+    "brier_score_ema": 0.24315545842028477,
+    "precision": 3.950141965099625
+  }
+}
