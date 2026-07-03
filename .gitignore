@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+.pytest_cache/
+.ipynb_checkpoints/
+.DS_Store
+# 注意：data_cache/ 刻意納入版控——FinMind 逐日快取是 API 額度的成果，
+# 換機器續跑不需重抓

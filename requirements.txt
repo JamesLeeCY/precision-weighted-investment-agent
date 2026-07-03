@@ -1,0 +1,18 @@
+# 核心依賴（測試與 synthetic 回測只需這些）
+numpy>=1.26
+pandas>=2.0
+pyyaml>=6.0
+requests>=2.31
+feedparser>=6.0
+matplotlib>=3.8
+python-dotenv>=1.0
+pytest>=8.0
+
+# 選用：LLM 推論（設定 ANTHROPIC_API_KEY 後啟用）
+# anthropic>=0.40
+
+# 選用：正式向量檢索（未安裝時自動退回內建 SimpleVectorStore）
+# chromadb>=0.5
+
+# 選用：法說會逐字稿 PDF 擷取（Phase 2）
+# pdfplumber>=0.11

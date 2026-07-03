@@ -1,0 +1,43 @@
+# MVP 測試股票池：純被動元件 5 支（使用者於 2026-07-03 指定）
+# 注意：原名單中的奇力新(2456)已於 2021 年底併入國巨下市，改以大毅(2478)替代。
+universe:
+  - ticker: "2327.TW"
+    name: "國巨"
+    segment: "MLCC / 晶片電阻"
+  - ticker: "2492.TW"
+    name: "華新科"
+    segment: "MLCC / 晶片電阻"
+  - ticker: "3026.TW"
+    name: "禾伸堂"
+    segment: "高壓 MLCC / 電子零組件通路"
+  - ticker: "2375.TW"
+    name: "凱美"
+    segment: "電容 / 被動元件（國巨集團）"
+  - ticker: "2478.TW"
+    name: "大毅"
+    segment: "晶片電阻 / 保護元件"
+
+backtest:
+  start_date: "2023-01-01"
+  end_date: "2026-05-31"
+  # 使用者決策（2026-07-03）：horizon = 20 個交易日，
+  # 應驗判定 = 期末收盤價絕對報酬 > 0（規格 9.2 之人工決策）
+  horizon_days: 20
+  outcome_rule: "absolute_return_positive"
+  # 每隔幾個交易日產生一次預測（walk-forward 的取樣頻率）
+  prediction_step_days: 10
+
+arbitrator:
+  bullish_threshold: 0.3     # 規格 5.2：final_score > 0.3 → bullish
+  bearish_threshold: -0.3    # 規格 5.2：final_score < -0.3 → bearish
+  ema_alpha: 0.2             # 規格 5.3：Brier EMA 平滑係數
+  epsilon: 0.01              # 規格 5.1：precision = 1/(brier_ema + epsilon)
+  cold_start_min_n: 5        # 規格 5.1：n_predictions < 5 時採冷啟動均值
+
+news:
+  window_days: 14            # 規格 3.3：新聞 Agent 預設時間窗
+
+llm:
+  model: "claude-sonnet-4-6"
+  # auto：偵測到 ANTHROPIC_API_KEY 才呼叫 LLM，否則各 Agent 使用規則式 fallback
+  enabled: auto

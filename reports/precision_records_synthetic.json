@@ -1,0 +1,72 @@
+{
+  "fundamentals_agent|2327.TW": {
+    "agent_id": "fundamentals_agent",
+    "ticker": "2327.TW",
+    "n_predictions": 96,
+    "brier_score_ema": 0.1894704169640301,
+    "precision": 5.0132747262483885
+  },
+  "news_agent|2327.TW": {
+    "agent_id": "news_agent",
+    "ticker": "2327.TW",
+    "n_predictions": 96,
+    "brier_score_ema": 0.3175349711904029,
+    "precision": 3.053109096612096
+  },
+  "fundamentals_agent|2375.TW": {
+    "agent_id": "fundamentals_agent",
+    "ticker": "2375.TW",
+    "n_predictions": 96,
+    "brier_score_ema": 0.1888470655837587,
+    "precision": 5.028990481022604
+  },
+  "news_agent|2375.TW": {
+    "agent_id": "news_agent",
+    "ticker": "2375.TW",
+    "n_predictions": 96,
+    "brier_score_ema": 0.1666637874445122,
+    "precision": 5.660469609902861
+  },
+  "fundamentals_agent|2478.TW": {
+    "agent_id": "fundamentals_agent",
+    "ticker": "2478.TW",
+    "n_predictions": 96,
+    "brier_score_ema": 0.2248238116999049,
+    "precision": 4.25851191478809
+  },
+  "news_agent|2478.TW": {
+    "agent_id": "news_agent",
+    "ticker": "2478.TW",
+    "n_predictions": 96,
+    "brier_score_ema": 0.2294633944980609,
+    "precision": 4.176003610472905
+  },
+  "fundamentals_agent|2492.TW": {
+    "agent_id": "fundamentals_agent",
+    "ticker": "2492.TW",
+    "n_predictions": 96,
+    "brier_score_ema": 0.2314369452351278,
+    "precision": 4.14186817608271
+  },
+  "news_agent|2492.TW": {
+    "agent_id": "news_agent",
+    "ticker": "2492.TW",
+    "n_predictions": 96,
+    "brier_score_ema": 0.3266567137472957,
+    "precision": 2.9703848435668774
+  },
+  "fundamentals_agent|3026.TW": {
+    "agent_id": "fundamentals_agent",
+    "ticker": "3026.TW",
+    "n_predictions": 96,
+    "brier_score_ema": 0.2326990274240886,
+    "precision": 4.120329655267284
+  },
+  "news_agent|3026.TW": {
+    "agent_id": "news_agent",
+    "ticker": "3026.TW",
+    "n_predictions": 96,
+    "brier_score_ema": 0.21048008854663536,
+    "precision": 4.535556959323711
+  }
+}
