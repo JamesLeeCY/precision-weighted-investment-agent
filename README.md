@@ -42,14 +42,15 @@ EMA 的倒數，即「精度」）動態加權合成投資論點——可靠度�
   |平均預測機率 − 實際命中率|，再依樣本數加權平均。ECE = 0 代表完美校準；
   一個方向常對但總是過度自信的模型，方向準確率可以很高、ECE 卻很差。
 
-**真實資料回測**（FinMind，3 檔被動元件 × 2025-01~2026-05，47 個預測事件，
-詳見[完整報告](docs/finmind_scoped_report.md)）：
+**真實資料回測**（FinMind，5 檔被動元件 × 2024-01~2026-05，135 個預測事件，
+詳見[完整版報告](docs/finmind_full_report.md)；另有 3 檔 47 事件的
+[縮小版](docs/finmind_scoped_report.md)）：
 
 | 策略 | 平均 Brier ↓ | ECE ↓ |
 |---|---|---|
-| Baseline A：單一 Agent（財報） | 0.2553 | 0.1490 |
-| Baseline B：簡單平均合併 | **0.2529** | **0.0848** |
-| 本系統：精度加權合併 | 0.2532 | 0.1103 |
+| Baseline A：單一 Agent（財報） | 0.2565 | 0.1155 |
+| Baseline B：簡單平均合併 | **0.2529** | **0.0871** |
+| 本系統：精度加權合併 | 0.2530 | 0.0933 |
 
 **Synthetic 機制驗證**（20 seeds，來源可靠度刻意分化，詳見
 [技術筆記](docs/technical_note.md)）：精度加權在 **17/20 seeds** 的
@@ -79,8 +80,8 @@ Brier 優於簡單平均。
 讀真實資料這張圖要注意兩件事：(1) 預測機率集中在 0.4–0.7 的窄帶（下方
 直方圖）——規則式 Agent 訊號溫和，合併後很少產生極端判斷，這是保守但
 誠實的行為；(2) 三個桶中只有中間桶（n=37）有統計意義，左右兩桶各只有
-4 和 6 筆，其偏離對角線主要是小樣本雜訊，不宜過度解讀——這也是完整版
-回測（擴大樣本）列為下一步的原因。
+4 和 6 筆，其偏離對角線主要是小樣本雜訊，不宜過度解讀。完整版回測
+（5 檔 / 135 事件）已擴大樣本並印證同一結論，見[完整版報告](docs/finmind_full_report.md)。
 
 ## 快速開始
 
@@ -136,7 +137,7 @@ arbitrator/             精度追蹤（Brier EMA）+ 合併公式
 data/                   FinMind 抓取（快取/節流/額度等待）、RSS 新聞、向量庫封裝
 backtest/               walk-forward 回測 + 評估指標
 tests/                  53 個單元測試
-reports/                synthetic / finmind_preliminary / finmind_scoped 結果
+reports/                synthetic / finmind_preliminary / finmind_scoped / finmind_full 結果
 docs/                   規格、技術筆記、回測報告
 notebooks/              校準分析 notebook
 ```
@@ -146,13 +147,15 @@ notebooks/              校準分析 notebook
 - [技術規格](docs/spec.md) — 系統的原始設計規格（v0.1）
 - [技術筆記](docs/technical_note.md) — 預測處理框架的理論對應、synthetic
   實驗、誠實分析（M5 交付物）
-- [真實資料回測報告](docs/finmind_scoped_report.md) — FinMind 縮小版結果
-  與逐項解讀
+- [真實資料回測報告（完整版）](docs/finmind_full_report.md) — FinMind 5 檔 /
+  135 事件的完整版結果與逐項解讀
+- [真實資料回測報告（縮小版）](docs/finmind_scoped_report.md) — FinMind 3 檔 /
+  47 事件的先導結果
 
 ## Roadmap
 
 - [x] MVP：財報 + 新聞 Agent、精度加權仲裁、回測管線（M1–M5）
-- [ ] 5 檔完整版真實回測（2024-01 起）
+- [x] 5 檔完整版真實回測（2024-01 起，135 事件，見[報告](docs/finmind_full_report.md)）
 - [ ] LLM 判讀模式的可靠度分化實驗
 - [ ] Phase 2：供應鏈 Agent（知識圖譜）、總經/籌碼 Agent
 - [ ] 對數意見池 / Agent 層級重新校準（見技術筆記第 6 節）
