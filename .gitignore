@@ -7,3 +7,6 @@ __pycache__/
 .DS_Store
 # 注意：data_cache/ 刻意納入版控——FinMind 逐日快取是 API 額度的成果，
 # 換機器續跑不需重抓
+
+# 回測終端輸出（Windows 編碼亂碼，非成果）
+reports/**/run.log
