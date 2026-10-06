@@ -17,6 +17,9 @@ universe:
     name: "大毅"
     segment: "晶片電阻 / 保護元件"
 
+benchmark:
+  ticker: "0050.TW"   # 超額報酬基準（含息還原；0050 於 2025-06-18 一拆四）
+
 backtest:
   start_date: "2023-01-01"
   end_date: "2026-05-31"
@@ -24,6 +27,11 @@ backtest:
   # 應驗判定 = 期末收盤價絕對報酬 > 0（規格 9.2 之人工決策）
   horizon_days: 20
   outcome_rule: "absolute_return_positive"
+  # outcome 用哪種報酬判定：price（未還原收盤價，原始決策）或 total_return（含息還原）
+  # 未還原價在除權息日有價格斷層（如國巨 2025-08 分割 546→136.5）；使用者決策（2026-10-06）：改用 total_return
+  outcome_basis: "total_return"
+  # 報酬層級評估：long/neutral 組合的單邊交易成本（手續費 0.1425%×2 + 證交稅 0.3%，均攤兩邊）
+  cost_per_side: 0.0029625
   # 每隔幾個交易日產生一次預測（walk-forward 的取樣頻率）
   prediction_step_days: 10
 

@@ -10,6 +10,8 @@ Walk-forward 流程（嚴格按時間順序，避免 look-ahead）：
    - Baseline A：單一 Agent（財報 Agent）
    - Baseline B：簡單平均（所有 Agent 精度設為相同值）
 5. 全部跑完後產出比較報表（Brier / 方向準確率 / ECE）與校準曲線
+6. finmind 模式另做報酬層級評估（backtest/portfolio.py）：連續報酬 Rank IC、
+   long/neutral 組合淨值與相對 0050 的超額報酬
 
 機率定義（供系統層級 Brier）：
 - Baseline A（單一 Agent）：規格 6.1 之轉換（bullish→conf、bearish→1-conf、neutral→0.5）
@@ -45,6 +47,7 @@ from backtest.metrics import (
     reliability_diagram,
     signal_to_probability,
 )
+from backtest.portfolio import DEFAULT_COST_PER_SIDE, evaluate_returns
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 BASELINE_A_AGENT = "fundamentals_agent"
@@ -72,6 +75,10 @@ class PredictionEvent:
     resolution_date: str  # as_of_date + horizon_days（交易日）
     outputs: dict[str, AgentOutput] = field(default_factory=dict)
     outcome: int = 0  # 1 = horizon 期間報酬 > 0
+    # 報酬層級評估用（synthetic 模式為 nan）
+    price_return: float = float("nan")  # 未還原收盤價報酬
+    forward_return: float = float("nan")  # 含息還原總報酬
+    benchmark_return: float = float("nan")  # 同窗口 0050 含息總報酬
 
 
 # ---------------------------------------------------------------------------
@@ -126,6 +133,10 @@ def run_walk_forward(
             "precision_weighted_signal": merged_pw.signal,
             "precision_weighted_p": merged_pw.probability_bullish,
             "pw_uncertainty": merged_pw.uncertainty,
+            "price_return": ev.price_return,
+            "forward_return": ev.forward_return,
+            "benchmark_return": ev.benchmark_return,
+            "excess_return": ev.forward_return - ev.benchmark_return,
         }
         for a in agent_ids:
             row[f"precision_{a}"] = precisions[a]
@@ -165,7 +176,71 @@ def evaluate(df: pd.DataFrame, output_dir: Path) -> pd.DataFrame:
     return pd.DataFrame(results)
 
 
-def write_report(summary: pd.DataFrame, df: pd.DataFrame, output_dir: Path, mode: str) -> Path:
+def has_returns(df: pd.DataFrame) -> bool:
+    return "forward_return" in df and df["forward_return"].notna().any()
+
+
+def return_report_lines(df: pd.DataFrame, returns: pd.DataFrame, cost_per_side: float) -> list[str]:
+    """報酬層級評估章節（Markdown）。"""
+    labels = {**STRATEGY_LABELS, "equal_weight": "對照：等權持有全部股票池", "benchmark_0050": "基準：0050"}
+    r = returns.set_index("strategy")
+    flips = int(((df["price_return"] > 0) != (df["forward_return"] > 0)).sum())
+    pct = lambda x: f"{x * 100:+.1f}%"  # noqa: E731
+    fmt_t = lambda t, p: f"{t:.2f} / {p:.2f}" if pd.notna(t) else "—"  # noqa: E731
+    lines = [
+        "",
+        "## 報酬層級評估（long/neutral 組合 vs 0050）",
+        "",
+        f"- 組合：每期等權持有 bullish 標的，其餘持現金；單邊交易成本 {cost_per_side * 100:.3f}%",
+        "- 報酬皆為含息還原總報酬（除權息、配股、分割已還原）",
+        f"- 期間 0050 累積報酬：{pct(r['bench_total_return'].iloc[0])}",
+        "",
+        "| 策略 | 累積報酬 | 年化報酬 | 年化波動 | Sharpe | 最大回撤 | 與 0050 累積報酬差 | 每期超額 t / p | 持股期比例 |",
+        "|---|---|---|---|---|---|---|---|---|",
+    ]
+    for key, row in r.iterrows():
+        lines.append(
+            f"| {labels.get(key, key)} | {pct(row['total_return'])} | {pct(row['ann_return'])} | "
+            f"{row['ann_vol'] * 100:.1f}% | {row['sharpe']:.2f} | {pct(row['max_drawdown'])} | "
+            f"{pct(row['excess_total'])} | {fmt_t(row['excess_t'], row['excess_p'])} | "
+            f"{row['avg_exposure'] * 100:.0f}% |"
+        )
+    lines += [
+        "",
+        "### 連續報酬 Rank IC（看多機率 vs 20 日含息報酬）",
+        "",
+        "| 策略 | Pooled IC | p | 橫斷面 IC 平均 | t | p | 期數 |",
+        "|---|---|---|---|---|---|---|",
+    ]
+    for key in STRATEGY_LABELS:
+        row = r.loc[key]
+        lines.append(
+            f"| {labels[key]} | {row['ic_pooled']:+.3f} | {row['ic_pooled_p']:.2f} | "
+            f"{row['ic_cs_mean']:+.3f} | {row['ic_cs_t']:.2f} | {row['ic_cs_p']:.2f} | {int(row['n_cs_dates'])} |"
+        )
+    lines += [
+        "",
+        "![Equity curves](equity_curves.png)",
+        "",
+        "- Pooled IC 混合了跨期的市場漲跌；橫斷面 IC 只看同一時點 5 檔之間的排序，",
+        "  是選股能力的直接衡量（同時點機率全相同的期數不計入）。",
+        "- p 值以常態近似計算，期數少時偏樂觀，僅供參考。",
+        "- 夏普比率未扣無風險利率；每期為 20 個交易日持有、每 step 日再平衡。",
+        f"- 未還原價與含息總報酬方向不一致的事件：{flips} / {len(df)}",
+        "  （outcome 依 config `backtest.outcome_basis` 判定，見 config/tickers.yaml）。",
+    ]
+    return lines
+
+
+def write_report(
+    summary: pd.DataFrame,
+    df: pd.DataFrame,
+    output_dir: Path,
+    mode: str,
+    returns: pd.DataFrame | None = None,
+    cost_per_side: float = DEFAULT_COST_PER_SIDE,
+    outcome_basis: str = "price",
+) -> Path:
     pw = summary.set_index("strategy")
     brier_pw = pw.loc["precision_weighted", "mean_brier"]
     ece_pw = pw.loc["precision_weighted", "ece"]
@@ -178,7 +253,9 @@ def write_report(summary: pd.DataFrame, df: pd.DataFrame, output_dir: Path, mode
         f"- 執行模式：`{mode}`",
         f"- 預測事件數：{len(df)}（{df['ticker'].nunique()} 檔股票）",
         f"- 期間：{df['as_of_date'].min()} ~ {df['as_of_date'].max()}",
-        "- 應驗判定：horizon 期末絕對報酬 > 0（20 個交易日）",
+        "- 應驗判定：horizon 期末絕對報酬 > 0（20 個交易日，"
+        + ("含息總報酬" if outcome_basis == "total_return" else "未還原收盤價")
+        + "）",
         "",
         "| 策略 | 平均 Brier ↓ | 方向準確率 ↑ | ECE ↓ | n(方向) |",
         "|---|---|---|---|---|",
@@ -207,6 +284,8 @@ def write_report(summary: pd.DataFrame, df: pd.DataFrame, output_dir: Path, mode
         "  加權線性意見池（權重同規格 5.2 合併公式）。",
         "- 精度加權在回測初期（冷啟動，n<5）等同簡單平均，差異隨精度記錄累積浮現。",
     ]
+    if returns is not None:
+        lines += return_report_lines(df, returns, cost_per_side)
     report_path = output_dir / "comparison_report.md"
     report_path.write_text("\n".join(lines), encoding="utf-8")
     df.to_csv(output_dir / "backtest_results.csv", index=False)
@@ -290,12 +369,15 @@ def generate_finmind_events(config: dict) -> list[PredictionEvent]:
     from agents.fundamentals_agent import FundamentalsAgent
     from agents.llm_client import LLMClient
     from agents.news_agent import NewsAgent
-    from data.fetch_financials import FinMindClient, FinMindFundamentalsProvider, get_daily_prices
+    from data.fetch_financials import FinMindClient, FinMindFundamentalsProvider, get_total_return_prices
     from data.fetch_news import FinMindNewsProvider
 
     bt = config["backtest"]
     horizon = int(bt["horizon_days"])
     step = int(bt["prediction_step_days"])
+    outcome_basis = bt.get("outcome_basis", "price")
+    if outcome_basis not in ("price", "total_return"):
+        raise ValueError(f"backtest.outcome_basis 必須是 price 或 total_return，收到 {outcome_basis!r}")
     tickers = [u["ticker"] for u in config["universe"]]
     names = {u["ticker"]: u["name"] for u in config["universe"]}
 
@@ -310,19 +392,48 @@ def generate_finmind_events(config: dict) -> list[PredictionEvent]:
         ticker_names=names,
     )
 
+    # 各標的（含 0050 基準）的未還原價與含息還原價，以日期為索引
+    bench_ticker = config.get("benchmark", {}).get("ticker", "0050.TW")
+    series: dict[str, tuple[pd.Series, pd.Series]] = {}
+    for t in [*tickers, bench_ticker]:
+        prices = get_total_return_prices(client, t, bt["start_date"], bt["end_date"])
+        if prices.empty:
+            print(f"[warn] {t} 無價格資料，跳過")
+            continue
+        idx = pd.DatetimeIndex(prices["date"])
+        series[t] = (
+            pd.Series(prices["close"].astype(float).to_numpy(), index=idx),
+            pd.Series(prices["adj_close"].astype(float).to_numpy(), index=idx),
+        )
+    bench = series.pop(bench_ticker, None)
+    if bench is None:
+        print(f"[warn] 基準 {bench_ticker} 無資料，超額報酬將為 nan")
+
+    # 共用市場日曆：所有標的交易日的聯集。各標的依自身日曆取樣會在停牌
+    # （如國巨 2025-08 停牌 7 日）後錯位，使組合持有期重疊、報酬重複計算。
+    calendar = sorted(set().union(*(c.index for c, _ in series.values())))
+
+    def window_return(s: pd.Series, start: pd.Timestamp, end: pd.Timestamp) -> float:
+        # 期末停牌時以停牌前最後收盤價計值
+        return float(s.asof(end) / s.asof(start) - 1.0)
+
     events = []
     for ticker in tickers:
-        prices = get_daily_prices(client, ticker, bt["start_date"], bt["end_date"])
-        if prices.empty:
-            print(f"[warn] {ticker} 無價格資料，跳過")
+        if ticker not in series:
             continue
-        closes = prices["close"].astype(float).to_numpy()
-        dates = prices["date"].dt.strftime("%Y-%m-%d").tolist()
+        close, adj = series[ticker]
         # 每 step 個交易日取一個預測點，需保留 horizon 個交易日算報酬
-        for idx in range(0, len(dates) - horizon, step):
-            as_of = dates[idx]
-            ret = closes[idx + horizon] / closes[idx] - 1.0
-            outcome = int(ret > 0)  # 使用者決策：20 日絕對報酬 > 0
+        for i in range(0, len(calendar) - horizon, step):
+            start_ts, end_ts = calendar[i], calendar[i + horizon]
+            if start_ts not in close.index:  # 當日停牌，無法進場
+                continue
+            as_of = start_ts.strftime("%Y-%m-%d")
+            end = end_ts.strftime("%Y-%m-%d")
+            price_ret = window_return(close, start_ts, end_ts)
+            total_ret = window_return(adj, start_ts, end_ts)
+            bench_ret = window_return(bench[1], start_ts, end_ts) if bench else float("nan")
+            # 使用者決策：20 日絕對報酬 > 0；outcome_basis 決定用未還原價或含息總報酬
+            outcome = int((total_ret if outcome_basis == "total_return" else price_ret) > 0)
             outputs = {}
             for agent in (fund_agent, news_agent):
                 try:
@@ -334,9 +445,12 @@ def generate_finmind_events(config: dict) -> list[PredictionEvent]:
                     PredictionEvent(
                         ticker=ticker,
                         as_of_date=as_of,
-                        resolution_date=dates[idx + horizon],
+                        resolution_date=end,
                         outputs=outputs,
                         outcome=outcome,
+                        price_return=price_ret,
+                        forward_return=total_ret,
+                        benchmark_return=bench_ret,
                     )
                 )
         print(f"[info] {ticker}: 累計 {len(events)} 個預測事件")
@@ -406,9 +520,29 @@ def main(argv: list[str] | None = None) -> Path:
         events, tracker, float(arb["bullish_threshold"]), float(arb["bearish_threshold"])
     )
     summary = evaluate(df, output_dir)
-    report_path = write_report(summary, df, output_dir, args.mode)
+
+    returns = None
+    cost = float(config["backtest"].get("cost_per_side", DEFAULT_COST_PER_SIDE))
+    if has_returns(df):
+        returns, periods = evaluate_returns(
+            df,
+            STRATEGY_LABELS_EN,
+            step_days=int(config["backtest"]["prediction_step_days"]),
+            cost_per_side=cost,
+            plot_path=str(output_dir / "equity_curves.png"),
+        )
+        returns.to_csv(output_dir / "return_metrics.csv", index=False)
+        periods.to_csv(output_dir / "period_returns.csv", index=False)
+
+    report_path = write_report(
+        summary, df, output_dir, args.mode, returns=returns, cost_per_side=cost,
+        outcome_basis=config["backtest"].get("outcome_basis", "price"),
+    )
 
     print(summary[["label", "mean_brier", "directional_accuracy", "ece"]].to_string(index=False))
+    if returns is not None:
+        cols = ["strategy", "total_return", "ann_return", "sharpe", "max_drawdown", "excess_total", "ic_cs_mean"]
+        print(returns[[c for c in cols if c in returns]].to_string(index=False))
     print(f"\n報表：{report_path}")
     return report_path
 

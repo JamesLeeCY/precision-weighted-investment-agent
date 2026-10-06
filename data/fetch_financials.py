@@ -185,3 +185,46 @@ def get_daily_prices(client: FinMindClient, ticker: str, start_date: str, end_da
     df = df[["date", "close"]].copy()
     df["date"] = pd.to_datetime(df["date"])
     return df.sort_values("date").reset_index(drop=True)
+
+
+def get_adjustment_events(client: FinMindClient, ticker: str, start_date: str, end_date: str) -> pd.DataFrame:
+    """除權息與分割事件，欄位 [date, before_price, after_price]。
+
+    FinMind 的 TaiwanStockPrice 是未還原股價：配股（如國巨 2024-08-15）
+    與分割（如 0050 2025-06-18 一拆四）會造成價格斷層。還原股價資料集
+    （TaiwanStockPriceAdj）需付費等級，因此改以這兩個免費資料集自行還原。
+    """
+    data_id = normalize_ticker(ticker)
+    frames = []
+    for dataset in ("TaiwanStockDividendResult", "TaiwanStockSplitPrice"):
+        df = client.get(dataset, data_id, start_date, end_date)
+        if not df.empty:
+            frames.append(df[["date", "before_price", "after_price"]])
+    if not frames:
+        return pd.DataFrame(columns=["date", "before_price", "after_price"])
+    events = pd.concat(frames, ignore_index=True)
+    events["date"] = pd.to_datetime(events["date"])
+    events = events[(events["before_price"] > 0) & (events["after_price"] > 0)]
+    return events.sort_values("date").reset_index(drop=True)
+
+
+def total_return_index(prices: pd.DataFrame, events: pd.DataFrame) -> pd.Series:
+    """含息還原收盤價（股利於除權息日以參考價再投入）。
+
+    adj_close[t] = close[t] × Π(before/after)，連乘所有 date <= t 的事件。
+    任意兩日的 adj_close 比值即為期間總報酬（含現金股利、配股、分割）。
+    """
+    factor = pd.Series(1.0, index=prices.index)
+    for _, ev in events.iterrows():
+        factor[prices["date"] >= ev["date"]] *= float(ev["before_price"]) / float(ev["after_price"])
+    return prices["close"].astype(float) * factor
+
+
+def get_total_return_prices(client: FinMindClient, ticker: str, start_date: str, end_date: str) -> pd.DataFrame:
+    """回測用日收盤價，欄位 [date, close, adj_close]（adj_close 為含息還原價）。"""
+    prices = get_daily_prices(client, ticker, start_date, end_date)
+    if prices.empty:
+        return prices.assign(adj_close=pd.Series(dtype=float))
+    events = get_adjustment_events(client, ticker, start_date, end_date)
+    prices["adj_close"] = total_return_index(prices, events)
+    return prices

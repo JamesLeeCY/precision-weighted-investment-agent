@@ -3,15 +3,15 @@
     "agent_id": "fundamentals_agent",
     "ticker": "2327.TW",
     "n_predictions": 26,
-    "brier_score_ema": 0.21583075197298401,
-    "precision": 4.428094895240969
+    "brier_score_ema": 0.2515092894368822,
+    "precision": 3.8239559372951435
   },
   "news_agent|2327.TW": {
     "agent_id": "news_agent",
     "ticker": "2327.TW",
     "n_predictions": 26,
-    "brier_score_ema": 0.23460160440287975,
-    "precision": 4.088280624492203
+    "brier_score_ema": 0.251115533997269,
+    "precision": 3.829722363474779
   },
   "fundamentals_agent|2375.TW": {
     "agent_id": "fundamentals_agent",
