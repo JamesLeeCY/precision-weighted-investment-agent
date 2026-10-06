@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from agents.base import SIGNAL_TO_SCORE, AgentOutput
+from agents.base import SIGNAL_TO_SCORE, AgentOutput, BaseAgent
 from agents.fundamentals_agent import FundamentalsAgent
 from agents.news_agent import NewsAgent, extract_events
 from data.fetch_financials import FundamentalsDataProvider
@@ -224,3 +224,28 @@ class TestNewsHelpers:
         # 「調降目標價」不應同時再計入「調降」
         events = extract_events(news("外資調降目標價", "經濟日報", 1))
         assert events == [("target_price_down", -1)]
+
+
+class _StubAgent(BaseAgent):
+    agent_id = "stub"
+
+    def __init__(self, signal, confidence):
+        self.signal, self.confidence = signal, confidence
+
+    def analyze(self, ticker, as_of_date):
+        return self._build_output(ticker, as_of_date, self.signal, self.confidence, "r")
+
+
+class TestDirectionalConfidenceFloor:
+    def test_directional_floored_to_half(self):
+        # bullish 但 confidence 0.3 → 機率會落在看空側，需拉到 0.5
+        out = _StubAgent("bullish", 0.3).analyze("2327.TW", "2025-01-01")
+        assert out.confidence == 0.5
+        assert out.raw_features["confidence_raw"] == pytest.approx(0.3)
+        assert _StubAgent("bearish", 0.1).analyze("2327.TW", "2025-01-01").confidence == 0.5
+
+    def test_neutral_and_strong_untouched(self):
+        neutral = _StubAgent("neutral", 0.2).analyze("2327.TW", "2025-01-01")
+        assert neutral.confidence == pytest.approx(0.2)
+        assert "confidence_raw" not in neutral.raw_features
+        assert _StubAgent("bullish", 0.7).analyze("2327.TW", "2025-01-01").confidence == pytest.approx(0.7)

@@ -35,6 +35,17 @@ backtest:
   # 每隔幾個交易日產生一次預測（walk-forward 的取樣頻率）
   prediction_step_days: 10
 
+# 參與合併的 Agent（--agents 可覆寫）。MVP 兩個 Agent 的對照組：
+#   --agents fundamentals_agent,news_agent
+agents:
+  - fundamentals_agent
+  - news_agent
+  - macro_agent
+
+macro:
+  window_days: 20            # 籌碼、匯率、大盤外資的觀察窗口（交易日）
+  rate_window_days: 60       # 美債殖利率變化的觀察窗口（交易日）
+
 arbitrator:
   bullish_threshold: 0.3     # 規格 5.2：final_score > 0.3 → bullish
   bearish_threshold: -0.3    # 規格 5.2：final_score < -0.3 → bearish

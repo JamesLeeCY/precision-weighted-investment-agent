@@ -140,6 +140,9 @@ def run_walk_forward(
         }
         for a in agent_ids:
             row[f"precision_{a}"] = precisions[a]
+        for o in outputs:
+            # 個別 Agent 的機率，供單一 Agent 消融分析
+            row[f"p_{o.agent_id}"] = signal_to_probability(o.signal, o.confidence)
         rows.append(row)
         pending.append(ev)
 
@@ -252,6 +255,7 @@ def write_report(
         "",
         f"- 執行模式：`{mode}`",
         f"- 預測事件數：{len(df)}（{df['ticker'].nunique()} 檔股票）",
+        f"- Agent：{', '.join(c[2:] for c in df.columns if c.startswith('p_')) or '—'}",
         f"- 期間：{df['as_of_date'].min()} ~ {df['as_of_date'].max()}",
         "- 應驗判定：horizon 期末絕對報酬 > 0（20 個交易日，"
         + ("含息總報酬" if outcome_basis == "total_return" else "未還原收盤價")
@@ -265,6 +269,16 @@ def write_report(
             f"| {r['label']} | {r['mean_brier']:.4f} | "
             f"{r['directional_accuracy']:.3f} | {r['ece']:.4f} | {r['n_directional']} |"
         )
+    agent_cols = [c for c in df.columns if c.startswith("p_")]
+    if agent_cols:
+        outcomes = df["outcome"].astype(int).tolist()
+        lines += ["", "### 個別 Agent（消融）", "", "| Agent | 平均 Brier ↓ | ECE ↓ | p ≠ 0.5 比例 |", "|---|---|---|---|"]
+        for c in agent_cols:
+            ps = df[c].astype(float).tolist()
+            lines.append(
+                f"| {c[2:]} | {mean_brier(ps, outcomes):.4f} | {ece(ps, outcomes):.4f} | "
+                f"{(df[c] != 0.5).mean() * 100:.0f}% |"
+            )
     lines += [
         "",
         "## 驗收標準（規格 6.3）",
@@ -368,7 +382,9 @@ def generate_synthetic_events(
 def generate_finmind_events(config: dict) -> list[PredictionEvent]:
     from agents.fundamentals_agent import FundamentalsAgent
     from agents.llm_client import LLMClient
+    from agents.macro_agent import MacroAgent
     from agents.news_agent import NewsAgent
+    from data.fetch_macro import FinMindMacroProvider
     from data.fetch_financials import FinMindClient, FinMindFundamentalsProvider, get_total_return_prices
     from data.fetch_news import FinMindNewsProvider
 
@@ -383,14 +399,31 @@ def generate_finmind_events(config: dict) -> list[PredictionEvent]:
 
     client = FinMindClient()
     llm = LLMClient(model=config["llm"]["model"], enabled=config["llm"]["enabled"])
-    fund_agent = FundamentalsAgent(FinMindFundamentalsProvider(client), llm=llm, horizon_days=horizon)
-    news_agent = NewsAgent(
-        FinMindNewsProvider(client),
-        llm=llm,
-        window_days=int(config["news"]["window_days"]),
-        horizon_days=horizon,
-        ticker_names=names,
-    )
+    builders = {
+        "fundamentals_agent": lambda: FundamentalsAgent(
+            FinMindFundamentalsProvider(client), llm=llm, horizon_days=horizon
+        ),
+        "news_agent": lambda: NewsAgent(
+            FinMindNewsProvider(client),
+            llm=llm,
+            window_days=int(config["news"]["window_days"]),
+            horizon_days=horizon,
+            ticker_names=names,
+        ),
+        "macro_agent": lambda: MacroAgent(
+            FinMindMacroProvider(client),
+            llm=llm,
+            horizon_days=horizon,
+            window_days=int(config.get("macro", {}).get("window_days", 20)),
+            rate_window_days=int(config.get("macro", {}).get("rate_window_days", 60)),
+        ),
+    }
+    agent_ids = config.get("agents", ["fundamentals_agent", "news_agent"])
+    unknown = set(agent_ids) - set(builders)
+    if unknown:
+        raise ValueError(f"未知的 agent：{sorted(unknown)}，可用：{sorted(builders)}")
+    agents = [builders[a]() for a in agent_ids]
+    print(f"[info] 啟用 Agent：{', '.join(agent_ids)}")
 
     # 各標的（含 0050 基準）的未還原價與含息還原價，以日期為索引
     bench_ticker = config.get("benchmark", {}).get("ticker", "0050.TW")
@@ -435,7 +468,7 @@ def generate_finmind_events(config: dict) -> list[PredictionEvent]:
             # 使用者決策：20 日絕對報酬 > 0；outcome_basis 決定用未還原價或含息總報酬
             outcome = int((total_ret if outcome_basis == "total_return" else price_ret) > 0)
             outputs = {}
-            for agent in (fund_agent, news_agent):
+            for agent in agents:
                 try:
                     outputs[agent.agent_id] = agent.analyze(ticker, as_of)
                 except Exception as exc:  # 單點失敗不中斷整個回測
@@ -473,12 +506,18 @@ def main(argv: list[str] | None = None) -> Path:
     parser.add_argument("--end-date", default=None, help="覆寫 config 的回測迄日")
     parser.add_argument("--step-days", type=int, default=None, help="覆寫預測取樣間隔（交易日）")
     parser.add_argument(
+        "--agents", default=None,
+        help="逗號分隔的 Agent 清單（如 fundamentals_agent,news_agent,macro_agent），覆寫 config 的 agents",
+    )
+    parser.add_argument(
         "--tickers", default=None,
         help="逗號分隔的 ticker 清單（如 2327.TW,2492.TW），只跑股票池的子集合以節省 API 額度",
     )
     args = parser.parse_args(argv)
 
     config = yaml.safe_load(Path(args.config).read_text(encoding="utf-8"))
+    if args.agents:
+        config["agents"] = [a.strip() for a in args.agents.split(",")]
     if args.tickers:
         wanted = {t.strip() for t in args.tickers.split(",")}
         config["universe"] = [u for u in config["universe"] if u["ticker"] in wanted]

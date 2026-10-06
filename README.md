@@ -7,17 +7,17 @@
 ![License](https://img.shields.io/badge/license-MIT-lightgrey)
 
 借用神經科學**預測處理框架（predictive processing）**中的 precision
-weighting 概念建構的多智能體投資研究系統：多個專家 Agent（財報、新聞事件）
+weighting 概念建構的多智能體投資研究系統：多個專家 Agent（財報、新聞事件、總經/籌碼）
 各自產出帶信心值的判斷，仲裁層依各 Agent 的**歷史準確度**（Brier score
 EMA 的倒數，即「精度」）動態加權合成投資論點——可靠度越高的來源權重越大，
 系統從均等權重（loose coupling）隨證據累積收斂到以可靠來源為主導
 （tight coupling）。鎖定台股 AI 供應鏈之被動元件族群。
 
 ```
- 財報 Agent          新聞事件 Agent        供應鏈/總經 Agent
- (規則式/LLM)        (規則式/LLM)          (Phase 2)
-      │                   │                   │
-      └───────────┬───────┴───────────────────┘
+ 財報 Agent        新聞事件 Agent      總經/籌碼 Agent     供應鏈 Agent
+ (規則式/LLM)      (規則式/LLM)        (規則式/LLM)        (Phase 2，未實作)
+      │                 │                  │
+      └─────────────────┼──────────────────┘
                   ▼
      精度加權仲裁層  final_score = Σ(precisionᵢ·confidenceᵢ·sᵢ) / Σ(precisionᵢ·confidenceᵢ)
                   ▼
@@ -34,7 +34,8 @@ EMA 的倒數，即「精度」）動態加權合成投資論點——可靠度�
   → confidence、bearish → 1−confidence、neutral → 0.5），與實際結果
   o ∈ {0,1}（20 個交易日後報酬是否為正）計算 **(p − o)²** 再取平均。它同時
   懲罰「方向錯」與「過度自信」：0 是完美預測，**0.25 是「永遠說 50%」的
-  無資訊基準**——低於 0.25 才代表模型帶有資訊。
+  無資訊基準**——低於 0.25 才代表模型帶有資訊。有方向的訊號信心下限為
+  0.5，確保 bullish 的 p 不會落在看空側。
 - **方向準確率**（越高越好）：非 neutral 的預測中，方向與實際報酬一致的
   比例。只看對錯、不看信心，與 Brier 互補。
 - **ECE, Expected Calibration Error**（越低越好）：衡量「模型說 70% 時，
@@ -48,14 +49,22 @@ EMA 的倒數，即「精度」）動態加權合成投資論點——可靠度�
 
 | 策略 | 平均 Brier ↓ | ECE ↓ |
 |---|---|---|
-| Baseline A：單一 Agent（財報） | 0.2584 | 0.1236 |
-| Baseline B：簡單平均合併 | **0.2549** | **0.0802** |
-| 本系統：精度加權合併 | 0.2550 | 0.0865 |
+| Baseline A：單一 Agent（財報） | 0.2593 | 0.1174 |
+| Baseline B：簡單平均合併 | **0.2556** | **0.0610** |
+| 本系統：精度加權合併 | 0.2557 | 0.0672 |
+
+三者 Brier 皆**高於** 0.25 的無資訊基準：目前的規則式 Agent 沒有預測力，
+合併只是讓機率更靠近 0.5、校準更好。
 
 **報酬層級**（long/neutral 組合、含息總報酬、扣交易成本，27 期）：所有策略
 皆落後 0050（期間 0050 累積 +192%，合併策略 +87%，單一 Agent +23%），
-橫斷面 Rank IC 約 −0.13（不顯著）——規則式 Agent 目前沒有選股能力。
+橫斷面 Rank IC 約 −0.15 到 −0.17（不顯著）——規則式 Agent 目前沒有選股能力。
 詳見[完整版報告第 4 節](docs/finmind_full_report.md#4-報酬層級評估2026-10-06-新增)。
+
+**Phase 2：加入總經/籌碼 Agent**（3 Agent，同 135 事件，詳見
+[Phase 2 報告](docs/phase2_macro_report.md)）：合併 Brier 0.2556 → 0.2538、
+ECE 0.061 → 0.054；三個 Agent 精度仍相近（比值 ≤ 1.24），精度加權依然等於
+簡單平均。組合報酬升至 +182%，但主要來自 2 期，排序能力（IC）沒有改善。
 
 **Synthetic 機制驗證**（20 seeds，來源可靠度刻意分化，詳見
 [技術筆記](docs/technical_note.md)）：精度加權在 **17/20 seeds** 的
@@ -137,12 +146,12 @@ python3.11 -m venv .venv
 
 ```
 config/tickers.yaml     股票池與全部參數（horizon、閾值、EMA α、冷啟動門檻）
-agents/                 Agent 基底 + 財報/新聞 Agent（LLM 可插拔）+ Phase 2 佔位
+agents/                 Agent 基底 + 財報/新聞/總經籌碼 Agent（LLM 可插拔）+ 供應鏈佔位
 arbitrator/             精度追蹤（Brier EMA）+ 合併公式
-data/                   FinMind 抓取（快取/節流/額度等待）、RSS 新聞、向量庫封裝
-backtest/               walk-forward 回測 + 評估指標
-tests/                  53 個單元測試
-reports/                synthetic / finmind_preliminary / finmind_scoped / finmind_full 結果
+data/                   FinMind 抓取（快取/節流/額度等待）、含息還原價、總經/籌碼、RSS 新聞、向量庫
+backtest/               walk-forward 回測 + 評估指標 + 報酬層級評估（vs 0050）
+tests/                  76 個單元測試
+reports/                synthetic / finmind_preliminary / finmind_scoped / finmind_full / finmind_macro 結果
 docs/                   規格、技術筆記、回測報告
 notebooks/              校準分析 notebook
 ```
@@ -154,6 +163,8 @@ notebooks/              校準分析 notebook
   實驗、誠實分析（M5 交付物）
 - [真實資料回測報告（完整版）](docs/finmind_full_report.md) — FinMind 5 檔 /
   135 事件的完整版結果與逐項解讀
+- [Phase 2 回測報告](docs/phase2_macro_report.md) — 加入總經/籌碼 Agent 的
+  3 Agent 結果、消融與報酬拆解
 - [真實資料回測報告（縮小版）](docs/finmind_scoped_report.md) — FinMind 3 檔 /
   47 事件的先導結果
 
@@ -162,7 +173,9 @@ notebooks/              校準分析 notebook
 - [x] MVP：財報 + 新聞 Agent、精度加權仲裁、回測管線（M1–M5）
 - [x] 5 檔完整版真實回測（2024-01 起，135 事件，見[報告](docs/finmind_full_report.md)）
 - [ ] LLM 判讀模式的可靠度分化實驗
-- [ ] Phase 2：供應鏈 Agent（知識圖譜）、總經/籌碼 Agent
+- [x] 報酬層級評估：long/neutral 組合 vs 0050、連續報酬 Rank IC
+- [x] Phase 2：總經/籌碼 Agent（規則式，見[報告](docs/phase2_macro_report.md)）
+- [ ] Phase 2：供應鏈 Agent（知識圖譜）
 - [ ] 對數意見池 / Agent 層級重新校準（見技術筆記第 6 節）
 
 ## 免責聲明

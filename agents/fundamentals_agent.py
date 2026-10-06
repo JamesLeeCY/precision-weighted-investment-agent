@@ -17,7 +17,7 @@ import math
 import numpy as np
 import pandas as pd
 
-from agents.base import AgentOutput, BaseAgent
+from agents.base import AgentOutput, BaseAgent, score_components
 from agents.llm_client import LLMClient
 from data.fetch_financials import FundamentalsDataProvider
 
@@ -113,26 +113,12 @@ class FundamentalsAgent(BaseAgent):
         if ar is not None:
             components.append(("應收天數", float(np.clip(-ar / 30.0, -1, 1))))
 
-        n_total = 5
-        coverage = len(components) / n_total
         if not components:
             return "neutral", 0.2, "無足夠財務資料可供判斷", 0.0
 
-        score = float(np.mean([v for _, v in components]))
-        signal = "bullish" if score > 0.2 else "bearish" if score < -0.2 else "neutral"
-
         # 訊號內部矛盾（同時有強正與強負分量）時降低信心
-        pos = max((v for _, v in components), default=0.0)
-        neg = min((v for _, v in components), default=0.0)
-        conflict = pos > 0.4 and neg < -0.4
-
-        confidence = 0.3 + 0.2 * coverage + 0.35 * abs(score)
-        if conflict:
-            confidence -= 0.15
-        confidence = float(np.clip(confidence, 0.05, 0.95))
-
-        parts = [f"{name}{'偏多' if v > 0.1 else '偏空' if v < -0.1 else '中性'}({v:+.2f})" for name, v in components]
-        rationale = "營運數字：" + "、".join(parts)
+        signal, confidence, score, conflict, parts = score_components(components, n_total=5)
+        rationale = "營運數字：" + parts
         if conflict:
             rationale += "；正負訊號矛盾，降低信心"
         return signal, confidence, rationale, score
