@@ -47,11 +47,17 @@ macro:
   rate_window_days: 60       # 美債殖利率變化的觀察窗口（交易日）
 
 arbitrator:
-  bullish_threshold: 0.3     # 規格 5.2：final_score > 0.3 → bullish
-  bearish_threshold: -0.3    # 規格 5.2：final_score < -0.3 → bearish
+  # 規格 5.2（2026-10-07 修訂）：final_score = 2·合併機率 − 1
+  # > 0.1 → bullish、< -0.1 → bearish，即合併機率 > 0.55 / < 0.45（事先設定）
+  bullish_threshold: 0.1
+  bearish_threshold: -0.1
   ema_alpha: 0.2             # 規格 5.3：Brier EMA 平滑係數
   epsilon: 0.01              # 規格 5.1：precision = 1/(brier_ema + epsilon)
   cold_start_min_n: 5        # 規格 5.1：n_predictions < 5 時採冷啟動均值
+  # Agent 層級重新校準（arbitrator/calibration.py）：p' = σ(a·logit p)，a ∈ [0,1]
+  # 事先固定、不依回測結果調整
+  calibration_min_n: 10              # 每個 Agent 累積滿 10 筆已到期預測才開始校準
+  calibration_prior_strength: 2.0    # 往 a=1（不修正）的先驗強度
 
 news:
   window_days: 14            # 規格 3.3：新聞 Agent 預設時間窗

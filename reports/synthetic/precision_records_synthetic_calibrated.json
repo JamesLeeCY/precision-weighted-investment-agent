@@ -1,0 +1,72 @@
+{
+  "fundamentals_agent|2327.TW": {
+    "agent_id": "fundamentals_agent",
+    "ticker": "2327.TW",
+    "n_predictions": 96,
+    "brier_score_ema": 0.19329947194873792,
+    "precision": 4.918851930181848
+  },
+  "news_agent|2327.TW": {
+    "agent_id": "news_agent",
+    "ticker": "2327.TW",
+    "n_predictions": 96,
+    "brier_score_ema": 0.28879579643009046,
+    "precision": 3.3467672970893716
+  },
+  "fundamentals_agent|2375.TW": {
+    "agent_id": "fundamentals_agent",
+    "ticker": "2375.TW",
+    "n_predictions": 96,
+    "brier_score_ema": 0.18986631165490292,
+    "precision": 5.003344444193474
+  },
+  "news_agent|2375.TW": {
+    "agent_id": "news_agent",
+    "ticker": "2375.TW",
+    "n_predictions": 96,
+    "brier_score_ema": 0.1825094051150361,
+    "precision": 5.194551400761116
+  },
+  "fundamentals_agent|2478.TW": {
+    "agent_id": "fundamentals_agent",
+    "ticker": "2478.TW",
+    "n_predictions": 96,
+    "brier_score_ema": 0.22520063725923495,
+    "precision": 4.2516891605944656
+  },
+  "news_agent|2478.TW": {
+    "agent_id": "news_agent",
+    "ticker": "2478.TW",
+    "n_predictions": 96,
+    "brier_score_ema": 0.23368625662191783,
+    "precision": 4.1036372500543274
+  },
+  "fundamentals_agent|2492.TW": {
+    "agent_id": "fundamentals_agent",
+    "ticker": "2492.TW",
+    "n_predictions": 96,
+    "brier_score_ema": 0.23105020203334253,
+    "precision": 4.148513428176583
+  },
+  "news_agent|2492.TW": {
+    "agent_id": "news_agent",
+    "ticker": "2492.TW",
+    "n_predictions": 96,
+    "brier_score_ema": 0.29814473986762385,
+    "precision": 3.2452282016223637
+  },
+  "fundamentals_agent|3026.TW": {
+    "agent_id": "fundamentals_agent",
+    "ticker": "3026.TW",
+    "n_predictions": 96,
+    "brier_score_ema": 0.23324179300885384,
+    "precision": 4.111135622008841
+  },
+  "news_agent|3026.TW": {
+    "agent_id": "news_agent",
+    "ticker": "3026.TW",
+    "n_predictions": 96,
+    "brier_score_ema": 0.2215713239265919,
+    "precision": 4.318323974850184
+  }
+}

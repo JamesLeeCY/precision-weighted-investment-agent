@@ -19,7 +19,7 @@ EMA 的倒數，即「精度」）動態加權合成投資論點——可靠度�
       │                 │                  │
       └─────────────────┼──────────────────┘
                   ▼
-     精度加權仲裁層  final_score = Σ(precisionᵢ·confidenceᵢ·sᵢ) / Σ(precisionᵢ·confidenceᵢ)
+     精度加權仲裁層  final_score = Σ(precisionᵢ·κᵢ·sᵢ) / Σ precisionᵢ，κᵢ = |2pᵢ − 1|（確信度）
                   ▼
      投資論點 + 不確定性區間 + evidence trace
                   ▼ (T+20 交易日後)
@@ -50,26 +50,36 @@ EMA 的倒數，即「精度」）動態加權合成投資論點——可靠度�
 | 策略 | 平均 Brier ↓ | ECE ↓ |
 |---|---|---|
 | Baseline A：單一 Agent（財報） | 0.2593 | 0.1174 |
-| Baseline B：簡單平均合併 | **0.2556** | **0.0610** |
-| 本系統：精度加權合併 | 0.2557 | 0.0672 |
+| Baseline B：簡單平均合併 | **0.2540** | **0.0295** |
+| 本系統：精度加權合併 | 0.2542 | 0.0297 |
 
 三者 Brier 皆**高於** 0.25 的無資訊基準：目前的規則式 Agent 沒有預測力，
 合併只是讓機率更靠近 0.5、校準更好。
 
 **報酬層級**（long/neutral 組合、含息總報酬、扣交易成本，27 期）：所有策略
-皆落後 0050（期間 0050 累積 +192%，合併策略 +87%，單一 Agent +23%），
-橫斷面 Rank IC 約 −0.15 到 −0.17（不顯著）——規則式 Agent 目前沒有選股能力。
+皆顯著落後 0050（期間 0050 累積 +192%，2 Agent 合併 −12% 到 +53%，單一 Agent
++23%），橫斷面 Rank IC 為負（不顯著）——規則式 Agent 目前沒有選股能力。組合報酬
+對訊號公式極度敏感：修訂規格 5.2 前，3 Agent 合併曾達 +182%，但那只是多頭中
+多數時間持股的結果。
 詳見[完整版報告第 4 節](docs/finmind_full_report.md#4-報酬層級評估2026-10-06-新增)。
 
 **Phase 2：加入總經/籌碼 Agent**（3 Agent，同 135 事件，詳見
-[Phase 2 報告](docs/phase2_macro_report.md)）：合併 Brier 0.2556 → 0.2538、
-ECE 0.061 → 0.054；三個 Agent 精度仍相近（比值 ≤ 1.24），精度加權依然等於
-簡單平均。組合報酬升至 +182%，但主要來自 2 期，排序能力（IC）沒有改善。
+[Phase 2 報告](docs/phase2_macro_report.md)）：合併 Brier 0.2540 → 0.2530；
+三個 Agent 精度仍相近（比值 ≤ 1.24），精度加權依然等於或略輸簡單平均。
 
 **LLM 判讀實驗**（地端 qwen3:8b，詳見[實驗報告](docs/llm_experiment_report.md)）：
 改用 LLM 後各 Agent 精度確實拉開（比值 1.35–2.63），但 LLM 嚴重過度自信、
 總經判讀一律看空，Brier 全面劣於規則式（合併 0.2805 vs 0.2538），精度加權
-仍略輸簡單平均。下一步是合併前先做 Agent 層級的重新校準。
+仍略輸簡單平均。（數字為規格 5.2 修訂前）
+
+**Agent 層級重新校準**（詳見[校準報告](docs/calibration_report.md)）：合併前以
+walk-forward 收縮校準修正各 Agent 的過度自信，LLM 合併 Brier 0.2726 → 0.2544，
+但仍未低於 0.25。校準後 LLM 的精度比縮回 1.04–1.28——原本
+的分化是過度自信程度不同，而非資訊量不同。目前的瓶頸在 Agent 本身的資訊量。
+
+**規格 5.2 修訂**（2026-10-07，詳見[校準報告第 8 節](docs/calibration_report.md#8-訊號公式修訂2026-10-07)）：
+投票權重改為確信度 |2p − 1|，合併分數 = 2 × 合併機率 − 1，門檻為合併機率
+0.55 / 0.45。毫無把握的 Agent 不再投票，訊號與機率一致。
 
 **Synthetic 機制驗證**（20 seeds，來源可靠度刻意分化，詳見
 [技術筆記](docs/technical_note.md)）：精度加權在 **17/20 seeds** 的
@@ -136,8 +146,9 @@ python3.11 -m venv .venv
   輸出含 signal（bullish/bearish/neutral）、confidence（單次判斷的主觀信心）、
   rationale、evidence_refs、raw_features
 - **precision ≠ confidence**：confidence 是 Agent 對單次判斷的信心；
-  precision 是仲裁層追蹤的歷史可靠度 `1/(brier_ema + ε)`。合併權重 =
-  兩者相乘（「這次訊號多強 × 這個來源多可信」）
+  precision 是仲裁層追蹤的歷史可靠度 `1/(brier_ema + ε)`。投票權重 =
+  precision × 確信度 |2p − 1|（「這個來源多可信 × 這次多有把握」），
+  合併分數 = 2 × 精度加權合併機率 − 1
 - **冷啟動**（[arbitrator/precision_tracker.py](arbitrator/precision_tracker.py)）：
   n < 5 的 Agent 精度取成熟記錄均值，無任何歷史時全體等權
 - **走時序回測**（[backtest/run_backtest.py](backtest/run_backtest.py)）：
@@ -152,10 +163,10 @@ python3.11 -m venv .venv
 ```
 config/tickers.yaml     股票池與全部參數（horizon、閾值、EMA α、冷啟動門檻）
 agents/                 Agent 基底 + 財報/新聞/總經籌碼 Agent（LLM 可插拔）+ 供應鏈佔位
-arbitrator/             精度追蹤（Brier EMA）+ 合併公式
+arbitrator/             精度追蹤（Brier EMA）+ 合併公式 + Agent 層級重新校準
 data/                   FinMind 抓取（快取/節流/額度等待）、含息還原價、總經/籌碼、RSS 新聞、向量庫
 backtest/               walk-forward 回測 + 評估指標 + 報酬層級評估（vs 0050）
-tests/                  91 個單元測試
+tests/                  104 個單元測試
 reports/                synthetic / finmind_preliminary / finmind_scoped / finmind_full / finmind_macro / finmind_llm_qwen3 結果
 docs/                   規格、技術筆記、回測報告
 notebooks/              校準分析 notebook
@@ -170,6 +181,8 @@ notebooks/              校準分析 notebook
   135 事件的完整版結果與逐項解讀
 - [Phase 2 回測報告](docs/phase2_macro_report.md) — 加入總經/籌碼 Agent 的
   3 Agent 結果、消融與報酬拆解
+- [Agent 層級重新校準報告](docs/calibration_report.md) — 收縮校準的效果、LLM 精度分化
+  的真相、synthetic 20 seeds 驗證
 - [LLM 判讀實驗報告](docs/llm_experiment_report.md) — 地端 qwen3:8b 取代規則式判讀的
   結果、過度自信與方向偏誤分析
 - [真實資料回測報告（縮小版）](docs/finmind_scoped_report.md) — FinMind 3 檔 /
@@ -180,11 +193,12 @@ notebooks/              校準分析 notebook
 - [x] MVP：財報 + 新聞 Agent、精度加權仲裁、回測管線（M1–M5）
 - [x] 5 檔完整版真實回測（2024-01 起，135 事件，見[報告](docs/finmind_full_report.md)）
 - [x] LLM 判讀模式的可靠度分化實驗（地端 qwen3:8b，見[報告](docs/llm_experiment_report.md)）
-- [ ] Agent 層級重新校準（修正 LLM 過度自信）
+- [x] Agent 層級重新校準（見[報告](docs/calibration_report.md)）
+- [x] 訊號公式反映校準（規格 5.2 修訂為確信度加權）
+- [ ] 合併機率的中性稀釋、合併後校準 / 對數意見池
 - [x] 報酬層級評估：long/neutral 組合 vs 0050、連續報酬 Rank IC
 - [x] Phase 2：總經/籌碼 Agent（規則式，見[報告](docs/phase2_macro_report.md)）
 - [ ] Phase 2：供應鏈 Agent（知識圖譜）
-- [ ] 對數意見池（見技術筆記第 6 節）
 
 ## 免責聲明
 

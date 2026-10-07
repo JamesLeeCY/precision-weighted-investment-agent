@@ -8,6 +8,12 @@
 | Agent | 財報 + 新聞 + **總經/籌碼**，三者皆為規則式（無 LLM） |
 | 輸出 | [reports/finmind_macro/](../reports/finmind_macro/comparison_report.md) |
 
+> **2026-10-07 規格 5.2 修訂**：合併公式與訊號門檻已改為確信度加權
+> （見[校準報告第 8 節](calibration_report.md#8-訊號公式修訂2026-10-07)）。
+> 本報告中合併策略（簡單平均、精度加權）的機率、訊號與組合報酬為修訂前的數字；
+> 單一 Agent 的數字不受影響。最新數字見 `reports/` 與校準報告第 8 節。
+
+
 ## 1. 總經/籌碼 Agent 設計
 
 [agents/macro_agent.py](../agents/macro_agent.py)，資料層

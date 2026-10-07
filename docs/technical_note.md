@@ -16,7 +16,7 @@
 | 單次預測誤差 | 單次 Brier score：(p − o)²，p 為規格 6.1 之機率轉換 |
 | 預測誤差變異數的估計 | Brier score 的指數移動平均（EMA，α = 0.2） |
 | precision（變異數倒數） | precision = 1 / (brier_ema + 0.01) |
-| precision 加權信念更新 | final_score = Σ(precision·confidence·s) / Σ(precision·confidence) |
+| precision 加權信念更新 | final_score = Σ(precision·κ·s) / Σprecision，κ = \|2p − 1\|（2026-10-07 修訂；原為 Σ(precision·confidence·s) / Σ(precision·confidence)） |
 | loose → tight coupling | 冷啟動（n < 5 時取全體均值 → 均等權重）→ 隨記錄累積收斂至可靠 Agent 主導 |
 
 兩個量的區分（規格 3.1 強調）：`confidence` 是 Agent 對**單次**判斷的主觀信心
@@ -31,6 +31,11 @@
    與規格 5.2 同權重，pᵢ 為規格 6.1 之個別機率。相較於 (final_score+1)/2 的
    映射，意見池避免「兩個 Agent 同向時機率被推到 0/1 極端」的過度自信問題
    （實驗中後者使合併策略 Brier 顯著劣化）。
+   **2026-10-07 修訂**：投票權重改為 precision·κ（κ = |2p − 1| 為確信度），分母改為
+   Σprecision，合併機率改為 p = Σ(precisionᵢ·pᵢ)/Σprecision，恆有 final_score = 2p − 1，
+   門檻改為 ±0.1（p 為 0.55 / 0.45）。原因是有方向訊號的 confidence 下限為 0.5，
+   原公式讓「毫無把握」的 Agent 仍以 0.5 權重投票，Agent 層級校準因此無法反映到
+   訊號上。詳見[校準報告第 8 節](calibration_report.md#8-訊號公式修訂2026-10-07)。
 2. **uncertainty 公式**：規格 5.2 的文字（「越接近 1 代表越依賴單一來源」）與
    公式 `1 − max(precision)/Σprecision` 方向相反。依同節前句「precision 越集中
    在少數高權重 Agent，區間應越窄」，以公式為準：精度集中 → uncertainty 低。

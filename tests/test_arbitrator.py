@@ -16,29 +16,46 @@ def out(agent_id, signal, confidence, ticker="2327.TW", date="2025-01-01"):
 
 class TestMergeFormula:
     def test_exact_weighted_average(self):
-        # 規格 5.2：final = Σ(prec*conf*s) / Σ(prec*conf)
-        outputs = [out("a", "bullish", 0.8), out("b", "bearish", 0.5)]
+        # 規格 5.2（2026-10-07 修訂）：final = Σ(prec·κ·s) / Σprec，κ = |2p − 1|
+        outputs = [out("a", "bullish", 0.8), out("b", "bearish", 0.6)]
         precisions = {"a": 5.0, "b": 2.0}
-        # num = 5*0.8*1 + 2*0.5*(-1) = 3.0；denom = 4+1 = 5 → 0.6
+        # κ_a = 0.6、κ_b = 0.2 → num = 5*0.6 − 2*0.2 = 2.6；denom = 7 → 0.3714
         merged = merge(outputs, precisions)
-        assert merged.final_score == pytest.approx(0.6)
+        assert merged.final_score == pytest.approx(2.6 / 7)
         assert merged.signal == "bullish"
 
-    def test_neutral_contributes_zero_to_numerator(self):
-        outputs = [out("a", "bullish", 0.6), out("b", "neutral", 0.9)]
-        precisions = {"a": 1.0, "b": 1.0}
-        # num = 0.6；denom = 0.6+0.9 = 1.5 → 0.4
-        assert merge(outputs, precisions).final_score == pytest.approx(0.4)
+    def test_score_equals_two_p_minus_one(self):
+        outputs = [out("a", "bullish", 0.7), out("b", "neutral", 0.9), out("c", "bearish", 0.9)]
+        merged = merge(outputs, {"a": 3.0, "b": 1.0, "c": 2.0})
+        assert merged.final_score == pytest.approx(2 * merged.probability_bullish - 1)
+
+    def test_neutral_dilutes_but_does_not_vote(self):
+        # neutral 的 κ = 0，不貢獻分子，但其精度仍在分母（稀釋）
+        outputs = [out("a", "bullish", 0.8), out("b", "neutral", 0.9)]
+        # num = 1*0.6；denom = 2 → 0.3
+        assert merge(outputs, {"a": 1.0, "b": 1.0}).final_score == pytest.approx(0.3)
+
+    def test_no_conviction_agent_does_not_vote(self):
+        # confidence 0.5 的 bearish（毫無把握）不應把 bullish 拉下來
+        alone = merge([out("a", "bullish", 0.7)], {"a": 1.0})
+        with_unsure = merge([out("a", "bullish", 0.7), out("b", "bearish", 0.5)], {"a": 1.0, "b": 1.0})
+        assert with_unsure.final_score == pytest.approx(alone.final_score / 2)  # 只被稀釋
+        assert with_unsure.contributions[1]["weight_share"] == 0.0
+
+    def test_tiny_conviction_alone_stays_neutral(self):
+        # 唯一表態的 Agent 確信度極小 → 不應被放大成強訊號
+        merged = merge([out("a", "bearish", 0.51), out("b", "neutral", 0.3)], {"a": 1.0, "b": 1.0})
+        assert merged.signal == "neutral"
 
     def test_thresholds(self):
-        # 規格 5.2：> 0.3 bullish、< -0.3 bearish、否則 neutral（邊界含 0.3）
-        assert score_to_signal(0.31) == "bullish"
-        assert score_to_signal(0.3) == "neutral"
-        assert score_to_signal(-0.3) == "neutral"
-        assert score_to_signal(-0.31) == "bearish"
+        # > 0.1 bullish、< -0.1 bearish（合併機率 0.55 / 0.45），邊界屬 neutral
+        assert score_to_signal(0.11) == "bullish"
+        assert score_to_signal(0.1) == "neutral"
+        assert score_to_signal(-0.1) == "neutral"
+        assert score_to_signal(-0.11) == "bearish"
 
-    def test_zero_confidence_denominator(self):
-        merged = merge([out("a", "bullish", 0.0)], {"a": 5.0})
+    def test_zero_precision(self):
+        merged = merge([out("a", "bullish", 0.9)], {"a": 0.0})
         assert merged.final_score == 0.0
         assert merged.signal == "neutral"
         assert merged.uncertainty == 1.0
@@ -59,13 +76,12 @@ class TestMergeFormula:
         merged = merge([out("a", "bearish", 1.0)], {"a": 1.0})
         assert merged.probability_bullish == pytest.approx(0.0)
 
-    def test_probability_is_weighted_opinion_pool(self):
-        # p = Σ(prec*conf*p_i) / Σ(prec*conf)，p_i 為規格 6.1 機率
-        outputs = [out("a", "bullish", 0.8), out("b", "bearish", 0.5)]
-        precisions = {"a": 5.0, "b": 2.0}
-        # w_a=4, w_b=1；p_a=0.8, p_b=0.5 → (4*0.8 + 1*0.5)/5 = 0.74
-        merged = merge(outputs, precisions)
-        assert merged.probability_bullish == pytest.approx(0.74)
+    def test_probability_is_precision_weighted_pool(self):
+        # p = Σ(prec·p_i) / Σprec，p_i 為規格 6.1 機率
+        outputs = [out("a", "bullish", 0.8), out("b", "bearish", 0.6)]
+        # (5*0.8 + 2*0.4) / 7 = 4.8 / 7
+        merged = merge(outputs, {"a": 5.0, "b": 2.0})
+        assert merged.probability_bullish == pytest.approx(4.8 / 7)
 
     def test_mixed_ticker_rejected(self):
         with pytest.raises(ValueError):

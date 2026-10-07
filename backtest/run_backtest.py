@@ -27,6 +27,7 @@ Walk-forward 流程（嚴格按時間順序，避免 look-ahead）：
 from __future__ import annotations
 
 import argparse
+import dataclasses
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -38,6 +39,7 @@ import yaml
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from agents.base import AgentOutput
+from arbitrator.calibration import AgentCalibrator
 from arbitrator.merge import merge
 from arbitrator.precision_tracker import PrecisionTracker
 from backtest.metrics import (
@@ -56,6 +58,8 @@ STRATEGY_LABELS = {
     "baseline_a": "Baseline A：單一 Agent（財報）",
     "baseline_b": "Baseline B：簡單平均合併",
     "precision_weighted": "本系統：精度加權合併",
+    "calibrated_average": "校準後簡單平均",
+    "calibrated_precision_weighted": "校準後精度加權",
 }
 
 # 校準曲線圖的標題（matplotlib 預設字型無 CJK，圖內用英文）
@@ -63,6 +67,8 @@ STRATEGY_LABELS_EN = {
     "baseline_a": "Baseline A: single agent (fundamentals)",
     "baseline_b": "Baseline B: simple average",
     "precision_weighted": "Precision-weighted (this system)",
+    "calibrated_average": "Calibrated simple average",
+    "calibrated_precision_weighted": "Calibrated precision-weighted",
 }
 
 
@@ -74,6 +80,8 @@ class PredictionEvent:
     as_of_date: str
     resolution_date: str  # as_of_date + horizon_days（交易日）
     outputs: dict[str, AgentOutput] = field(default_factory=dict)
+    # 預測當下各 Agent 的校準後機率（到期時以此計算校準後精度）
+    calibrated_p: dict[str, float] = field(default_factory=dict)
     outcome: int = 0  # 1 = horizon 期間報酬 > 0
     # 報酬層級評估用（synthetic 模式為 nan）
     price_return: float = float("nan")  # 未還原收盤價報酬
@@ -85,12 +93,32 @@ class PredictionEvent:
 # Walk-forward 引擎
 # ---------------------------------------------------------------------------
 
+def calibrated_output(out: AgentOutput, p_cal: float) -> AgentOutput:
+    """以校準後機率改寫 confidence（訊號方向不變；neutral 原樣保留）。"""
+    if out.signal == "neutral":
+        return out
+    return dataclasses.replace(out, confidence=p_cal if out.signal == "bullish" else 1.0 - p_cal)
+
+
 def run_walk_forward(
     events: list[PredictionEvent],
     tracker: PrecisionTracker,
-    bullish_threshold: float = 0.3,
-    bearish_threshold: float = -0.3,
+    bullish_threshold: float = 0.1,
+    bearish_threshold: float = -0.1,
+    calibrator: AgentCalibrator | None = None,
+    cal_tracker: PrecisionTracker | None = None,
 ) -> pd.DataFrame:
+    """走時序回測。除了原本三個策略，另做 Agent 層級重新校準的兩個策略：
+    合併前以 calibrator 修正各 Agent 機率；校準後精度加權使用 cal_tracker，
+    其精度由「預測當下的校準後機率」的 Brier 累積（只反映資訊量，不含校準誤差）。
+    """
+    calibrator = calibrator or AgentCalibrator()
+    if cal_tracker is None:
+        cal_tracker = PrecisionTracker(
+            tracker.storage_path.with_name(tracker.storage_path.stem + "_calibrated.json"),
+            epsilon=tracker.epsilon, ema_alpha=tracker.ema_alpha, cold_start_min_n=tracker.cold_start_min_n,
+        )
+        cal_tracker.records = {}
     events = sorted(events, key=lambda e: (e.as_of_date, e.ticker))
     pending: list[PredictionEvent] = []
     rows = []
@@ -104,6 +132,9 @@ def run_walk_forward(
                     p = signal_to_probability(out.signal, out.confidence)
                     brier = (p - old.outcome) ** 2
                     tracker.record_outcome(out.agent_id, old.ticker, brier, autosave=False)
+                    calibrator.record(out.agent_id, p, old.outcome)
+                    p_cal = old.calibrated_p[out.agent_id]
+                    cal_tracker.record_outcome(out.agent_id, old.ticker, (p_cal - old.outcome) ** 2, autosave=False)
             else:
                 still_pending.append(old)
         pending = still_pending
@@ -119,6 +150,17 @@ def run_walk_forward(
         equal = {a: 1.0 for a in agent_ids}
         merged_avg = merge(outputs, equal, bullish_threshold, bearish_threshold)
 
+        # Agent 層級重新校準後再合併
+        cal_outputs = []
+        for o in outputs:
+            ev.calibrated_p[o.agent_id] = calibrator.calibrate(
+                o.agent_id, signal_to_probability(o.signal, o.confidence)
+            )
+            cal_outputs.append(calibrated_output(o, ev.calibrated_p[o.agent_id]))
+        cal_precisions = cal_tracker.get_precisions(agent_ids, ev.ticker)
+        merged_cal_avg = merge(cal_outputs, equal, bullish_threshold, bearish_threshold)
+        merged_cal_pw = merge(cal_outputs, cal_precisions, bullish_threshold, bearish_threshold)
+
         # Baseline A：單一 Agent
         base = ev.outputs.get(BASELINE_A_AGENT, outputs[0])
 
@@ -133,6 +175,10 @@ def run_walk_forward(
             "precision_weighted_signal": merged_pw.signal,
             "precision_weighted_p": merged_pw.probability_bullish,
             "pw_uncertainty": merged_pw.uncertainty,
+            "calibrated_average_signal": merged_cal_avg.signal,
+            "calibrated_average_p": merged_cal_avg.probability_bullish,
+            "calibrated_precision_weighted_signal": merged_cal_pw.signal,
+            "calibrated_precision_weighted_p": merged_cal_pw.probability_bullish,
             "price_return": ev.price_return,
             "forward_return": ev.forward_return,
             "benchmark_return": ev.benchmark_return,
@@ -144,10 +190,14 @@ def run_walk_forward(
             # 個別 Agent 的機率，供單一 Agent 消融分析
             row[f"p_{o.agent_id}"] = signal_to_probability(o.signal, o.confidence)
             row[f"llm_{o.agent_id}"] = bool(o.raw_features.get("llm_used", False))
+            row[f"pcal_{o.agent_id}"] = ev.calibrated_p[o.agent_id]
+            row[f"slope_{o.agent_id}"] = calibrator.slope(o.agent_id)
+            row[f"calprecision_{o.agent_id}"] = cal_precisions[o.agent_id]
         rows.append(row)
         pending.append(ev)
 
     tracker.save()
+    cal_tracker.save()
     return pd.DataFrame(rows)
 
 
@@ -253,7 +303,7 @@ def write_report(
     ece_ok = ece_pw <= pw.loc["baseline_a", "ece"] and ece_pw <= pw.loc["baseline_b", "ece"]
 
     lines = [
-        "# 回測比較報表：三種合併策略（規格 6.3）",
+        "# 回測比較報表：合併策略比較（規格 6.3 + Agent 層級重新校準）",
         "",
         f"- 執行模式：`{mode}`",
         f"- 預測事件數：{len(df)}（{df['ticker'].nunique()} 檔股票）",
@@ -277,14 +327,19 @@ def write_report(
         outcomes = df["outcome"].astype(int).tolist()
         lines += [
             "", "### 個別 Agent（消融）", "",
-            "| Agent | 平均 Brier ↓ | ECE ↓ | p ≠ 0.5 比例 | LLM 判讀比例 |", "|---|---|---|---|---|",
+            "| Agent | 平均 Brier ↓ | ECE ↓ | 校準後 Brier ↓ | 校準後 ECE ↓ | 期末收縮係數 a | p ≠ 0.5 比例 | LLM 判讀比例 |",
+            "|---|---|---|---|---|---|---|---|",
         ]
         for c in agent_cols:
+            agent = c[2:]
             ps = df[c].astype(float).tolist()
-            llm_col = f"llm_{c[2:]}"
+            llm_col = f"llm_{agent}"
             llm_rate = f"{df[llm_col].astype(bool).mean() * 100:.0f}%" if llm_col in df else "—"
+            cal = df[f"pcal_{agent}"].astype(float).tolist() if f"pcal_{agent}" in df else None
+            cal_cells = f"{mean_brier(cal, outcomes):.4f} | {ece(cal, outcomes):.4f}" if cal else "— | —"
+            slope = f"{df[f'slope_{agent}'].iloc[-1]:.2f}" if f"slope_{agent}" in df else "—"
             lines.append(
-                f"| {c[2:]} | {mean_brier(ps, outcomes):.4f} | {ece(ps, outcomes):.4f} | "
+                f"| {agent} | {mean_brier(ps, outcomes):.4f} | {ece(ps, outcomes):.4f} | {cal_cells} | {slope} | "
                 f"{(df[c] != 0.5).mean() * 100:.0f}% | {llm_rate} |"
             )
     lines += [
@@ -293,6 +348,8 @@ def write_report(
         "",
         f"- 精度加權 Brier 優於兩個 baseline：{'✅ 通過' if brier_ok else '❌ 未通過'}",
         f"- 精度加權 ECE 不劣於兩個 baseline：{'✅ 通過' if ece_ok else '❌ 未通過'}",
+        f"- 校準後精度加權 Brier 優於校準後簡單平均："
+        f"{'✅ 通過' if pw.loc['calibrated_precision_weighted', 'mean_brier'] < pw.loc['calibrated_average', 'mean_brier'] else '❌ 未通過'}",
         "",
         "## 校準曲線",
         "",
@@ -603,8 +660,21 @@ def main(argv: list[str] | None = None) -> Path:
     )
     tracker.records = {}  # 每次回測從零開始累積精度
 
+    calibrator = AgentCalibrator(
+        min_n=int(arb.get("calibration_min_n", 10)),
+        prior_strength=float(arb.get("calibration_prior_strength", 2.0)),
+    )
+    cal_tracker = PrecisionTracker(
+        output_dir / f"precision_records_{args.mode}_calibrated.json",
+        epsilon=float(arb["epsilon"]),
+        ema_alpha=float(arb["ema_alpha"]),
+        cold_start_min_n=int(arb["cold_start_min_n"]),
+    )
+    cal_tracker.records = {}
+
     df = run_walk_forward(
-        events, tracker, float(arb["bullish_threshold"]), float(arb["bearish_threshold"])
+        events, tracker, float(arb["bullish_threshold"]), float(arb["bearish_threshold"]),
+        calibrator=calibrator, cal_tracker=cal_tracker,
     )
     summary = evaluate(df, output_dir)
 
