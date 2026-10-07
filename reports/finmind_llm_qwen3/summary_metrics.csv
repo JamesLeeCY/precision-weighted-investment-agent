@@ -1,0 +1,4 @@
+strategy,label,n,mean_brier,directional_accuracy,n_directional,ece
+baseline_a,Baseline A：單一 Agent（財報）,135,0.33544444444444443,0.5,102,0.28592592592592586
+baseline_b,Baseline B：簡單平均合併,135,0.2804990593666497,0.45454545454545453,66,0.13132279330717167
+precision_weighted,本系統：精度加權合併,135,0.28117931195583834,0.4838709677419355,62,0.15712142675474852

@@ -11,13 +11,12 @@
 """
 from __future__ import annotations
 
-import json
 import math
 
 import numpy as np
 import pandas as pd
 
-from agents.base import AgentOutput, BaseAgent, score_components
+from agents.base import AgentOutput, BaseAgent, describe_features, score_components
 from agents.llm_client import LLMClient
 from data.fetch_financials import FundamentalsDataProvider
 
@@ -31,6 +30,19 @@ SYSTEM_PROMPT = """你是台股基本面分析師。根據提供的財務特徵�
 
 只回傳 JSON（不要其他文字）：
 {{"signal": "bullish|bearish|neutral", "confidence": 0.0-1.0, "rationale": "繁體中文，200字以內"}}"""
+
+
+FEATURE_LABELS = {
+    "revenue_yoy_pct": "最新月營收年增率（%）",
+    "revenue_mom_pct": "最新月營收月增率（%）",
+    "revenue_yoy_slope": "近 4 個月營收年增率的變化斜率（百分點/月，正值 = 成長加速）",
+    "gross_margin_pct": "最新一季毛利率（%）",
+    "gross_margin_slope": "近 4 季毛利率變化斜率（百分點/季）",
+    "inventory_days": "最新一季存貨週轉天數（天）",
+    "inventory_days_yoy_pct": "存貨週轉天數年增率（%，正值 = 存貨去化變慢）",
+    "receivable_days": "最新一季應收帳款天數（天）",
+    "receivable_days_yoy_pct": "應收帳款天數年增率（%，正值 = 收款變慢）",
+}
 
 
 def _slope(values: pd.Series) -> float | None:
@@ -136,10 +148,11 @@ class FundamentalsAgent(BaseAgent):
             if transcript:
                 evidence.append(f"transcript:{ticker}:{as_of_date}")
 
+        llm_result = None
         if self.llm.available and feats:
             user_prompt = (
                 f"股票：{ticker}，判斷基準日：{as_of_date}\n\n"
-                f"營運數字特徵：\n{json.dumps(feats, ensure_ascii=False, indent=2)}\n\n"
+                f"營運數字特徵：\n{describe_features(feats, FEATURE_LABELS)}\n\n"
                 f"管理層敘述（法說會摘要）：\n{transcript or '（本次無逐字稿資料）'}"
             )
             llm_result = self.llm.judge(
@@ -157,5 +170,5 @@ class FundamentalsAgent(BaseAgent):
             confidence=confidence,
             rationale=rationale,
             evidence_refs=evidence,
-            raw_features={**feats, "rule_score": score, "llm_used": self.llm.available and bool(feats)},
+            raw_features={**feats, "rule_score": score, "llm_used": llm_result is not None},
         )

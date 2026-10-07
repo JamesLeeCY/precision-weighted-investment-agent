@@ -143,6 +143,7 @@ def run_walk_forward(
         for o in outputs:
             # 個別 Agent 的機率，供單一 Agent 消融分析
             row[f"p_{o.agent_id}"] = signal_to_probability(o.signal, o.confidence)
+            row[f"llm_{o.agent_id}"] = bool(o.raw_features.get("llm_used", False))
         rows.append(row)
         pending.append(ev)
 
@@ -243,6 +244,7 @@ def write_report(
     returns: pd.DataFrame | None = None,
     cost_per_side: float = DEFAULT_COST_PER_SIDE,
     outcome_basis: str = "price",
+    llm_info: str = "未使用（規則式）",
 ) -> Path:
     pw = summary.set_index("strategy")
     brier_pw = pw.loc["precision_weighted", "mean_brier"]
@@ -257,6 +259,7 @@ def write_report(
         f"- 預測事件數：{len(df)}（{df['ticker'].nunique()} 檔股票）",
         f"- Agent：{', '.join(c[2:] for c in df.columns if c.startswith('p_')) or '—'}",
         f"- 期間：{df['as_of_date'].min()} ~ {df['as_of_date'].max()}",
+        f"- LLM 判讀：{llm_info}",
         "- 應驗判定：horizon 期末絕對報酬 > 0（20 個交易日，"
         + ("含息總報酬" if outcome_basis == "total_return" else "未還原收盤價")
         + "）",
@@ -272,12 +275,17 @@ def write_report(
     agent_cols = [c for c in df.columns if c.startswith("p_")]
     if agent_cols:
         outcomes = df["outcome"].astype(int).tolist()
-        lines += ["", "### 個別 Agent（消融）", "", "| Agent | 平均 Brier ↓ | ECE ↓ | p ≠ 0.5 比例 |", "|---|---|---|---|"]
+        lines += [
+            "", "### 個別 Agent（消融）", "",
+            "| Agent | 平均 Brier ↓ | ECE ↓ | p ≠ 0.5 比例 | LLM 判讀比例 |", "|---|---|---|---|---|",
+        ]
         for c in agent_cols:
             ps = df[c].astype(float).tolist()
+            llm_col = f"llm_{c[2:]}"
+            llm_rate = f"{df[llm_col].astype(bool).mean() * 100:.0f}%" if llm_col in df else "—"
             lines.append(
                 f"| {c[2:]} | {mean_brier(ps, outcomes):.4f} | {ece(ps, outcomes):.4f} | "
-                f"{(df[c] != 0.5).mean() * 100:.0f}% |"
+                f"{(df[c] != 0.5).mean() * 100:.0f}% | {llm_rate} |"
             )
     lines += [
         "",
@@ -379,9 +387,25 @@ def generate_synthetic_events(
 # FinMind 模式：真實資料驅動兩個 MVP Agent
 # ---------------------------------------------------------------------------
 
-def generate_finmind_events(config: dict) -> list[PredictionEvent]:
+def build_llm(config: dict):
+    """依 config 的 llm 區塊建立 LLMClient（provider: anthropic / ollama）。"""
+    from agents.llm_client import DEFAULT_OLLAMA_URL, LLMClient
+
+    cfg = config.get("llm", {})
+    cache_dir = cfg.get("cache_dir")
+    return LLMClient(
+        model=cfg.get("model", "claude-sonnet-4-6"),
+        enabled=cfg.get("enabled", "auto"),
+        provider=cfg.get("provider", "anthropic"),
+        base_url=cfg.get("base_url", DEFAULT_OLLAMA_URL),
+        cache_dir=PROJECT_ROOT / cache_dir if cache_dir else None,
+        options=cfg.get("options"),
+        think=cfg.get("think"),
+    )
+
+
+def generate_finmind_events(config: dict, llm=None) -> list[PredictionEvent]:
     from agents.fundamentals_agent import FundamentalsAgent
-    from agents.llm_client import LLMClient
     from agents.macro_agent import MacroAgent
     from agents.news_agent import NewsAgent
     from data.fetch_macro import FinMindMacroProvider
@@ -398,7 +422,7 @@ def generate_finmind_events(config: dict) -> list[PredictionEvent]:
     names = {u["ticker"]: u["name"] for u in config["universe"]}
 
     client = FinMindClient()
-    llm = LLMClient(model=config["llm"]["model"], enabled=config["llm"]["enabled"])
+    llm = llm or build_llm(config)
     builders = {
         "fundamentals_agent": lambda: FundamentalsAgent(
             FinMindFundamentalsProvider(client), llm=llm, horizon_days=horizon
@@ -505,6 +529,11 @@ def main(argv: list[str] | None = None) -> Path:
     parser.add_argument("--start-date", default=None, help="覆寫 config 的回測起日（控制 API 額度用）")
     parser.add_argument("--end-date", default=None, help="覆寫 config 的回測迄日")
     parser.add_argument("--step-days", type=int, default=None, help="覆寫預測取樣間隔（交易日）")
+    parser.add_argument("--llm-provider", choices=["anthropic", "ollama", "none"], default=None,
+                        help="覆寫 config 的 llm.provider；none = 全部規則式")
+    parser.add_argument("--llm-model", default=None, help="覆寫 config 的 llm.model（如 qwen3:8b、phi4）")
+    parser.add_argument("--llm-think", choices=["true", "false"], default=None,
+                        help="推理模型（qwen3 等）是否開啟思考模式")
     parser.add_argument(
         "--agents", default=None,
         help="逗號分隔的 Agent 清單（如 fundamentals_agent,news_agent,macro_agent），覆寫 config 的 agents",
@@ -516,6 +545,16 @@ def main(argv: list[str] | None = None) -> Path:
     args = parser.parse_args(argv)
 
     config = yaml.safe_load(Path(args.config).read_text(encoding="utf-8"))
+    llm_cfg = config.setdefault("llm", {})
+    if args.llm_provider == "none":
+        llm_cfg["enabled"] = False
+    elif args.llm_provider:
+        llm_cfg["provider"] = args.llm_provider
+        llm_cfg["enabled"] = True
+    if args.llm_model:
+        llm_cfg["model"] = args.llm_model
+    if args.llm_think:
+        llm_cfg["think"] = args.llm_think == "true"
     if args.agents:
         config["agents"] = [a.strip() for a in args.agents.split(",")]
     if args.tickers:
@@ -533,6 +572,7 @@ def main(argv: list[str] | None = None) -> Path:
     output_dir = Path(args.output_dir) if args.output_dir else PROJECT_ROOT / "reports" / args.mode
     output_dir.mkdir(parents=True, exist_ok=True)
 
+    llm_info = "未使用（規則式）"
     if args.mode == "synthetic":
         tickers = [u["ticker"] for u in config["universe"]]
         events = generate_synthetic_events(
@@ -542,7 +582,15 @@ def main(argv: list[str] | None = None) -> Path:
         import dotenv
 
         dotenv.load_dotenv(PROJECT_ROOT / ".env")
-        events = generate_finmind_events(config)
+        llm = build_llm(config)
+        events = generate_finmind_events(config, llm=llm)
+        if llm.available:
+            st = llm.stats
+            llm_info = (
+                f"{llm.provider} / `{llm.model}`（新呼叫 {st['calls']}、快取命中 {st['cache_hits']}、"
+                f"失敗退回規則式 {st['failures']}）"
+            )
+            print(f"[info] LLM：{llm_info}")
 
     if not events:
         raise SystemExit("沒有任何預測事件，無法回測")
@@ -576,6 +624,7 @@ def main(argv: list[str] | None = None) -> Path:
     report_path = write_report(
         summary, df, output_dir, args.mode, returns=returns, cost_per_side=cost,
         outcome_basis=config["backtest"].get("outcome_basis", "price"),
+        llm_info=llm_info,
     )
 
     print(summary[["label", "mean_brier", "directional_accuracy", "ece"]].to_string(index=False))

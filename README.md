@@ -66,6 +66,11 @@ EMA 的倒數，即「精度」）動態加權合成投資論點——可靠度�
 ECE 0.061 → 0.054；三個 Agent 精度仍相近（比值 ≤ 1.24），精度加權依然等於
 簡單平均。組合報酬升至 +182%，但主要來自 2 期，排序能力（IC）沒有改善。
 
+**LLM 判讀實驗**（地端 qwen3:8b，詳見[實驗報告](docs/llm_experiment_report.md)）：
+改用 LLM 後各 Agent 精度確實拉開（比值 1.35–2.63），但 LLM 嚴重過度自信、
+總經判讀一律看空，Brier 全面劣於規則式（合併 0.2805 vs 0.2538），精度加權
+仍略輸簡單平均。下一步是合併前先做 Agent 層級的重新校準。
+
 **Synthetic 機制驗證**（20 seeds，來源可靠度刻意分化，詳見
 [技術筆記](docs/technical_note.md)）：精度加權在 **17/20 seeds** 的
 Brier 優於簡單平均。
@@ -123,7 +128,7 @@ python3.11 -m venv .venv
 |---|---|---|
 | 測試 / synthetic | 無 | 完整驗證 schema、合併公式、冷啟動、指標 |
 | finmind 回測 | `FINMIND_API_TOKEN`（免費註冊） | 兩個 Agent 以真實財報/新聞驅動（規則式判斷）。免費額度 600 req/hr，客戶端內建逐日快取與額度自動等待；`data_cache/` 已隨 repo 提供，重跑既有範圍不消耗額度 |
-| + LLM 判讀 | 另加 `ANTHROPIC_API_KEY` | Agent 自動改用 Claude 產出 signal/confidence/rationale，失敗時退回規則式 |
+| + LLM 判讀 | `ANTHROPIC_API_KEY`，或地端 Ollama | Agent 改用 LLM 產出 signal/confidence/rationale，失敗時退回規則式。地端模型：`--llm-provider ollama --llm-model qwen3:8b`；回應快取於 `data_cache/llm/` |
 
 ## 系統設計
 
@@ -150,8 +155,8 @@ agents/                 Agent 基底 + 財報/新聞/總經籌碼 Agent（LLM �
 arbitrator/             精度追蹤（Brier EMA）+ 合併公式
 data/                   FinMind 抓取（快取/節流/額度等待）、含息還原價、總經/籌碼、RSS 新聞、向量庫
 backtest/               walk-forward 回測 + 評估指標 + 報酬層級評估（vs 0050）
-tests/                  76 個單元測試
-reports/                synthetic / finmind_preliminary / finmind_scoped / finmind_full / finmind_macro 結果
+tests/                  91 個單元測試
+reports/                synthetic / finmind_preliminary / finmind_scoped / finmind_full / finmind_macro / finmind_llm_qwen3 結果
 docs/                   規格、技術筆記、回測報告
 notebooks/              校準分析 notebook
 ```
@@ -165,6 +170,8 @@ notebooks/              校準分析 notebook
   135 事件的完整版結果與逐項解讀
 - [Phase 2 回測報告](docs/phase2_macro_report.md) — 加入總經/籌碼 Agent 的
   3 Agent 結果、消融與報酬拆解
+- [LLM 判讀實驗報告](docs/llm_experiment_report.md) — 地端 qwen3:8b 取代規則式判讀的
+  結果、過度自信與方向偏誤分析
 - [真實資料回測報告（縮小版）](docs/finmind_scoped_report.md) — FinMind 3 檔 /
   47 事件的先導結果
 
@@ -172,11 +179,12 @@ notebooks/              校準分析 notebook
 
 - [x] MVP：財報 + 新聞 Agent、精度加權仲裁、回測管線（M1–M5）
 - [x] 5 檔完整版真實回測（2024-01 起，135 事件，見[報告](docs/finmind_full_report.md)）
-- [ ] LLM 判讀模式的可靠度分化實驗
+- [x] LLM 判讀模式的可靠度分化實驗（地端 qwen3:8b，見[報告](docs/llm_experiment_report.md)）
+- [ ] Agent 層級重新校準（修正 LLM 過度自信）
 - [x] 報酬層級評估：long/neutral 組合 vs 0050、連續報酬 Rank IC
 - [x] Phase 2：總經/籌碼 Agent（規則式，見[報告](docs/phase2_macro_report.md)）
 - [ ] Phase 2：供應鏈 Agent（知識圖譜）
-- [ ] 對數意見池 / Agent 層級重新校準（見技術筆記第 6 節）
+- [ ] 對數意見池（見技術筆記第 6 節）
 
 ## 免責聲明
 

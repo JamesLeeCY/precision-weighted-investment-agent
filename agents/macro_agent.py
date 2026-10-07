@@ -19,13 +19,12 @@
 """
 from __future__ import annotations
 
-import json
 import math
 
 import numpy as np
 import pandas as pd
 
-from agents.base import AgentOutput, BaseAgent, score_components
+from agents.base import AgentOutput, BaseAgent, describe_features, score_components
 from agents.llm_client import LLMClient
 from data.fetch_macro import MacroDataProvider
 
@@ -45,6 +44,16 @@ SCALES = [
     ("us10y_chg_bp", "美債殖利率", 50.0, -1),
     ("market_foreign_net_e8", "外資大盤", 1000.0, 1),
 ]
+
+
+FEATURE_LABELS = {
+    "foreign_ratio_chg_pp": "外資持股比例變化（百分點，正值 = 外資持股增加）",
+    "trust_net_pct_shares": "投信累計淨買超佔發行股數（%，正值 = 淨買進）",
+    "margin_balance_chg_pct": "融資餘額變化（%，正值 = 融資增加）",
+    "usd_twd_chg_pct": "美元兌台幣匯率變化（%，正值 = 美元升值、台幣貶值）",
+    "us10y_chg_bp": "美國 10 年期公債殖利率變化（基點，正值 = 殖利率上升）",
+    "market_foreign_net_e8": "全市場外資累計淨買超（億元，正值 = 淨買進）",
+}
 
 
 def _change(series: pd.Series, window: int, pct: bool) -> float | None:
@@ -143,11 +152,12 @@ class MacroAgent(BaseAgent):
             "finmind:total_institutional_investors",
         ]
 
+        llm_result = None
         if self.llm.available and feats:
             user_prompt = (
                 f"股票：{ticker}，判斷基準日：{as_of_date}\n\n"
-                f"特徵（近 {self.window} 個交易日變化；美債為近 {self.rate_window} 日）：\n"
-                f"{json.dumps(feats, ensure_ascii=False, indent=2)}"
+                f"特徵（近 {self.window} 個交易日的累計或變化；美債為近 {self.rate_window} 個交易日）：\n"
+                f"{describe_features(feats, FEATURE_LABELS)}"
             )
             llm_result = self.llm.judge(SYSTEM_PROMPT.format(horizon=self.default_horizon_days), user_prompt)
             if llm_result:
@@ -162,5 +172,5 @@ class MacroAgent(BaseAgent):
             confidence=confidence,
             rationale=rationale,
             evidence_refs=evidence,
-            raw_features={**feats, "rule_score": score, "llm_used": self.llm.available and bool(feats)},
+            raw_features={**feats, "rule_score": score, "llm_used": llm_result is not None},
         )

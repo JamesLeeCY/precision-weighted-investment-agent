@@ -172,6 +172,7 @@ class NewsAgent(BaseAgent):
         signal, confidence, rationale, score, event_log = self.rule_based_judgement(items, as_of_date)
         evidence = [it.url or it.title[:60] for it in items[:10]]
 
+        llm_result = None
         if self.llm.available and items:
             lines = [
                 f"- [{it.published:%Y-%m-%d}] (可信度{it.source_tier}) {it.title}：{it.summary[:100]}"
@@ -200,6 +201,6 @@ class NewsAgent(BaseAgent):
                 "n_news": len(items),
                 "rule_score": score,
                 "events": event_log[:20],
-                "llm_used": self.llm.available and bool(items),
+                "llm_used": llm_result is not None,
             },
         )

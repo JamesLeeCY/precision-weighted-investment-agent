@@ -57,6 +57,16 @@ news:
   window_days: 14            # 規格 3.3：新聞 Agent 預設時間窗
 
 llm:
+  # provider：anthropic（需 ANTHROPIC_API_KEY）或 ollama（地端模型）
+  # 回測可用 --llm-provider / --llm-model / --llm-think 覆寫
+  provider: "anthropic"
   model: "claude-sonnet-4-6"
-  # auto：偵測到 ANTHROPIC_API_KEY 才呼叫 LLM，否則各 Agent 使用規則式 fallback
+  # auto：anthropic 偵測到 API key 才啟用；ollama 連得上伺服器且有該模型才啟用。
+  # 不可用時各 Agent 一律使用規則式 fallback
   enabled: auto
+  base_url: "http://localhost:11434"   # ollama 伺服器
+  think: null                          # 推理模型（qwen3）的思考模式；null = 不傳
+  options:
+    num_ctx: 4096                      # ollama context 長度（新聞 prompt 約 1.5k token）
+  # 回應快取（納入版控）：地端模型在 CPU 上每次呼叫數十秒，快取讓回測可中斷續跑
+  cache_dir: "data_cache/llm"

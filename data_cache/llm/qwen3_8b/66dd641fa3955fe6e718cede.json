@@ -1,0 +1,1 @@
+{"model": "qwen3:8b", "text": "{\n  \"signal\": \"bearish\",\n  \"confidence\": 0.85,\n  \"rationale\": \"外資持股增加及市場外資買超顯示資金流入，但融資餘額大減顯示散戶拋壓，且匯率與殖利率走弱不利台股。投信買超為零，整體偏向bearish。\"\n}"}

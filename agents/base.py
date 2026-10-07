@@ -89,6 +89,21 @@ def score_components(
     return signal, confidence, score, conflict, parts
 
 
+def describe_features(feats: dict, labels: dict[str, str]) -> str:
+    """把特徵字典轉成「中文定義：數值」逐行文字，供 LLM prompt 使用。
+
+    只給定義與單位，不給多空方向提示——判讀交給模型。只送英文欄位名時，
+    地端模型會誤讀方向（例如把 USD/TWD 上升當成台幣升值）。
+    """
+    lines = []
+    for key, value in feats.items():
+        label = labels.get(key)
+        if label is None:
+            continue
+        lines.append(f"- {label}：{value:.2f}" if isinstance(value, (int, float)) else f"- {label}：{value}")
+    return "\n".join(lines) if lines else "（無資料）"
+
+
 class BaseAgent(ABC):
     """所有專家 Agent 的基底類別。
 

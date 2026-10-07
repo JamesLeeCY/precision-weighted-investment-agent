@@ -1,0 +1,1 @@
+{"model": "qwen3:8b", "text": "{\n  \"signal\": \"bearish\",\n  \"confidence\": 0.85,\n  \"rationale\": \"營收年增率為-5.15，顯示營收下滑，且存貨週轉天數年增率高達29.17，顯示去化變慢，負面訊號明顯。\"\n}"}
