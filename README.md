@@ -79,7 +79,7 @@ walk-forward 收縮校準修正各 Agent 的過度自信，LLM 合併 Brier 0.27
 
 **新聞內文與供應鏈 Agent**（詳見[報告](docs/news_content_and_supply_chain_report.md)）：
 新聞內文覆蓋率 36%（Google News 轉址無法解析），在規則式判讀下反而讓新聞 Agent
-變差（Brier 0.2531 → 0.2640）。供應鏈 Agent 的機率品質最差（0.2652），但帶來全
+變差（Brier 0.2531 → 0.2640），改用 LLM（qwen3:8b）判讀也一樣變差（0.2718 → 0.2877）。供應鏈 Agent 的機率品質最差（0.2652），但帶來全
 專案第一個為正的橫斷面 IC（+0.160，t = 1.71，未達顯著）。
 
 **規格 5.2 修訂**（2026-10-07，詳見[校準報告第 8 節](docs/calibration_report.md#8-訊號公式修訂2026-10-07)）：
@@ -143,7 +143,7 @@ python3.11 -m venv .venv
 |---|---|---|
 | 測試 / synthetic | 無 | 完整驗證 schema、合併公式、冷啟動、指標 |
 | finmind 回測 | `FINMIND_API_TOKEN`（免費註冊） | 兩個 Agent 以真實財報/新聞驅動（規則式判斷）。免費額度 600 req/hr，客戶端內建逐日快取與額度自動等待；`data_cache/` 已隨 repo 提供，重跑既有範圍不消耗額度 |
-| + LLM 判讀 | `ANTHROPIC_API_KEY`，或地端 Ollama | Agent 改用 LLM 產出 signal/confidence/rationale，失敗時退回規則式。地端模型：`--llm-provider ollama --llm-model qwen3:8b`；回應快取於 `data_cache/llm/` |
+| + LLM 判讀 | `ANTHROPIC_API_KEY`，或地端 Ollama | Agent 改用 LLM 產出 signal/confidence/rationale，失敗時退回規則式。地端模型：`--llm-provider ollama --llm-model qwen3:8b`；與其他工作共用電腦時可用 `--llm-num-thread` 限制執行緒；回應快取於 `data_cache/llm/` |
 
 ## 系統設計
 
@@ -172,8 +172,8 @@ agents/                 Agent 基底 + 財報/新聞/總經籌碼/供應鏈 Agen
 arbitrator/             精度追蹤（Brier EMA）+ 合併公式 + Agent 層級重新校準
 data/                   FinMind 抓取（快取/節流/額度等待）、含息還原價、總經/籌碼、供應鏈、新聞內文、RSS 新聞、向量庫
 backtest/               walk-forward 回測 + 評估指標 + 報酬層級評估（vs 0050）
-tests/                  121 個單元測試
-reports/                synthetic / finmind_preliminary / finmind_scoped / finmind_full / finmind_macro / finmind_llm_qwen3 / finmind_news_content / finmind_supply_chain 結果
+tests/                  125 個單元測試
+reports/                synthetic / finmind_preliminary / finmind_scoped / finmind_full / finmind_macro / finmind_llm_qwen3 / finmind_news_content / finmind_llm_qwen3_content / finmind_supply_chain 結果
 docs/                   規格、技術筆記、回測報告
 notebooks/              校準分析 notebook
 ```

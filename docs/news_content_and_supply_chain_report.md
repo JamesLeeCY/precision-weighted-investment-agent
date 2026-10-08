@@ -48,6 +48,33 @@
 
 **結論**：在規則式判讀下，內文沒有幫助。它的價值可能要靠 LLM 判讀才能發揮，但目前可取得的內文偏向低品質來源，這點也限制了上限。
 
+### LLM 判讀有內文的新聞（2026-10-08 補充）
+
+用 qwen3:8b 判讀同樣有內文的新聞，3 個 Agent 都用 LLM，與 [LLM 判讀實驗](llm_experiment_report.md)（只有標題）對照。輸出：[reports/finmind_llm_qwen3_content/](../reports/finmind_llm_qwen3_content/comparison_report.md)。
+
+**執行條件**：Ollama `num_thread: 2`，與其他工作共用電腦。開跑前先確認 CPU 沒有其他主要占用（17:21 整體 8.7%），39 次新呼叫（另有 1 次試跑、347 次快取）耗時約 3 小時 6 分（每次平均約 4.8 分鐘），0 次失敗。執行期間整體 CPU 約 25%，扣除基線後推論約占 16–17%，與 2/12 個邏輯核心一致。
+
+| 新聞 Agent | Brier | 有方向的判斷（多/空） | 命中率 | 信心 ≥ 0.8 的命中率 | 校準後 a |
+|---|---|---|---|---|---|
+| 規則式・只有標題 | **0.2531** | 38（27/11） | 47.4% | — | 0.64 |
+| 規則式・加內文 | 0.2640 | 49（32/17） | 38.8% | — | 0.26 |
+| LLM・只有標題 | 0.2718 | 68（61/7） | 55.9% | 53%（32 筆） | 0.18 |
+| LLM・加內文 | 0.2877 | 68（62/6） | 50.0% | 50%（38 筆） | **0.04** |
+
+40 個帶內文的新 prompt 中，只有 20 個事件的 LLM 輸出改變。在這 20 個事件上：
+
+| | 只有標題 | 加內文 |
+|---|---|---|
+| Brier | 0.2475 | 0.3550 |
+| 命中率（18 筆有方向） | 66.7% | 44.4% |
+| 平均偏離 0.5 的幅度 | 0.21 | 0.28 |
+
+**內文讓 LLM 判讀也變差**：模型看到內文後信心更高，命中率卻下降；校準後係數只剩 0.04，代表新聞 Agent 被判定幾乎沒有判讀能力。樣本只有 20 個事件，不足以下強結論，但方向與規則式一致。
+
+可能原因：取得的內文有 43% 來自 CMoney 的自動盤後文章與論壇貼文，充滿技術面、籌碼面的描述，讓模型對短期方向過度自信；真正有資訊量的主流媒體內文（經濟日報、科技新報等）大多因 Google News 轉址而拿不到。
+
+合併後：3 Agent 校準後精度加權 Brier 0.2558（只有標題時 0.2544），組合報酬 −24%，仍顯著輸 0050。
+
 ## 2. 供應鏈 Agent
 
 ### 做法
@@ -99,7 +126,7 @@ look-ahead 防護：股價只用 as_of_date 前一日以前的收盤價，且使
 
 ## 4. 下一步
 
-1. 以 LLM 判讀有內文的新聞（約 116 次呼叫，qwen3:8b 純 CPU 約 4 小時），檢驗內文是否需要 LLM 才能發揮。
+1. ~~以 LLM 判讀有內文的新聞~~（已完成，見第 1 節補充：內文讓 LLM 判讀也變差）。若要再試，先提升內文來源品質（主流媒體），而不是增加篇數。
 2. 修訂供應鏈圖譜：以年報、法說會資料確認主要客戶與終端市場占比，取代目前的人工權重。
 3. 供應鏈 Agent 的下游營收改用「年增率的變化」而非水準，避免在單一景氣循環中一路看多。
 4. 以更長期間、更多股票驗證供應鏈 Agent 的橫斷面 IC 是否穩定。
@@ -111,6 +138,8 @@ look-ahead 防護：股價只用 as_of_date 前一日以前的收盤價，且使
 ```bash
 # 3 Agent + 新聞內文（需連網抓取；內文快取只存在本機）
 .venv/Scripts/python backtest/run_backtest.py --mode finmind --start-date 2024-01-01 --end-date 2026-05-31 --step-days 21 --agents fundamentals_agent,news_agent,macro_agent --news-content --output-dir reports/finmind_news_content
+# 3 Agent LLM + 新聞內文（需 Ollama + qwen3:8b；回應已快取；內文快取只存在本機）
+.venv/Scripts/python backtest/run_backtest.py --mode finmind --start-date 2024-01-01 --end-date 2026-05-31 --step-days 21 --agents fundamentals_agent,news_agent,macro_agent --news-content-offline --llm-provider ollama --llm-model qwen3:8b --llm-think false --llm-num-thread 2 --output-dir reports/finmind_llm_qwen3_content
 # 4 Agent（含供應鏈，只有標題）
 .venv/Scripts/python backtest/run_backtest.py --mode finmind --start-date 2024-01-01 --end-date 2026-05-31 --step-days 21 --output-dir reports/finmind_supply_chain
 ```

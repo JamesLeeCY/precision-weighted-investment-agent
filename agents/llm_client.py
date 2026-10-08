@@ -23,6 +23,8 @@ from pathlib import Path
 
 DEFAULT_MODEL = "claude-sonnet-4-6"
 DEFAULT_OLLAMA_URL = "http://localhost:11434"
+MAX_NUM_CTX = 16384
+RESOURCE_OPTIONS = ("num_ctx", "num_thread")
 
 _JSON_RE = re.compile(r"\{.*\}", re.DOTALL)
 
@@ -116,16 +118,39 @@ class LLMClient:
 
     # ---------- 快取 ----------
 
-    def _cache_path(self, system_prompt: str, user_prompt: str) -> Path | None:
+    def _cache_paths(self, system_prompt: str, user_prompt: str) -> list[Path]:
+        """回傳 [目前格式, 舊格式] 的快取路徑。
+
+        num_ctx 只決定 context 容量、num_thread 只決定執行緒數，皆不納入快取鍵
+        （num_ctx 會依 prompt 長度自動調整）。舊版快取鍵含 num_ctx，查詢時一併比對，
+        既有快取不會失效。
+        """
         if self.cache_dir is None:
-            return None
-        key = json.dumps(
-            [self.provider, self.model, self.options, self.think, system_prompt, user_prompt],
-            ensure_ascii=False, sort_keys=True,
-        )
-        digest = hashlib.sha256(key.encode("utf-8")).hexdigest()[:24]
+            return []
         safe_model = re.sub(r"[^A-Za-z0-9._-]", "_", self.model)
-        return self.cache_dir / safe_model / f"{digest}.json"
+        paths = []
+        # num_ctx（context 容量）與 num_thread（執行緒數）只影響資源用量，不納入快取鍵；
+        # 舊格式含 num_ctx（當時沒有 num_thread）
+        option_sets = [
+            {k: v for k, v in self.options.items() if k not in RESOURCE_OPTIONS},
+            {k: v for k, v in self.options.items() if k != "num_thread"},
+        ]
+        for options in option_sets:
+            key = json.dumps(
+                [self.provider, self.model, options, self.think, system_prompt, user_prompt],
+                ensure_ascii=False, sort_keys=True,
+            )
+            path = self.cache_dir / safe_model / f"{hashlib.sha256(key.encode('utf-8')).hexdigest()[:24]}.json"
+            if path not in paths:
+                paths.append(path)
+        return paths
+
+    def _cache_path(self, system_prompt: str, user_prompt: str) -> Path | None:
+        """既有快取的路徑（新格式優先）；都不存在時回傳新格式路徑供寫入。"""
+        paths = self._cache_paths(system_prompt, user_prompt)
+        if not paths:
+            return None
+        return next((p for p in paths if p.exists()), paths[0])
 
     # ---------- 呼叫 ----------
 
@@ -145,6 +170,12 @@ class LLMClient:
     def _call_ollama(self, system_prompt: str, user_prompt: str) -> str:
         import requests
 
+        # context 容量依 prompt 長度自動放大（CJK 約每字 1 token，保守估計）；
+        # 放不下時 Ollama 會截斷 prompt，模型就看不到部分新聞
+        needed = len(system_prompt) + len(user_prompt) + 1024
+        num_ctx = int(self.options.get("num_ctx", 4096))
+        while num_ctx < needed and num_ctx < MAX_NUM_CTX:
+            num_ctx *= 2
         payload = {
             "model": self.model,
             "messages": [
@@ -153,7 +184,7 @@ class LLMClient:
             ],
             "stream": False,
             "format": JUDGEMENT_SCHEMA,
-            "options": self.options,
+            "options": {**self.options, "num_ctx": num_ctx},
         }
         if self.think is not None:
             payload["think"] = self.think

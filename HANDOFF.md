@@ -37,11 +37,12 @@
 - 2026-10-06 的修正：共用市場日曆取樣；outcome 改用含息總報酬；有方向訊號的信心下限 0.5（`agents/base.py:_build_output`）。
 - **新聞內文（`reports/finmind_news_content`，詳見 `docs/news_content_and_supply_chain_report.md`）**：覆蓋率 36%（371/1,033；Google News 轉址 61% 無法解析）；取得的內文 43% 來自 CMoney。規則式新聞 Agent 加內文後變差（Brier 0.2531 → 0.2640，命中率 47% → 39%），因為關鍵字被長文中的固定段落（法人買賣超、漲價）帶偏
 - **供應鏈 Agent（`reports/finmind_supply_chain`，4 Agent、只有標題）**：Brier 0.2652（最差，偏多：69 多 / 4 空），但橫斷面 IC +0.160（t = 1.71，全專案第一個為正且接近顯著的訊號，考慮多重比較仍只是線索）。4 Agent 簡單平均 Brier 0.2529（3 Agent 為 0.2530），累積報酬 +59%（多持股的多頭效果，非判讀能力）
+- **LLM 判讀有內文的新聞（`reports/finmind_llm_qwen3_content`）**：qwen3:8b、`--llm-num-thread 2`，39 次新呼叫約 3 小時（CPU 約占 16–17%）。內文讓 LLM 新聞判讀也變差（Brier 0.2718 → 0.2877；輸出有變的 20 個事件命中率 66.7% → 44.4%，信心反而更高；校準後係數 0.04）。取得的內文偏向 CMoney 自動文章，主流媒體內文拿不到
 - 目前 config 預設為 4 個 Agent；3 Agent 對照組需加 `--agents fundamentals_agent,news_agent,macro_agent`
 - 履歷/對外描述注意：Agent 有財報、新聞、總經/籌碼、供應鏈四個，供應鏈圖譜是需求代理而非確認的客戶關係；也不要宣稱打敗大盤、有預測力或有選股能力。可宣稱的是：完整的 walk-forward 評估框架、精度加權機制在 synthetic 中驗證有效、對真實資料負結果的誠實分析。
 
 ## 待辦（依建議順序）
-1. **提升 Agent 本身的資訊量**（目前真正的瓶頸）：以 LLM 判讀有內文的新聞（約 116 次呼叫，qwen3:8b 約 4 小時）；更強的 LLM（雲端 Claude：`--llm-provider anthropic`）或 qwen3 思考模式（`--llm-think true`）
+1. **提升 Agent 本身的資訊量**（目前真正的瓶頸）：新聞內文已試過（規則式與 LLM 都變差），若再試應先提升來源品質（主流媒體內文），而非增加篇數；更強的 LLM（雲端 Claude：`--llm-provider anthropic`）或 qwen3 思考模式（`--llm-think true`）
 2. **供應鏈 Agent 改進**：以年報 / 法說會資料修訂圖譜的客戶與權重；下游營收改用年增率的變化而非水準（避免單一景氣循環中一路看多）；以更長期間驗證其橫斷面 IC
 3. 各 Agent 可個別指定模型（目前所有 Agent 共用同一份 llm 設定）
 4. 合併機率的中性稀釋（規格 5.2 修訂的代價）：讓中性 Agent 棄權不進入平均，或改用對數意見池（中性的 logit 為 0，天然不影響結果）
@@ -51,11 +52,11 @@
 8. 總經/籌碼 Agent 可延伸：半導體庫存週期（免費層無資料）、主力分點、借券等個股籌碼
 
 ## 已知限制
-每檔僅 27 筆樣本；新聞僅標題；期間與族群單一；地端 LLM 僅測過 qwen3:8b（純 CPU 每次呼叫約 1 分鐘，phi4 約 8 分鐘，未跑完整實驗）；總經分量同一時點各檔相同（對選股無幫助）；總經 Agent 的門檻為經驗值；組合報酬每期之間有 1 個交易日空檔（step 21 > horizon 20）未計入；p 值為常態近似。
+每檔僅 27 筆樣本；新聞僅標題；期間與族群單一；地端 LLM 僅測過 qwen3:8b（純 CPU；2 執行緒時長新聞 prompt 每次約 5–7 分鐘）；phi4 未跑完整實驗（3 核心估計完整 386 次呼叫約 61 小時，主要卡在冗長輸出）；總經分量同一時點各檔相同（對選股無幫助）；總經 Agent 的門檻為經驗值；組合報酬每期之間有 1 個交易日空檔（step 21 > horizon 20）未計入；p 值為常態近似。
 
 ## 操作
 ```bash
-.venv/Scripts/python -m pytest tests -q          # 121 tests（Windows；macOS/Linux 用 .venv/bin/python）
+.venv/Scripts/python -m pytest tests -q          # 125 tests（Windows；macOS/Linux 用 .venv/bin/python）
 # 3 Agent（config 預設）
 .venv/Scripts/python backtest/run_backtest.py --mode finmind --start-date 2024-01-01 --end-date 2026-05-31 --step-days 21 --agents fundamentals_agent,news_agent,macro_agent --output-dir reports/finmind_macro
 # LLM 判讀（需 Ollama + qwen3:8b；回應已快取，重跑秒完）
@@ -64,6 +65,8 @@
 .venv/Scripts/python backtest/run_backtest.py --mode finmind --start-date 2024-01-01 --end-date 2026-05-31 --step-days 21 --output-dir reports/finmind_supply_chain
 # 3 Agent + 新聞內文（需連網；內文快取只存在本機）
 .venv/Scripts/python backtest/run_backtest.py --mode finmind --start-date 2024-01-01 --end-date 2026-05-31 --step-days 21 --agents fundamentals_agent,news_agent,macro_agent --news-content --output-dir reports/finmind_news_content
+# 3 Agent LLM + 新聞內文（回應已快取；內文快取只存在本機，需先以 --news-content 抓取）
+.venv/Scripts/python backtest/run_backtest.py --mode finmind --start-date 2024-01-01 --end-date 2026-05-31 --step-days 21 --agents fundamentals_agent,news_agent,macro_agent --news-content-offline --llm-provider ollama --llm-model qwen3:8b --llm-think false --llm-num-thread 2 --output-dir reports/finmind_llm_qwen3_content
 # 2 Agent 對照組
 .venv/Scripts/python backtest/run_backtest.py --mode finmind --start-date 2024-01-01 --end-date 2026-05-31 --step-days 21 --agents fundamentals_agent,news_agent --output-dir reports/finmind_full
 ```

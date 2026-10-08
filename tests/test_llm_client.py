@@ -89,3 +89,58 @@ class TestOllamaClient:
     def test_unknown_provider(self):
         with pytest.raises(ValueError):
             LLMClient(provider="openai")
+
+
+class TestNumCtx:
+    def test_num_ctx_not_in_cache_key(self, tmp_path):
+        ok = '{"signal": "neutral", "confidence": 0.5, "rationale": "r"}'
+        a, calls = make_ollama(tmp_path, [ok])
+        a.options["num_ctx"] = 4096
+        a.judge("sys", "u")
+        b, b_calls = make_ollama(tmp_path, [ok])
+        b.options["num_ctx"] = 8192
+        b.judge("sys", "u")
+        assert len(calls) == 1 and b_calls == []
+
+    def test_legacy_cache_key_still_found(self, tmp_path):
+        import json as _json
+        llm, calls = make_ollama(tmp_path, [])
+        llm.options["num_ctx"] = 4096
+        legacy = llm._cache_paths("sys", "u")[-1]  # 舊格式：options 含 num_ctx
+        legacy.parent.mkdir(parents=True, exist_ok=True)
+        legacy.write_text(_json.dumps({"text": '{"signal": "bullish", "confidence": 0.6, "rationale": "r"}'}), encoding="utf-8")
+        assert llm.judge("sys", "u")["signal"] == "bullish"
+        assert calls == []
+
+    def test_num_ctx_grows_with_prompt(self, tmp_path, monkeypatch):
+        llm = LLMClient(model="qwen3:8b", provider="ollama", options={"num_ctx": 4096})
+        sent = {}
+
+        class Resp:
+            def raise_for_status(self):
+                pass
+
+            def json(self):
+                return {"message": {"content": "{}"}}
+
+        import requests
+
+        monkeypatch.setattr(requests, "post", lambda url, json, timeout: sent.update(json) or Resp())
+        llm._call_ollama("s", "字" * 7000)
+        assert sent["options"]["num_ctx"] == 8192
+        llm._call_ollama("s", "短")
+        assert sent["options"]["num_ctx"] == 4096
+
+
+def test_num_thread_not_in_cache_key_and_legacy_still_found(tmp_path):
+    import json as _json
+    ok = '{"signal": "neutral", "confidence": 0.5, "rationale": "r"}'
+    old, calls = make_ollama(tmp_path, [])
+    old.options["num_ctx"] = 4096
+    legacy = old._cache_paths("sys", "u")[-1]  # 舊格式：含 num_ctx、沒有 num_thread
+    legacy.parent.mkdir(parents=True, exist_ok=True)
+    legacy.write_text(_json.dumps({"text": ok}), encoding="utf-8")
+    limited, limited_calls = make_ollama(tmp_path, [])
+    limited.options.update({"num_ctx": 4096, "num_thread": 2})
+    assert limited.judge("sys", "u")["signal"] == "neutral"
+    assert limited_calls == []

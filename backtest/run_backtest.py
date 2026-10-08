@@ -606,6 +606,8 @@ def main(argv: list[str] | None = None) -> Path:
     parser.add_argument("--llm-provider", choices=["anthropic", "ollama", "none"], default=None,
                         help="覆寫 config 的 llm.provider；none = 全部規則式")
     parser.add_argument("--llm-model", default=None, help="覆寫 config 的 llm.model（如 qwen3:8b、phi4）")
+    parser.add_argument("--llm-num-thread", type=int, default=None,
+                        help="ollama 推論使用的 CPU 執行緒數（與其他工作共用電腦時用來限制占用）")
     parser.add_argument("--llm-think", choices=["true", "false"], default=None,
                         help="推理模型（qwen3 等）是否開啟思考模式")
     parser.add_argument("--news-content", action="store_true",
@@ -633,6 +635,8 @@ def main(argv: list[str] | None = None) -> Path:
         llm_cfg["model"] = args.llm_model
     if args.llm_think:
         llm_cfg["think"] = args.llm_think == "true"
+    if args.llm_num_thread:
+        llm_cfg["options"] = {**(llm_cfg.get("options") or {}), "num_thread": args.llm_num_thread}
     if args.news_content or args.news_content_offline:
         config["news"]["fetch_content"] = True
         config["news"]["content_offline"] = args.news_content_offline
