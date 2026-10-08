@@ -94,5 +94,5 @@ prompt 中每個特徵都附有中文定義與正負號意義，所以這不是�
 *重現方式（需 Ollama 與 qwen3:8b；回應已快取，重跑不需重新推論）：*
 
 ```bash
-.venv/Scripts/python backtest/run_backtest.py --mode finmind --start-date 2024-01-01 --end-date 2026-05-31 --step-days 21 --llm-provider ollama --llm-model qwen3:8b --llm-think false --output-dir reports/finmind_llm_qwen3
+.venv/Scripts/python backtest/run_backtest.py --mode finmind --start-date 2024-01-01 --end-date 2026-05-31 --step-days 21 --agents fundamentals_agent,news_agent,macro_agent --llm-provider ollama --llm-model qwen3:8b --llm-think false --output-dir reports/finmind_llm_qwen3
 ```

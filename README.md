@@ -7,17 +7,17 @@
 ![License](https://img.shields.io/badge/license-MIT-lightgrey)
 
 借用神經科學**預測處理框架（predictive processing）**中的 precision
-weighting 概念建構的多智能體投資研究系統：多個專家 Agent（財報、新聞事件、總經/籌碼）
+weighting 概念建構的多智能體投資研究系統：多個專家 Agent（財報、新聞事件、總經/籌碼、供應鏈）
 各自產出帶信心值的判斷，仲裁層依各 Agent 的**歷史準確度**（Brier score
 EMA 的倒數，即「精度」）動態加權合成投資論點——可靠度越高的來源權重越大，
 系統從均等權重（loose coupling）隨證據累積收斂到以可靠來源為主導
 （tight coupling）。鎖定台股 AI 供應鏈之被動元件族群。
 
 ```
- 財報 Agent        新聞事件 Agent      總經/籌碼 Agent     供應鏈 Agent
- (規則式/LLM)      (規則式/LLM)        (規則式/LLM)        (Phase 2，未實作)
-      │                 │                  │
-      └─────────────────┼──────────────────┘
+ 財報 Agent      新聞事件 Agent    總經/籌碼 Agent    供應鏈 Agent
+ (規則式/LLM)    (規則式/LLM)      (規則式/LLM)       (規則式/LLM，知識圖譜)
+      │               │                 │                  │
+      └───────────────┴────────┬────────┴──────────────────┘
                   ▼
      精度加權仲裁層  final_score = Σ(precisionᵢ·κᵢ·sᵢ) / Σ precisionᵢ，κᵢ = |2pᵢ − 1|（確信度）
                   ▼
@@ -76,6 +76,11 @@ EMA 的倒數，即「精度」）動態加權合成投資論點——可靠度�
 walk-forward 收縮校準修正各 Agent 的過度自信，LLM 合併 Brier 0.2726 → 0.2544，
 但仍未低於 0.25。校準後 LLM 的精度比縮回 1.04–1.28——原本
 的分化是過度自信程度不同，而非資訊量不同。目前的瓶頸在 Agent 本身的資訊量。
+
+**新聞內文與供應鏈 Agent**（詳見[報告](docs/news_content_and_supply_chain_report.md)）：
+新聞內文覆蓋率 36%（Google News 轉址無法解析），在規則式判讀下反而讓新聞 Agent
+變差（Brier 0.2531 → 0.2640）。供應鏈 Agent 的機率品質最差（0.2652），但帶來全
+專案第一個為正的橫斷面 IC（+0.160，t = 1.71，未達顯著）。
 
 **規格 5.2 修訂**（2026-10-07，詳見[校準報告第 8 節](docs/calibration_report.md#8-訊號公式修訂2026-10-07)）：
 投票權重改為確信度 |2p − 1|，合併分數 = 2 × 合併機率 − 1，門檻為合併機率
@@ -162,12 +167,13 @@ python3.11 -m venv .venv
 
 ```
 config/tickers.yaml     股票池與全部參數（horizon、閾值、EMA α、冷啟動門檻）
-agents/                 Agent 基底 + 財報/新聞/總經籌碼 Agent（LLM 可插拔）+ 供應鏈佔位
+config/supply_chain_graph.json  供應鏈知識圖譜（下游為需求代理，非確認客戶）
+agents/                 Agent 基底 + 財報/新聞/總經籌碼/供應鏈 Agent（LLM 可插拔）
 arbitrator/             精度追蹤（Brier EMA）+ 合併公式 + Agent 層級重新校準
-data/                   FinMind 抓取（快取/節流/額度等待）、含息還原價、總經/籌碼、RSS 新聞、向量庫
+data/                   FinMind 抓取（快取/節流/額度等待）、含息還原價、總經/籌碼、供應鏈、新聞內文、RSS 新聞、向量庫
 backtest/               walk-forward 回測 + 評估指標 + 報酬層級評估（vs 0050）
-tests/                  104 個單元測試
-reports/                synthetic / finmind_preliminary / finmind_scoped / finmind_full / finmind_macro / finmind_llm_qwen3 結果
+tests/                  121 個單元測試
+reports/                synthetic / finmind_preliminary / finmind_scoped / finmind_full / finmind_macro / finmind_llm_qwen3 / finmind_news_content / finmind_supply_chain 結果
 docs/                   規格、技術筆記、回測報告
 notebooks/              校準分析 notebook
 ```
@@ -181,6 +187,8 @@ notebooks/              校準分析 notebook
   135 事件的完整版結果與逐項解讀
 - [Phase 2 回測報告](docs/phase2_macro_report.md) — 加入總經/籌碼 Agent 的
   3 Agent 結果、消融與報酬拆解
+- [新聞內文與供應鏈 Agent 報告](docs/news_content_and_supply_chain_report.md) — 新聞內文
+  的覆蓋率與效果、供應鏈 Agent（知識圖譜）的設計與結果
 - [Agent 層級重新校準報告](docs/calibration_report.md) — 收縮校準的效果、LLM 精度分化
   的真相、synthetic 20 seeds 驗證
 - [LLM 判讀實驗報告](docs/llm_experiment_report.md) — 地端 qwen3:8b 取代規則式判讀的
@@ -198,7 +206,8 @@ notebooks/              校準分析 notebook
 - [ ] 合併機率的中性稀釋、合併後校準 / 對數意見池
 - [x] 報酬層級評估：long/neutral 組合 vs 0050、連續報酬 Rank IC
 - [x] Phase 2：總經/籌碼 Agent（規則式，見[報告](docs/phase2_macro_report.md)）
-- [ ] Phase 2：供應鏈 Agent（知識圖譜）
+- [x] Phase 2：供應鏈 Agent（知識圖譜，見[報告](docs/news_content_and_supply_chain_report.md)）
+- [x] 新聞內文抓取（直接連結來源，覆蓋率 36%）
 
 ## 免責聲明
 

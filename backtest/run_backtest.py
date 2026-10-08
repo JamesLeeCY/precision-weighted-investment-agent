@@ -465,7 +465,9 @@ def generate_finmind_events(config: dict, llm=None) -> list[PredictionEvent]:
     from agents.fundamentals_agent import FundamentalsAgent
     from agents.macro_agent import MacroAgent
     from agents.news_agent import NewsAgent
+    from agents.supply_chain_agent import SupplyChainAgent
     from data.fetch_macro import FinMindMacroProvider
+    from data.fetch_supply_chain import FinMindSupplyChainProvider, load_graph
     from data.fetch_financials import FinMindClient, FinMindFundamentalsProvider, get_total_return_prices
     from data.fetch_news import FinMindNewsProvider
 
@@ -480,6 +482,11 @@ def generate_finmind_events(config: dict, llm=None) -> list[PredictionEvent]:
 
     client = FinMindClient()
     llm = llm or build_llm(config)
+    fetcher = None
+    if config["news"].get("fetch_content"):
+        from data.fetch_article import ArticleFetcher
+
+        fetcher = ArticleFetcher(offline=bool(config["news"].get("content_offline", False)))
     builders = {
         "fundamentals_agent": lambda: FundamentalsAgent(
             FinMindFundamentalsProvider(client), llm=llm, horizon_days=horizon
@@ -490,6 +497,7 @@ def generate_finmind_events(config: dict, llm=None) -> list[PredictionEvent]:
             window_days=int(config["news"]["window_days"]),
             horizon_days=horizon,
             ticker_names=names,
+            content_fetcher=fetcher.fetch if fetcher else None,
         ),
         "macro_agent": lambda: MacroAgent(
             FinMindMacroProvider(client),
@@ -497,6 +505,13 @@ def generate_finmind_events(config: dict, llm=None) -> list[PredictionEvent]:
             horizon_days=horizon,
             window_days=int(config.get("macro", {}).get("window_days", 20)),
             rate_window_days=int(config.get("macro", {}).get("rate_window_days", 60)),
+        ),
+        "supply_chain_agent": lambda: SupplyChainAgent(
+            FinMindSupplyChainProvider(client),
+            graph=load_graph(PROJECT_ROOT / config.get("supply_chain", {}).get("graph", "config/supply_chain_graph.json")),
+            llm=llm,
+            horizon_days=horizon,
+            window_days=int(config.get("supply_chain", {}).get("window_days", 20)),
         ),
     }
     agent_ids = config.get("agents", ["fundamentals_agent", "news_agent"])
@@ -568,6 +583,8 @@ def generate_finmind_events(config: dict, llm=None) -> list[PredictionEvent]:
                     )
                 )
         print(f"[info] {ticker}: 累計 {len(events)} 個預測事件")
+    if fetcher is not None:
+        print(f"[info] 新聞內文：{fetcher.stats}，快取狀態 {fetcher.coverage()}")
     return events
 
 
@@ -591,6 +608,10 @@ def main(argv: list[str] | None = None) -> Path:
     parser.add_argument("--llm-model", default=None, help="覆寫 config 的 llm.model（如 qwen3:8b、phi4）")
     parser.add_argument("--llm-think", choices=["true", "false"], default=None,
                         help="推理模型（qwen3 等）是否開啟思考模式")
+    parser.add_argument("--news-content", action="store_true",
+                        help="為入選新聞抓取內文摘要（快取於本機 article_cache/，不納入版控）")
+    parser.add_argument("--news-content-offline", action="store_true",
+                        help="只用已快取的新聞內文，不連網")
     parser.add_argument(
         "--agents", default=None,
         help="逗號分隔的 Agent 清單（如 fundamentals_agent,news_agent,macro_agent），覆寫 config 的 agents",
@@ -612,6 +633,9 @@ def main(argv: list[str] | None = None) -> Path:
         llm_cfg["model"] = args.llm_model
     if args.llm_think:
         llm_cfg["think"] = args.llm_think == "true"
+    if args.news_content or args.news_content_offline:
+        config["news"]["fetch_content"] = True
+        config["news"]["content_offline"] = args.news_content_offline
     if args.agents:
         config["agents"] = [a.strip() for a in args.agents.split(",")]
     if args.tickers:

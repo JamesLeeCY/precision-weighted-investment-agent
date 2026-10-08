@@ -1,0 +1,53 @@
+{
+  "_說明": [
+    "供應鏈 Agent（規格 3.4）的簡化知識圖譜，手動整理。",
+    "重要：被動元件廠的實際客戶名單與營收占比未公開，以下 downstream 是『下游終端市場的代表性公司』，作為需求動能的代理，不是已確認的直接客戶關係。",
+    "weight 為相對權重（1.0 = 主要、0.5 = 次要），是人工設定的假設，未經回測最佳化。",
+    "relation：downstream = 下游需求代理；leader = 產業龍頭（龍頭動能領先同業）；group = 同集團（營運連動）。",
+    "可依產業研究逐步修訂；修訂後需重跑回測。"
+  ],
+  "proxies": {
+    "2382.TW": {"name": "廣達", "role": "AI 伺服器 ODM"},
+    "3231.TW": {"name": "緯創", "role": "AI 伺服器 ODM"},
+    "6669.TW": {"name": "緯穎", "role": "雲端伺服器 ODM"},
+    "2317.TW": {"name": "鴻海", "role": "電子代工（伺服器、消費性電子）"},
+    "2330.TW": {"name": "台積電", "role": "半導體需求領先指標"}
+  },
+  "edges": {
+    "2327.TW": [
+      {"to": "2382.TW", "relation": "downstream", "weight": 1.0},
+      {"to": "3231.TW", "relation": "downstream", "weight": 1.0},
+      {"to": "6669.TW", "relation": "downstream", "weight": 0.5},
+      {"to": "2317.TW", "relation": "downstream", "weight": 1.0},
+      {"to": "2330.TW", "relation": "downstream", "weight": 0.5}
+    ],
+    "2492.TW": [
+      {"to": "2382.TW", "relation": "downstream", "weight": 1.0},
+      {"to": "3231.TW", "relation": "downstream", "weight": 1.0},
+      {"to": "6669.TW", "relation": "downstream", "weight": 0.5},
+      {"to": "2317.TW", "relation": "downstream", "weight": 1.0},
+      {"to": "2330.TW", "relation": "downstream", "weight": 0.5},
+      {"to": "2327.TW", "relation": "leader", "weight": 1.0}
+    ],
+    "3026.TW": [
+      {"to": "2382.TW", "relation": "downstream", "weight": 0.5},
+      {"to": "3231.TW", "relation": "downstream", "weight": 0.5},
+      {"to": "2317.TW", "relation": "downstream", "weight": 1.0},
+      {"to": "2330.TW", "relation": "downstream", "weight": 0.5},
+      {"to": "2327.TW", "relation": "leader", "weight": 1.0}
+    ],
+    "2375.TW": [
+      {"to": "2382.TW", "relation": "downstream", "weight": 0.5},
+      {"to": "3231.TW", "relation": "downstream", "weight": 0.5},
+      {"to": "2317.TW", "relation": "downstream", "weight": 1.0},
+      {"to": "2327.TW", "relation": "group", "weight": 1.0}
+    ],
+    "2478.TW": [
+      {"to": "2382.TW", "relation": "downstream", "weight": 0.5},
+      {"to": "3231.TW", "relation": "downstream", "weight": 0.5},
+      {"to": "2317.TW", "relation": "downstream", "weight": 1.0},
+      {"to": "2330.TW", "relation": "downstream", "weight": 0.5},
+      {"to": "2327.TW", "relation": "leader", "weight": 1.0}
+    ]
+  }
+}

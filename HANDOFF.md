@@ -3,13 +3,15 @@
 更新日期：2026-10-06
 
 ## 一句話
-多代理人精度加權投資研究系統（台股被動元件）。MVP（M1–M5）、5 檔完整真實回測、報酬層級評估、Phase 2 總經/籌碼 Agent、地端 LLM 判讀實驗（qwen3:8b）、Agent 層級重新校準已完成；供應鏈 Agent 尚未開始。
+多代理人精度加權投資研究系統（台股被動元件）。MVP（M1–M5）、5 檔完整真實回測、報酬層級評估、Phase 2 總經/籌碼 Agent、地端 LLM 判讀實驗（qwen3:8b）、Agent 層級重新校準、新聞內文抓取、供應鏈 Agent（Phase 2 全部 Agent）已完成。
 
 ## 架構
 - `config/tickers.yaml`：股票池與全部參數（horizon、閾值、EMA α、冷啟動門檻、基準 0050、交易成本、`outcome_basis`、`agents` 清單、`macro` 窗口）
 - `agents/llm_client.py`：provider 可選 anthropic / ollama（地端），JSON schema 結構化輸出、temperature 0、回應快取於 `data_cache/llm/`（納入版控，重跑不需重新推論）
-- `agents/`：`base.py` 介面 `analyze(ticker, as_of_date) → AgentOutput`，以及共用的規則評分 `score_components`；`fundamentals_agent`、`news_agent`、`macro_agent` 已實作（規則式；LLM 可用時改用 LLM 判讀，失敗退回規則式；`raw_features.llm_used` 標示是否實際採用 LLM）；`supply_chain_agent` 僅為 `NotImplementedError` 佔位
+- `agents/`：`base.py` 介面 `analyze(ticker, as_of_date) → AgentOutput`，以及共用的規則評分 `score_components`；`fundamentals_agent`、`news_agent`、`macro_agent` 已實作（規則式；LLM 可用時改用 LLM 判讀，失敗退回規則式；`raw_features.llm_used` 標示是否實際採用 LLM）、`supply_chain_agent`（知識圖譜 `config/supply_chain_graph.json`：下游節點是需求代理、非確認客戶，權重為人工假設）。`news_agent` 可選 `content_fetcher` 於檢索後補新聞內文
 - `arbitrator/`：`precision_tracker.py`（Brier EMA、n<5 冷啟動）、`merge.py`（precision×confidence 加權）、`calibration.py`（Agent 層級收縮校準 p' = σ(a·logit p)，a ∈ [0,1]，walk-forward 擬合）
+- `data/fetch_article.py`：新聞內文抓取（遵守 robots.txt、同網域 ≥ 1 秒）；快取 `article_cache/` **不納入版控**（著作權）；Google News 轉址連結無法解析
+- `data/fetch_supply_chain.py`：圖譜載入與關聯公司的含息還原股價、月營收
 - `data/`：FinMind 抓取（快取/節流/額度等待）、含息還原價（`get_total_return_prices`：以 DividendResult + SplitPrice 自行還原，PriceAdj 需付費）、`fetch_macro.py`（法人/外資持股/融資/匯率/美債/大盤外資，只用 as_of 前一日以前的資料）、RSS 新聞、向量庫封裝
 - `backtest/`：`run_backtest.py`（walk-forward，共用市場日曆取樣，T+20 到期才更新精度，財報公告遞延防 look-ahead，`--agents` 選擇 Agent，報表含個別 Agent 消融）、`metrics.py`（Brier/ECE）、`portfolio.py`（連續報酬 Rank IC、long/neutral 組合、vs 0050）
 - `data_cache/` 刻意納入版控，重跑既有範圍不耗 API 額度
@@ -33,26 +35,35 @@
 - **Agent 層級重新校準（`docs/calibration_report.md`）**：LLM 合併 Brier 0.2726 → 0.2544。校準後 LLM 的精度比從 1.35–2.63 縮回 1.04–1.28，原本的「分化」是過度自信程度不同，不是資訊量不同。
 - **2026-10-07 規格 5.2 修訂**（`arbitrator/merge.py`，校準報告第 8 節）：final_score = Σ(precision·κ·s)/Σprecision = 2p − 1，κ = |2p − 1| 為確信度，門檻 ±0.1（合併機率 0.55/0.45）。p = 0.5 的 Agent 不再投票，訊號與機率一致。**代價**：合併機率是純精度加權平均，中性輸出會稀釋，synthetic 中合併變得信心不足（合併 < 單一 Agent 只有 2/20）。
 - 2026-10-06 的修正：共用市場日曆取樣；outcome 改用含息總報酬；有方向訊號的信心下限 0.5（`agents/base.py:_build_output`）。
-- 履歷/對外描述注意：Agent 只有財報、新聞、總經/籌碼三個，不要宣稱含供應鏈訊號；也不要宣稱打敗大盤、有預測力或有選股能力。可宣稱的是：完整的 walk-forward 評估框架、精度加權機制在 synthetic 中驗證有效、對真實資料負結果的誠實分析。
+- **新聞內文（`reports/finmind_news_content`，詳見 `docs/news_content_and_supply_chain_report.md`）**：覆蓋率 36%（371/1,033；Google News 轉址 61% 無法解析）；取得的內文 43% 來自 CMoney。規則式新聞 Agent 加內文後變差（Brier 0.2531 → 0.2640，命中率 47% → 39%），因為關鍵字被長文中的固定段落（法人買賣超、漲價）帶偏
+- **供應鏈 Agent（`reports/finmind_supply_chain`，4 Agent、只有標題）**：Brier 0.2652（最差，偏多：69 多 / 4 空），但橫斷面 IC +0.160（t = 1.71，全專案第一個為正且接近顯著的訊號，考慮多重比較仍只是線索）。4 Agent 簡單平均 Brier 0.2529（3 Agent 為 0.2530），累積報酬 +59%（多持股的多頭效果，非判讀能力）
+- 目前 config 預設為 4 個 Agent；3 Agent 對照組需加 `--agents fundamentals_agent,news_agent,macro_agent`
+- 履歷/對外描述注意：Agent 有財報、新聞、總經/籌碼、供應鏈四個，供應鏈圖譜是需求代理而非確認的客戶關係；也不要宣稱打敗大盤、有預測力或有選股能力。可宣稱的是：完整的 walk-forward 評估框架、精度加權機制在 synthetic 中驗證有效、對真實資料負結果的誠實分析。
 
 ## 待辦（依建議順序）
-1. **提升 Agent 本身的資訊量**（目前真正的瓶頸）：新聞內文（目前只有標題）、更強的 LLM（雲端 Claude：`--llm-provider anthropic`）或 qwen3 思考模式（`--llm-think true`）、供應鏈 Agent（知識圖譜，如 `config/supply_chain_graph.json`）
-2. 合併機率的中性稀釋（規格 5.2 修訂的代價）：讓中性 Agent 棄權不進入平均，或改用對數意見池（中性的 logit 為 0，天然不影響結果）
-3. 合併後再校準：線性池平均已校準機率會信心不足
-4. 規格第 9 節待人工決策：新聞可信度分級、MOPS 爬蟲頻率（horizon 已定為 20 日）
-5. 報酬評估可延伸：機率加權部位（而非 bullish 等權）、相對 0050 的 outcome 定義（超額報酬 > 0）
-6. 總經/籌碼 Agent 可延伸：半導體庫存週期（免費層無資料）、主力分點、借券等個股籌碼
+1. **提升 Agent 本身的資訊量**（目前真正的瓶頸）：以 LLM 判讀有內文的新聞（約 116 次呼叫，qwen3:8b 約 4 小時）；更強的 LLM（雲端 Claude：`--llm-provider anthropic`）或 qwen3 思考模式（`--llm-think true`）
+2. **供應鏈 Agent 改進**：以年報 / 法說會資料修訂圖譜的客戶與權重；下游營收改用年增率的變化而非水準（避免單一景氣循環中一路看多）；以更長期間驗證其橫斷面 IC
+3. 各 Agent 可個別指定模型（目前所有 Agent 共用同一份 llm 設定）
+4. 合併機率的中性稀釋（規格 5.2 修訂的代價）：讓中性 Agent 棄權不進入平均，或改用對數意見池（中性的 logit 為 0，天然不影響結果）
+5. 合併後再校準：線性池平均已校準機率會信心不足
+6. 規格第 9 節待人工決策：新聞可信度分級、MOPS 爬蟲頻率（horizon 已定為 20 日）
+7. 報酬評估可延伸：機率加權部位（而非 bullish 等權）、相對 0050 的 outcome 定義（超額報酬 > 0）
+8. 總經/籌碼 Agent 可延伸：半導體庫存週期（免費層無資料）、主力分點、借券等個股籌碼
 
 ## 已知限制
 每檔僅 27 筆樣本；新聞僅標題；期間與族群單一；地端 LLM 僅測過 qwen3:8b（純 CPU 每次呼叫約 1 分鐘，phi4 約 8 分鐘，未跑完整實驗）；總經分量同一時點各檔相同（對選股無幫助）；總經 Agent 的門檻為經驗值；組合報酬每期之間有 1 個交易日空檔（step 21 > horizon 20）未計入；p 值為常態近似。
 
 ## 操作
 ```bash
-.venv/Scripts/python -m pytest tests -q          # 104 tests（Windows；macOS/Linux 用 .venv/bin/python）
+.venv/Scripts/python -m pytest tests -q          # 121 tests（Windows；macOS/Linux 用 .venv/bin/python）
 # 3 Agent（config 預設）
-.venv/Scripts/python backtest/run_backtest.py --mode finmind --start-date 2024-01-01 --end-date 2026-05-31 --step-days 21 --output-dir reports/finmind_macro
+.venv/Scripts/python backtest/run_backtest.py --mode finmind --start-date 2024-01-01 --end-date 2026-05-31 --step-days 21 --agents fundamentals_agent,news_agent,macro_agent --output-dir reports/finmind_macro
 # LLM 判讀（需 Ollama + qwen3:8b；回應已快取，重跑秒完）
-.venv/Scripts/python backtest/run_backtest.py --mode finmind --start-date 2024-01-01 --end-date 2026-05-31 --step-days 21 --llm-provider ollama --llm-model qwen3:8b --llm-think false --output-dir reports/finmind_llm_qwen3
+.venv/Scripts/python backtest/run_backtest.py --mode finmind --start-date 2024-01-01 --end-date 2026-05-31 --step-days 21 --agents fundamentals_agent,news_agent,macro_agent --llm-provider ollama --llm-model qwen3:8b --llm-think false --output-dir reports/finmind_llm_qwen3
+# 4 Agent（含供應鏈，config 預設）
+.venv/Scripts/python backtest/run_backtest.py --mode finmind --start-date 2024-01-01 --end-date 2026-05-31 --step-days 21 --output-dir reports/finmind_supply_chain
+# 3 Agent + 新聞內文（需連網；內文快取只存在本機）
+.venv/Scripts/python backtest/run_backtest.py --mode finmind --start-date 2024-01-01 --end-date 2026-05-31 --step-days 21 --agents fundamentals_agent,news_agent,macro_agent --news-content --output-dir reports/finmind_news_content
 # 2 Agent 對照組
 .venv/Scripts/python backtest/run_backtest.py --mode finmind --start-date 2024-01-01 --end-date 2026-05-31 --step-days 21 --agents fundamentals_agent,news_agent --output-dir reports/finmind_full
 ```

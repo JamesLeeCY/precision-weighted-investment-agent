@@ -97,8 +97,12 @@ class NewsAgent(BaseAgent):
         window_days: int = 14,
         horizon_days: int = 20,
         ticker_names: dict[str, str] | None = None,
+        content_fetcher=None,
     ):
         self.provider = news_provider
+        # 可選：callable(url) -> str，於檢索之後為入選新聞補上內文摘要。
+        # 放在檢索之後，使「挑哪些新聞」與只有標題時完全相同，可單獨衡量內文的效果
+        self.content_fetcher = content_fetcher
         self.llm = llm or LLMClient(enabled=False)
         self.window_days = window_days
         self.default_horizon_days = horizon_days
@@ -168,6 +172,10 @@ class NewsAgent(BaseAgent):
         start = (pd.Timestamp(as_of_date) - pd.Timedelta(days=self.window_days)).strftime("%Y-%m-%d")
         items = self.provider.get_news(ticker, start, as_of_date)
         items = self._retrieve(items, ticker)
+        if self.content_fetcher is not None:
+            for it in items:
+                if not it.summary and it.url:
+                    it.summary = self.content_fetcher(it.url)
 
         signal, confidence, rationale, score, event_log = self.rule_based_judgement(items, as_of_date)
         evidence = [it.url or it.title[:60] for it in items[:10]]
@@ -175,7 +183,7 @@ class NewsAgent(BaseAgent):
         llm_result = None
         if self.llm.available and items:
             lines = [
-                f"- [{it.published:%Y-%m-%d}] (可信度{it.source_tier}) {it.title}：{it.summary[:100]}"
+                f"- [{it.published:%Y-%m-%d}] (可信度{it.source_tier}) {it.title}：{it.summary[:300]}"
                 for it in items
             ]
             user_prompt = (
@@ -199,6 +207,7 @@ class NewsAgent(BaseAgent):
             evidence_refs=evidence,
             raw_features={
                 "n_news": len(items),
+                "n_with_content": sum(1 for it in items if it.summary),
                 "rule_score": score,
                 "events": event_log[:20],
                 "llm_used": llm_result is not None,

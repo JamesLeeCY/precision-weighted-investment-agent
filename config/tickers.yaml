@@ -35,12 +35,18 @@ backtest:
   # 每隔幾個交易日產生一次預測（walk-forward 的取樣頻率）
   prediction_step_days: 10
 
-# 參與合併的 Agent（--agents 可覆寫）。MVP 兩個 Agent 的對照組：
-#   --agents fundamentals_agent,news_agent
+# 參與合併的 Agent（--agents 可覆寫）。對照組：
+#   MVP 2 Agent：--agents fundamentals_agent,news_agent
+#   Phase 2 前 3 Agent：--agents fundamentals_agent,news_agent,macro_agent
 agents:
   - fundamentals_agent
   - news_agent
   - macro_agent
+  - supply_chain_agent
+
+supply_chain:
+  graph: "config/supply_chain_graph.json"   # 手動整理的知識圖譜（下游為需求代理，非確認客戶）
+  window_days: 20                           # 股價動能觀察窗口（交易日）
 
 macro:
   window_days: 20            # 籌碼、匯率、大盤外資的觀察窗口（交易日）
@@ -61,6 +67,8 @@ arbitrator:
 
 news:
   window_days: 14            # 規格 3.3：新聞 Agent 預設時間窗
+  # 是否為入選新聞抓取內文摘要（data/fetch_article.py；--news-content 可覆寫）
+  fetch_content: false
 
 llm:
   # provider：anthropic（需 ANTHROPIC_API_KEY）或 ollama（地端模型）
