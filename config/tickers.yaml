@@ -45,8 +45,11 @@ agents:
   - supply_chain_agent
 
 supply_chain:
-  graph: "config/supply_chain_graph.json"   # 手動整理的知識圖譜（下游為需求代理，非確認客戶）
+  graph: "config/supply_chain_graph.json"   # 依 2024 年報修訂的知識圖譜（下游為需求代理，非確認客戶）
   window_days: 20                           # 股價動能觀察窗口（交易日）
+  # 關聯公司股價與營收的抓取起點（固定值，快取鍵不隨回測期間變動）；
+  # 長期回測需早於回測起點 13 個月以上。2023-01-01 為 v1 圖譜回測所用
+  history_start: "2017-01-01"
 
 macro:
   window_days: 20            # 籌碼、匯率、大盤外資的觀察窗口（交易日）

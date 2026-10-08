@@ -178,11 +178,16 @@ class FinMindFundamentalsProvider(FundamentalsDataProvider):
 
 
 def get_daily_prices(client: FinMindClient, ticker: str, start_date: str, end_date: str) -> pd.DataFrame:
-    """回測用日收盤價，欄位 [date, close]。"""
+    """回測用日收盤價，欄位 [date, close]。
+
+    FinMind 偶有收盤價為 0 的資料列（無成交日，例如國巨 2019-11-12、鴻海
+    2025-07-30），視為缺值剔除；否則報酬會被算成 −100% 或除以零。
+    """
     df = client.get("TaiwanStockPrice", normalize_ticker(ticker), start_date, end_date)
     if df.empty:
         return pd.DataFrame(columns=["date", "close"])
     df = df[["date", "close"]].copy()
+    df = df[df["close"].astype(float) > 0]
     df["date"] = pd.to_datetime(df["date"])
     return df.sort_values("date").reset_index(drop=True)
 

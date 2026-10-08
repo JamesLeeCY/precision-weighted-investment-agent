@@ -507,7 +507,9 @@ def generate_finmind_events(config: dict, llm=None) -> list[PredictionEvent]:
             rate_window_days=int(config.get("macro", {}).get("rate_window_days", 60)),
         ),
         "supply_chain_agent": lambda: SupplyChainAgent(
-            FinMindSupplyChainProvider(client),
+            FinMindSupplyChainProvider(
+                client, history_start=config.get("supply_chain", {}).get("history_start", "2023-01-01")
+            ),
             graph=load_graph(PROJECT_ROOT / config.get("supply_chain", {}).get("graph", "config/supply_chain_graph.json")),
             llm=llm,
             horizon_days=horizon,
@@ -614,6 +616,8 @@ def main(argv: list[str] | None = None) -> Path:
                         help="為入選新聞抓取內文摘要（快取於本機 article_cache/，不納入版控）")
     parser.add_argument("--news-content-offline", action="store_true",
                         help="只用已快取的新聞內文，不連網")
+    parser.add_argument("--supply-chain-graph", default=None,
+                        help="覆寫供應鏈知識圖譜路徑（如 config/supply_chain_graph_v1.json）")
     parser.add_argument(
         "--agents", default=None,
         help="逗號分隔的 Agent 清單（如 fundamentals_agent,news_agent,macro_agent），覆寫 config 的 agents",
@@ -640,6 +644,8 @@ def main(argv: list[str] | None = None) -> Path:
     if args.news_content or args.news_content_offline:
         config["news"]["fetch_content"] = True
         config["news"]["content_offline"] = args.news_content_offline
+    if args.supply_chain_graph:
+        config.setdefault("supply_chain", {})["graph"] = args.supply_chain_graph
     if args.agents:
         config["agents"] = [a.strip() for a in args.agents.split(",")]
     if args.tickers:

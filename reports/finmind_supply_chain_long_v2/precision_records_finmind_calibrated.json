@@ -1,0 +1,37 @@
+{
+  "supply_chain_agent|2327.TW": {
+    "agent_id": "supply_chain_agent",
+    "ticker": "2327.TW",
+    "n_predictions": 84,
+    "brier_score_ema": 0.24479146350320657,
+    "precision": 3.9247782725947364
+  },
+  "supply_chain_agent|2375.TW": {
+    "agent_id": "supply_chain_agent",
+    "ticker": "2375.TW",
+    "n_predictions": 84,
+    "brier_score_ema": 0.2535493688774592,
+    "precision": 3.7943555101623607
+  },
+  "supply_chain_agent|2478.TW": {
+    "agent_id": "supply_chain_agent",
+    "ticker": "2478.TW",
+    "n_predictions": 84,
+    "brier_score_ema": 0.25261454921618126,
+    "precision": 3.807862142385765
+  },
+  "supply_chain_agent|2492.TW": {
+    "agent_id": "supply_chain_agent",
+    "ticker": "2492.TW",
+    "n_predictions": 84,
+    "brier_score_ema": 0.25267163662707687,
+    "precision": 3.807034565440087
+  },
+  "supply_chain_agent|3026.TW": {
+    "agent_id": "supply_chain_agent",
+    "ticker": "3026.TW",
+    "n_predictions": 84,
+    "brier_score_ema": 0.24990131456833137,
+    "precision": 3.8476142441252916
+  }
+}

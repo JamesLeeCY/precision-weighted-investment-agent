@@ -1,53 +1,55 @@
 {
   "_說明": [
-    "供應鏈 Agent（規格 3.4）的簡化知識圖譜，手動整理。",
-    "重要：被動元件廠的實際客戶名單與營收占比未公開，以下 downstream 是『下游終端市場的代表性公司』，作為需求動能的代理，不是已確認的直接客戶關係。",
-    "weight 為相對權重（1.0 = 主要、0.5 = 次要），是人工設定的假設，未經回測最佳化。",
-    "relation：downstream = 下游需求代理；leader = 產業龍頭（龍頭動能領先同業）；group = 同集團（營運連動）。",
-    "可依產業研究逐步修訂；修訂後需重跑回測。"
+    "供應鏈 Agent（規格 3.4）的知識圖譜，2026-10-08 依各公司 2024 年度年報（公開資訊觀測站 / 公司官網）修訂。",
+    "重要：五家公司年報皆揭露『無占營收 10% 以上客戶』（凱美的關係人銷貨除外），因此 downstream 節點是『下游終端市場的代表性公司』，作為需求代理，不是已確認的直接客戶。",
+    "權重規則（事先設定，未參考任何報酬資料）：國巨依法說會揭露的應用別比重；其他公司依年報文字——列為主要市場（『以…為主』）給 1.0、次要市場給 0.5；同一市場有多個代理公司時平分權重。",
+    "市場 → 代理：運算（筆電 / 伺服器 ODM）= 廣達 2382、緯創 3231、緯穎 6669；消費 / 通訊 / 手機（EMS）= 鴻海 2317；工業 = 研華 2395；電源 = 台達電 2308。",
+    "車用需求目前沒有合適的台股代理（國巨約 20% 營收來自車用），為已知缺口。",
+    "relation：downstream = 下游需求代理；leader = 產業龍頭（國巨年報：晶片電阻產能全球第一）；group = 同集團 / 關係人。",
+    "限制：以 2024 年度年報的營收結構套用於所有回測期間，早期年份的結構可能不同。"
   ],
   "proxies": {
-    "2382.TW": {"name": "廣達", "role": "AI 伺服器 ODM"},
-    "3231.TW": {"name": "緯創", "role": "AI 伺服器 ODM"},
-    "6669.TW": {"name": "緯穎", "role": "雲端伺服器 ODM"},
-    "2317.TW": {"name": "鴻海", "role": "電子代工（伺服器、消費性電子）"},
-    "2330.TW": {"name": "台積電", "role": "半導體需求領先指標"}
+    "2382.TW": {"name": "廣達", "market": "運算（筆電 / 伺服器 ODM）"},
+    "3231.TW": {"name": "緯創", "market": "運算（筆電 / 伺服器 ODM）"},
+    "6669.TW": {"name": "緯穎", "market": "運算（雲端伺服器）"},
+    "2317.TW": {"name": "鴻海", "market": "消費 / 通訊 / 手機（EMS）"},
+    "2395.TW": {"name": "研華", "market": "工業（工業電腦）"},
+    "2308.TW": {"name": "台達電", "market": "電源"}
   },
   "edges": {
     "2327.TW": [
-      {"to": "2382.TW", "relation": "downstream", "weight": 1.0},
-      {"to": "3231.TW", "relation": "downstream", "weight": 1.0},
-      {"to": "6669.TW", "relation": "downstream", "weight": 0.5},
-      {"to": "2317.TW", "relation": "downstream", "weight": 1.0},
-      {"to": "2330.TW", "relation": "downstream", "weight": 0.5}
+      {"to": "2395.TW", "relation": "downstream", "weight": 0.36, "source": "法說會應用別：工控 36%"},
+      {"to": "2382.TW", "relation": "downstream", "weight": 0.07, "source": "法說會應用別：運算 21%（三家 ODM 平分）"},
+      {"to": "3231.TW", "relation": "downstream", "weight": 0.07, "source": "法說會應用別：運算 21%（三家 ODM 平分）"},
+      {"to": "6669.TW", "relation": "downstream", "weight": 0.07, "source": "法說會應用別：運算 21%（三家 ODM 平分）"},
+      {"to": "2317.TW", "relation": "downstream", "weight": 0.20, "source": "法說會應用別：消費 11% + 電信 9%"}
     ],
     "2492.TW": [
-      {"to": "2382.TW", "relation": "downstream", "weight": 1.0},
-      {"to": "3231.TW", "relation": "downstream", "weight": 1.0},
-      {"to": "6669.TW", "relation": "downstream", "weight": 0.5},
-      {"to": "2317.TW", "relation": "downstream", "weight": 1.0},
-      {"to": "2330.TW", "relation": "downstream", "weight": 0.5},
-      {"to": "2327.TW", "relation": "leader", "weight": 1.0}
+      {"to": "2317.TW", "relation": "downstream", "weight": 1.0, "source": "2024 年報：MLCC 主要用於通訊、電腦週邊、消費性電子；下游首列手機"},
+      {"to": "2382.TW", "relation": "downstream", "weight": 0.5, "source": "2024 年報：筆電、平板、主機板（運算為主要市場，兩家 ODM 平分）"},
+      {"to": "3231.TW", "relation": "downstream", "weight": 0.5, "source": "2024 年報：筆電、平板、主機板（運算為主要市場，兩家 ODM 平分）"},
+      {"to": "2308.TW", "relation": "downstream", "weight": 0.5, "source": "2024 年報：下游含電源供應器（次要）"},
+      {"to": "2395.TW", "relation": "downstream", "weight": 0.5, "source": "2024 年報：下游含工業與醫療設備（次要）"},
+      {"to": "2327.TW", "relation": "leader", "weight": 1.0, "source": "產品重疊（MLCC、晶片電阻）；國巨年報：晶片電阻產能全球第一"}
     ],
     "3026.TW": [
-      {"to": "2382.TW", "relation": "downstream", "weight": 0.5},
-      {"to": "3231.TW", "relation": "downstream", "weight": 0.5},
-      {"to": "2317.TW", "relation": "downstream", "weight": 1.0},
-      {"to": "2330.TW", "relation": "downstream", "weight": 0.5},
-      {"to": "2327.TW", "relation": "leader", "weight": 1.0}
+      {"to": "2308.TW", "relation": "downstream", "weight": 1.0, "source": "2024 年報：AI 伺服器電源用 MLCC 獲國內外電源大廠認證採用"},
+      {"to": "2317.TW", "relation": "downstream", "weight": 1.0, "source": "2024 年報：代理之主動元件以手機、網通、智慧家庭為主；MLCC 下游含資通訊、消費"},
+      {"to": "2395.TW", "relation": "downstream", "weight": 0.5, "source": "2024 年報：MLCC 擴大工控等高階應用（次要）"},
+      {"to": "2327.TW", "relation": "leader", "weight": 0.5, "source": "MLCC 產品重疊；禾伸堂約 6 成營收為代理，自製被動元件 39%"}
     ],
     "2375.TW": [
-      {"to": "2382.TW", "relation": "downstream", "weight": 0.5},
-      {"to": "3231.TW", "relation": "downstream", "weight": 0.5},
-      {"to": "2317.TW", "relation": "downstream", "weight": 1.0},
-      {"to": "2327.TW", "relation": "group", "weight": 1.0}
+      {"to": "2317.TW", "relation": "downstream", "weight": 1.0, "source": "2024 年報：市場以影音家電、手機為主"},
+      {"to": "2382.TW", "relation": "downstream", "weight": 0.5, "source": "2024 年報：市場以電腦資訊為主（兩家 ODM 平分）"},
+      {"to": "3231.TW", "relation": "downstream", "weight": 0.5, "source": "2024 年報：市場以電腦資訊為主（兩家 ODM 平分）"},
+      {"to": "2327.TW", "relation": "group", "weight": 1.0, "source": "2024 年報：對國益興業科技（深圳）銷貨 10.39%，為對合併公司具重大影響力者之子公司（國巨集團）"}
     ],
     "2478.TW": [
-      {"to": "2382.TW", "relation": "downstream", "weight": 0.5},
-      {"to": "3231.TW", "relation": "downstream", "weight": 0.5},
-      {"to": "2317.TW", "relation": "downstream", "weight": 1.0},
-      {"to": "2330.TW", "relation": "downstream", "weight": 0.5},
-      {"to": "2327.TW", "relation": "leader", "weight": 1.0}
+      {"to": "2317.TW", "relation": "downstream", "weight": 1.0, "source": "2024 年報：被動元件應用以消費性電子、通訊為主"},
+      {"to": "2382.TW", "relation": "downstream", "weight": 0.5, "source": "2024 年報：應用以電腦為主（兩家 ODM 平分）"},
+      {"to": "3231.TW", "relation": "downstream", "weight": 0.5, "source": "2024 年報：應用以電腦為主（兩家 ODM 平分）"},
+      {"to": "2395.TW", "relation": "downstream", "weight": 0.5, "source": "2024 年報：車用加工業約 30%（工業部分，次要）"},
+      {"to": "2327.TW", "relation": "leader", "weight": 1.0, "source": "晶片電阻占大毅營收 90.8%；國巨年報：晶片電阻產能全球第一"}
     ]
   }
 }

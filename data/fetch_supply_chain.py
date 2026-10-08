@@ -46,7 +46,8 @@ class FinMindSupplyChainProvider(SupplyChainDataProvider):
     def __init__(self, client: FinMindClient, history_start: str = "2023-01-01"):
         self.client = client
         self.history_start = history_start
-        self.revenue = FinMindFundamentalsProvider(client)
+        # 營收歷史需早於回測起點 13 個月以上（年增率），與股價共用同一個起點
+        self.revenue = FinMindFundamentalsProvider(client, history_start=history_start)
         self._memo: dict[str, pd.Series] = {}
 
     def get_closes(self, ticker, as_of_date):
@@ -58,7 +59,8 @@ class FinMindSupplyChainProvider(SupplyChainDataProvider):
                 self._memo[data_id] = pd.Series(dtype=float)
             else:
                 prices = pd.DataFrame({"date": pd.to_datetime(df["date"]), "close": df["close"].astype(float)})
-                prices = prices.sort_values("date").reset_index(drop=True)
+                # 收盤價為 0 的資料列（無成交日）視為缺值，見 get_daily_prices
+                prices = prices[prices["close"] > 0].sort_values("date").reset_index(drop=True)
                 adj = total_return_index(prices, self._adjustment_events(data_id))
                 self._memo[data_id] = pd.Series(adj.to_numpy(), index=prices["date"])
         s = self._memo[data_id]

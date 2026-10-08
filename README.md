@@ -79,8 +79,12 @@ walk-forward 收縮校準修正各 Agent 的過度自信，LLM 合併 Brier 0.27
 
 **新聞內文與供應鏈 Agent**（詳見[報告](docs/news_content_and_supply_chain_report.md)）：
 新聞內文覆蓋率 36%（Google News 轉址無法解析），在規則式判讀下反而讓新聞 Agent
-變差（Brier 0.2531 → 0.2640），改用 LLM（qwen3:8b）判讀也一樣變差（0.2718 → 0.2877）。供應鏈 Agent 的機率品質最差（0.2652），但帶來全
-專案第一個為正的橫斷面 IC（+0.160，t = 1.71，未達顯著）。
+變差（Brier 0.2531 → 0.2640），改用 LLM（qwen3:8b）判讀也一樣變差（0.2718 → 0.2877）。供應鏈 Agent 的機率品質最差（0.2656），樣本內
+橫斷面 IC +0.160（t = 1.71）。
+
+**供應鏈訊號驗證**（詳見[驗證報告](docs/supply_chain_validation_report.md)）：依 2024 年度年報修訂
+圖譜，並回測 2019–2026。供應鏈訊號**不穩定**：樣本內的 +0.160 是 21 種取樣起點中的最大值，
+2019–2023 樣本外 IC 為負（v1 −0.070、v2 −0.128）。
 
 **規格 5.2 修訂**（2026-10-07，詳見[校準報告第 8 節](docs/calibration_report.md#8-訊號公式修訂2026-10-07)）：
 投票權重改為確信度 |2p − 1|，合併分數 = 2 × 合併機率 − 1，門檻為合併機率
@@ -167,13 +171,14 @@ python3.11 -m venv .venv
 
 ```
 config/tickers.yaml     股票池與全部參數（horizon、閾值、EMA α、冷啟動門檻）
-config/supply_chain_graph.json  供應鏈知識圖譜（下游為需求代理，非確認客戶）
+config/supply_chain_graph.json  供應鏈知識圖譜（依 2024 年報修訂，每條邊標註出處；v1 另存為 _v1）
 agents/                 Agent 基底 + 財報/新聞/總經籌碼/供應鏈 Agent（LLM 可插拔）
 arbitrator/             精度追蹤（Brier EMA）+ 合併公式 + Agent 層級重新校準
 data/                   FinMind 抓取（快取/節流/額度等待）、含息還原價、總經/籌碼、供應鏈、新聞內文、RSS 新聞、向量庫
 backtest/               walk-forward 回測 + 評估指標 + 報酬層級評估（vs 0050）
-tests/                  125 個單元測試
-reports/                synthetic / finmind_preliminary / finmind_scoped / finmind_full / finmind_macro / finmind_llm_qwen3 / finmind_news_content / finmind_llm_qwen3_content / finmind_supply_chain 結果
+tests/                  126 個單元測試
+analysis/               訊號穩定性分析（分期 IC、取樣起點穩健性）
+reports/                synthetic / finmind_preliminary / finmind_scoped / finmind_full / finmind_macro / finmind_llm_qwen3 / finmind_news_content / finmind_llm_qwen3_content / finmind_supply_chain(_v2 / _long_v1 / _long_v2) 結果
 docs/                   規格、技術筆記、回測報告
 notebooks/              校準分析 notebook
 ```
@@ -187,6 +192,8 @@ notebooks/              校準分析 notebook
   135 事件的完整版結果與逐項解讀
 - [Phase 2 回測報告](docs/phase2_macro_report.md) — 加入總經/籌碼 Agent 的
   3 Agent 結果、消融與報酬拆解
+- [供應鏈驗證報告](docs/supply_chain_validation_report.md) — 年報修訂圖譜、2019–2026
+  長期回測、取樣起點穩健性
 - [新聞內文與供應鏈 Agent 報告](docs/news_content_and_supply_chain_report.md) — 新聞內文
   的覆蓋率與效果、供應鏈 Agent（知識圖譜）的設計與結果
 - [Agent 層級重新校準報告](docs/calibration_report.md) — 收縮校準的效果、LLM 精度分化

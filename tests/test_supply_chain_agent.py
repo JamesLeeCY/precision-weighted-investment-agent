@@ -101,3 +101,15 @@ def test_provider_excludes_as_of_and_adjusts_split():
     closes = FinMindSupplyChainProvider(client).get_closes("2327.TW", "2025-08-26")
     assert list(closes.index.strftime("%Y-%m-%d")) == ["2025-08-21", "2025-08-25"]  # 不含 as_of 當日
     assert closes.iloc[1] / closes.iloc[0] == pytest.approx(1.0)  # 一拆四不是 −75%
+
+
+def test_zero_close_rows_are_dropped():
+    # FinMind 偶有收盤價為 0 的資料列；若保留，報酬會變成 −100% 或除以零
+    prices = pd.DataFrame({"date": ["2025-07-29", "2025-07-30", "2025-07-31"], "close": [200.0, 0.0, 202.0]})
+    client = FakeClient({("TaiwanStockPrice", "2317"): prices})
+    closes = FinMindSupplyChainProvider(client).get_closes("2317.TW", "2025-08-01")
+    assert list(closes.index.strftime("%Y-%m-%d")) == ["2025-07-29", "2025-07-31"]
+
+    from data.fetch_financials import get_daily_prices
+    daily = get_daily_prices(client, "2317.TW", "2025-07-01", "2025-08-01")
+    assert (daily["close"] > 0).all() and len(daily) == 2

@@ -8,6 +8,8 @@
 | 合併公式 | 規格 5.2 修訂版（確信度加權，門檻 0.55 / 0.45），見[校準報告第 8 節](calibration_report.md#8-訊號公式修訂2026-10-07) |
 | 輸出 | [reports/finmind_news_content/](../reports/finmind_news_content/comparison_report.md)（3 Agent + 新聞內文）、[reports/finmind_supply_chain/](../reports/finmind_supply_chain/comparison_report.md)（4 Agent，只有標題） |
 
+> **2026-10-08 後續驗證**：本報告中供應鏈 Agent 的橫斷面 IC（+0.160）經長期回測與取樣起點檢查後**不成立**——它是 21 種取樣起點中的最大值，2019–2023 樣本外為負。圖譜也已依年報修訂。詳見[供應鏈驗證報告](supply_chain_validation_report.md)。另修正了收盤價為 0 的資料列，`finmind_supply_chain` 的供應鏈 Agent Brier 由 0.2652 更正為 0.2656，其餘數字不變。
+
 兩個實驗各自只改一個因素，對照組都是 [reports/finmind_macro](../reports/finmind_macro/comparison_report.md)（3 Agent、只有標題）。
 
 ## 1. 新聞內文
@@ -140,6 +142,6 @@ look-ahead 防護：股價只用 as_of_date 前一日以前的收盤價，且使
 .venv/Scripts/python backtest/run_backtest.py --mode finmind --start-date 2024-01-01 --end-date 2026-05-31 --step-days 21 --agents fundamentals_agent,news_agent,macro_agent --news-content --output-dir reports/finmind_news_content
 # 3 Agent LLM + 新聞內文（需 Ollama + qwen3:8b；回應已快取；內文快取只存在本機）
 .venv/Scripts/python backtest/run_backtest.py --mode finmind --start-date 2024-01-01 --end-date 2026-05-31 --step-days 21 --agents fundamentals_agent,news_agent,macro_agent --news-content-offline --llm-provider ollama --llm-model qwen3:8b --llm-think false --llm-num-thread 2 --output-dir reports/finmind_llm_qwen3_content
-# 4 Agent（含供應鏈，只有標題）
-.venv/Scripts/python backtest/run_backtest.py --mode finmind --start-date 2024-01-01 --end-date 2026-05-31 --step-days 21 --output-dir reports/finmind_supply_chain
+# 4 Agent（含供應鏈，只有標題，v1 圖譜）
+.venv/Scripts/python backtest/run_backtest.py --mode finmind --start-date 2024-01-01 --end-date 2026-05-31 --step-days 21 --supply-chain-graph config/supply_chain_graph_v1.json --output-dir reports/finmind_supply_chain
 ```
