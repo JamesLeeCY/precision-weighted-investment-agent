@@ -42,6 +42,7 @@
 - **連續輸出模式（`--agent-output continuous`，詳見 `docs/continuous_output_report.md`）**：規則式 Agent 以 p = σ(ln3 · score · 證據強度) 直接輸出機率（`agents/base.py:continuous_judgement`；證據強度 = 資料覆蓋率，新聞為來源可信度 × 事件數），signal / confidence 由 p 換回、符合規格。預設仍為門檻模式（已驗證既有報告逐筆可重現）。41 檔結果：財報 Agent 產業內 IC +0.022 / +0.028（門檻模式 +0.002 / +0.017）；簡單平均合併相對等權持有每期 +1.31%（t 2.21，扣成本），2019–2023 為 +1.58%（未扣成本，21/21 起點為正，選股 +0.97%、產業配置 +0.72%），2024–2026 約 0。5 檔 × 2024–2026 含新聞沒有改善（合併 Brier 0.2530 → 0.2564）。在選股偏誤、多重比較、兩期不一致下仍是未經證實的弱訊號
 - **無選股偏誤股票池（`reports/finmind_pit`，`config/tickers_pit.yaml`，詳見 `docs/pit_universe_report.md`）**：`data/universe.py` 從 931 檔電子相關上市櫃股票（含 34 檔 2019 年後下市）中，每年第一個交易日依前 60 日平均成交金額取前 100 檔（`config/universe_pit_membership.csv`，271 檔不重複，與 41 檔每年只重疊 16–23 檔）；回測支援逐年成員（`universe_membership`）。等權持有 +538%，與 0050 +566% 相當 → 選股偏誤已移除。**財報 Agent 產業內 IC 2019–2026 為 +0.029（t 2.16，55/85 期為正）；每日檢驗 2019–2023 +0.019、2024–2026 +0.044，21/21 起點全為正**。單獨持有財報 Agent 看多股票，扣成本後相對等權每期 +0.26%（t 1.90）；起點檢驗（未扣成本）+0.44% / +0.33%，21/21 為正，主要來自產業內選股。合併策略 −0.44%（41 檔上的 +1.31% 沒有重現）；供應鏈 Agent 2024–2026 跨產業 IC 0/21 為正。供應鏈的產業內 IC 在此股票池無意義（圖譜全為產業預設）。所有策略 Brier 仍不如基率預測（0.2489）
 - **產業內 IC 加權（`arbitrator/ic_weighting.py`，策略 `ic_weighted`，詳見 `docs/ic_weighting_report.md`）**：權重 = max(0, 最近 24 個已到期時點的平均產業內 IC)，不足 6 期等權；純產業押注不算產業內能力（第一版會誤算，已由測試抓到並修正）。無偏誤股票池：3 Agent IC 加權相對等權 +0.30%/期（t 1.09），簡單平均為 −0.44%；2023 年後財報 Agent 權重占 97–100%，但 2020 年權重一度幾乎全給供應鏈（雜訊）。沒有勝過財報 Agent 單獨（+0.26%，t 1.90）；只放財報 Agent 的合併（`reports/finmind_pit_fundamentals`）+0.28%（t 1.26）。關鍵數字：財報 Agent 每期產業內 IC 平均 0.029、標準差 0.122，24 期估計標準誤 0.025，要 t = 2 需約 73 期（6 年）→ 任何依歷史表現調權的機制（含精度加權）在這種訊號強度下都主要在追雜訊
+- **前瞻驗證（`forward/`，詳見 `docs/forward_validation.md`）**：規格 fv1 於 2026-10-09 凍結（git `57c364d`；spec 檔 commit `e940168`）：只用財報 Agent、連續輸出、當年無偏誤成員、每月第一個交易日預測、持有 20 個交易日；事先登錄主要指標（產業內 IC）與評估方式（只算 live；24 期檢查警訊、73 期正式檢定 t > 2）。`predict` 會比對財報 Agent / 評分 / 機率映射 / 公告遞延 / 含息還原的程式碼指紋，改了就拒絕；紀錄只能新增；每次用 `data_cache/forward/<日期>/` 的新資料快照。已回填開發未用過的 2026-06、07、08、09（結算）與 10（待結算）：產業內 IC +0.005（4 期，t 0.07）。2026-07 加權指數 20 日 −15%、股票池平均 −26%（國巨 1,140 → 456.5，連續跌停，非資料錯誤）。紀錄瑕疵：回填第 2–5 批 `git_dirty` 誤記為 True（把未 commit 的 predictions.csv 算進去），已修正檢查，既有紀錄不改
 - **data_cache 版控政策（2026-10-09 起）**：無偏誤股票池新增約 3,000 個 FinMind 快取檔（約 1.2 GB），不再納入版控（`.gitignore`：`data_cache/*`，但 `data_cache/llm/` 與既有已追蹤檔案仍版控）。重現 `finmind_pit` 需重新下載（約 4–5 小時 FinMind 額度，客戶端會自動等待額度）
 - **選股偏誤**：擴大股票池是 2026 年事後挑選的 AI 贏家（等權持有 +1,493% vs 0050 +566%），絕對報酬與跨產業 IC 都會被高估；以產業內 IC 與相對等權持有為主要指標
 - 擴大圖譜 `config/supply_chain_graph_expanded.json`：36 檔新股票逐一讀 2024 年報，只有辛耘點名客戶（台積電 21.02%）；多數以代號揭露。154 條邊中 111 條為產業預設、9 條年報文字、9 條推論、1 條年報確認。新增美股代理（NVIDIA、Microsoft、Amazon、Alphabet、Meta、Applied Materials；以 SPY 計算超額報酬）
@@ -53,7 +54,7 @@
 
 ## 待辦（依建議順序）
 1. **預設合併組成改為只放財報 Agent**（`--agents fundamentals_agent`；依全期、獨立股票池的證據，而非滾動估計）；產業內 IC 加權保留為監控工具，若要用於權重應加強先驗（向固定組成收縮）並拉長估計期間
-2. **前瞻驗證**：凍結目前的規則與參數，從 2026-06 起逐月記錄預測，累積真正的樣本外結果
+2. **每月執行前瞻驗證**：每月第一個交易日 `predict` → `resolve` → `report` → commit 並 push（第一個 live 預測日：2026-11-02 前後的第一個交易日）；每年 1 月先 `build-universe --year YYYY`。可考慮排程自動化
 3. **以財報 Agent 為核心的產業中性組合**：產業內排序、產業內多空（評估腳本已有 `analysis/agent_ic.py`、`analysis/phase_robustness_agents.py`、`analysis/portfolio_phase_robustness.py`）
 4. **提升其他 Agent 的資訊量**：新聞內文已試過（規則式與 LLM 都變差），若再試應先提升來源品質（主流媒體內文）；更強的 LLM（雲端 Claude）或 qwen3 思考模式
 5. 各 Agent 可個別指定模型（目前所有 Agent 共用同一份 llm 設定）
@@ -68,7 +69,7 @@
 
 ## 操作
 ```bash
-.venv/Scripts/python -m pytest tests -q          # 142 tests（Windows；macOS/Linux 用 .venv/bin/python）
+.venv/Scripts/python -m pytest tests -q          # 146 tests（Windows；macOS/Linux 用 .venv/bin/python）
 # 3 Agent（config 預設）
 .venv/Scripts/python backtest/run_backtest.py --mode finmind --start-date 2024-01-01 --end-date 2026-05-31 --step-days 21 --agents fundamentals_agent,news_agent,macro_agent --output-dir reports/finmind_macro
 # LLM 判讀（需 Ollama + qwen3:8b；回應已快取，重跑秒完）
@@ -96,6 +97,10 @@
 .venv/Scripts/python analysis/agent_ic.py reports/finmind_pit/backtest_results.csv config/tickers_pit.yaml
 # 只放財報 Agent 的合併（IC 加權已含在每次回測的 ic_weighted 策略中）
 .venv/Scripts/python backtest/run_backtest.py --mode finmind --config config/tickers_pit.yaml --agents fundamentals_agent --output-dir reports/finmind_pit_fundamentals
+# 前瞻驗證（每月第一個交易日）
+.venv/Scripts/python forward/run_forward.py predict --as-of YYYY-MM-DD
+.venv/Scripts/python forward/run_forward.py resolve
+.venv/Scripts/python forward/run_forward.py report
 # 2 Agent 對照組
 .venv/Scripts/python backtest/run_backtest.py --mode finmind --start-date 2024-01-01 --end-date 2026-05-31 --step-days 21 --agents fundamentals_agent,news_agent --output-dir reports/finmind_full
 ```

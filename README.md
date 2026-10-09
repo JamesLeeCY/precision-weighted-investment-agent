@@ -109,6 +109,11 @@ walk-forward 收縮校準修正各 Agent 的過度自信，LLM 合併 Brier 0.27
 但沒有勝過直接只用財報 Agent。每期 IC 的標準差是平均的 4 倍，用 2 年資料估計「誰有能力」
 的誤差和訊號一樣大——這也是精度加權在真實資料上從未奏效的根本原因。
 
+**前瞻驗證**（詳見[操作說明](docs/forward_validation.md)、[最新報告](forward/REPORT.md)）：規則（財報 Agent、
+連續輸出、無偏誤股票池、每月第一個交易日預測、持有 20 個交易日）於 2026-10-09 凍結並事先登錄評估
+方式，程式碼指紋改動即拒絕預測，紀錄只能新增。開發未用過的 2026-06 ~ 09 回填 4 期：產業內 IC 平均
++0.005（t 0.07），在統計上不具意義；正式（live）紀錄自 2026-11 起累積。
+
 **規格 5.2 修訂**（2026-10-07，詳見[校準報告第 8 節](docs/calibration_report.md#8-訊號公式修訂2026-10-07)）：
 投票權重改為確信度 |2p − 1|，合併分數 = 2 × 合併機率 − 1，門檻為合併機率
 0.55 / 0.45。毫無把握的 Agent 不再投票，訊號與機率一致。
@@ -201,7 +206,8 @@ agents/                 Agent 基底 + 財報/新聞/總經籌碼/供應鏈 Agen
 arbitrator/             精度追蹤（Brier EMA）+ 合併公式 + Agent 層級重新校準 + 產業內 IC 加權
 data/                   FinMind 抓取（快取/節流/額度等待）、含息還原價、總經/籌碼、供應鏈、新聞內文、RSS 新聞、向量庫
 backtest/               walk-forward 回測 + 評估指標 + 報酬層級評估（vs 0050）
-tests/                  142 個單元測試
+tests/                  146 個單元測試
+forward/                前瞻驗證：凍結規格、預測 / 結算紀錄、自動報告
 analysis/               訊號穩定性分析（分期 IC、產業內 IC、取樣起點穩健性）
 reports/                synthetic / finmind_preliminary / finmind_scoped / finmind_full / finmind_macro / finmind_llm_qwen3 / finmind_news_content / finmind_llm_qwen3_content / finmind_supply_chain(_v2 / _long_v1 / _long_v2) 結果
 docs/                   規格、技術筆記、回測報告
@@ -217,6 +223,7 @@ notebooks/              校準分析 notebook
   135 事件的完整版結果與逐項解讀
 - [Phase 2 回測報告](docs/phase2_macro_report.md) — 加入總經/籌碼 Agent 的
   3 Agent 結果、消融與報酬拆解
+- [前瞻驗證操作說明](docs/forward_validation.md) — 凍結規則、每月流程、完整性機制
 - [產業內 IC 加權報告](docs/ic_weighting_report.md) — 以產業內排序能力加權合併、
   權重演變、估計雜訊分析
 - [無選股偏誤股票池報告](docs/pit_universe_report.md) — 逐年依當時資訊選股、含下市公司；

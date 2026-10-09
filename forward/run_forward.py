@@ -92,7 +92,12 @@ def source_hashes() -> dict[str, str]:
 def git_state() -> tuple[str, bool]:
     try:
         commit = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT, capture_output=True, text=True, check=True).stdout.strip()
-        dirty = bool(subprocess.run(["git", "status", "--porcelain"], cwd=ROOT, capture_output=True, text=True, check=True).stdout.strip())
+        # 只看已追蹤檔案的未 commit 修改；前瞻紀錄本身（predictions / outcomes / REPORT）不算
+        dirty = bool(subprocess.run(
+            ["git", "status", "--porcelain", "--untracked-files=no", "--", ".",
+             ":(exclude)forward/predictions.csv", ":(exclude)forward/outcomes.csv", ":(exclude)forward/REPORT.md"],
+            cwd=ROOT, capture_output=True, text=True, check=True,
+        ).stdout.strip())
         return commit, dirty
     except (OSError, subprocess.CalledProcessError):
         return "unknown", True
