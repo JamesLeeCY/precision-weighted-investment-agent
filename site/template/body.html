@@ -15,6 +15,7 @@
   <ul>
     <li><a href="#findings">重點結論</a></li>
     <li><a href="#scorecard">回測成績</a></li>
+    <li><a href="#signals">其他訊號</a></li>
     <li><a href="#architecture">Agent 架構</a></li>
     <li><a href="#universe">股票池</a></li>
     <li><a href="#stocks">逐股分析</a></li>
@@ -62,8 +63,16 @@
   <p class="small">方向準確率都低於「永遠猜上漲」，風險調整後也沒有贏過 0050；唯一的正面結果是財報 Agent 在無偏誤股票池上的產業內選股（累積報酬高於等權持有，但回撤比 0050 深）。產業內多空未計放空成本，只作分析用。</p>
 </section>
 
+<section id="signals">
+  <div class="eyebrow">03 · Signal tests</div>
+  <h2>其他訊號與進出場濾網</h2>
+  <p class="muted">為了找到能贏過大盤的訊號，另外測了估值、技術面、動能、反轉，以及技術面進出場濾網和 5 日短期反轉。2019–2022 對財報規則是樣本外；新訊號在兩段都必須有效才算數。<span class="small">（共測 8 個 20 日訊號、7 種濾網組合、6 個 5 日訊號，多重比較下單一好結果應打折看待）</span></p>
+  <div id="signalPanels" style="display:grid;gap:22px"></div>
+  <p class="small">結論：沒有新訊號在兩段都有效——技術面與動能只在 2023 年後的多頭有效、樣本外轉負；反轉剛好相反；產業內相對估值兩段都為負。大盤濾網把回撤降低約 40%，但樣本外 Sharpe 下降。5 日短期反轉在同一收盤成交時顯著（t 3.4），但扣掉 0.3% 證交稅後全部虧損。詳見 docs/technical_timing_report.md、docs/short_term_reversal_report.md。</p>
+</section>
+
 <section id="architecture">
-  <div class="eyebrow">03 · Architecture</div>
+  <div class="eyebrow">04 · Architecture</div>
   <h2>Agent 架構</h2>
   <p class="muted">四個領域 Agent 各自輸出方向與信心，轉成機率後經校準、合併。前瞻驗證只凍結了財報 Agent 一條路徑（綠色）。</p>
   <div class="arch">
@@ -74,14 +83,17 @@ flowchart TD
   D2[(新聞 RSS<br/>標題＋內文)] --> N
   D3[(法人籌碼・融資<br/>匯率・美債)] --> M
   D4[(年報大客戶<br/>供應鏈圖譜)] --> S
+  D5[(日 K 價量<br/>含息還原)] --> T
   F[財報 Agent<br/>規則評分]:::on
   N[新聞 Agent<br/>LLM 判讀]
   M[總經／籌碼 Agent<br/>規則或 LLM]
   S[供應鏈 Agent<br/>上下游相對報酬]
+  T[技術面 Agent<br/>均線・量價・支撐壓力]
   F --> P{{機率映射<br/>連續輸出 p = σ（ln3·score·evidence）}}:::on
   N --> P
   M --> P
   S --> P
+  T --> P
   P --> C[Agent 層級校準<br/>p' = σ（a·logit p）]
   C --> W[合併<br/>精度加權 Brier EMA<br/>或產業內 IC 加權]
   W --> O[最終訊號<br/>p > 0.55 看多・p < 0.45 看空]
@@ -95,7 +107,7 @@ flowchart TD
 </section>
 
 <section id="universe">
-  <div class="eyebrow">04 · Universe</div>
+  <div class="eyebrow">05 · Universe</div>
   <h2>股票池</h2>
   <p class="muted">研究過程用過三個股票池。正式結論以「無選股偏誤」股票池為準：每年 1 月依前 60 個交易日平均成交金額，從當時上市櫃電子／半導體股（含之後下市者）取前 100 檔。</p>
   <div class="two">
@@ -114,7 +126,7 @@ flowchart TD
 </section>
 
 <section id="stocks">
-  <div class="eyebrow">05 · Stock analysis</div>
+  <div class="eyebrow">06 · Stock analysis</div>
   <h2>逐股分析：<span data-fill="year"></span> 前瞻股票池 <span data-fill="nStocks"></span> 檔</h2>
   <p class="muted">「最新 p」是財報 Agent 在 <span class="mono" data-fill="latest"></span> 對「之後 20 個交易日含息報酬為正」的機率<span data-fill="latestState"></span>。其後各欄為最近幾期已結算的預測 p 與實際 20 日報酬。點選任一列看完整財報特徵。</p>
   <div class="toolbar">
@@ -138,7 +150,7 @@ flowchart TD
 </section>
 
 <section id="forward">
-  <div class="eyebrow">06 · Forward validation</div>
+  <div class="eyebrow">07 · Forward validation</div>
   <h2>前瞻驗證</h2>
   <p class="muted">規則凍結後才產生預測，結果出來再對答案。回填（backfill）期是凍結後補做的開發未用期間，不計入正式檢定；live 期是當月即時預測。<span data-fill="pendingText"></span></p>
   <div class="two">
@@ -159,7 +171,7 @@ flowchart TD
 </section>
 
 <section id="timeline">
-  <div class="eyebrow">07 · Timeline</div>
+  <div class="eyebrow">08 · Timeline</div>
   <h2>研究歷程</h2>
   <div class="timeline" id="tl"></div>
 </section>
@@ -187,6 +199,7 @@ flowchart TD
     { n: '新聞 Agent', m: 'LLM：Anthropic 或本機 Ollama qwen3:8b', f: 'RSS 標題 + 內文摘要（robots.txt 規範下抓取）', r: '訊號微弱；加入內文後反而變差' },
     { n: '總經／籌碼 Agent', m: '規則（LLM 版本幾乎全判空）', f: '外資持股、投信買賣超、融資（反向）、美元台幣、美 10 年債、外資大盤買賣超', r: '無預測力；同日所有個股訊號相近，無法選股' },
     { n: '供應鏈 Agent', m: '規則', f: '下游客戶超額報酬、下游營收 YoY、龍頭超額報酬（年報大客戶圖譜）', r: '只捕捉產業輪動，產業內 IC ≈ 0' },
+    { n: '技術面 Agent', m: '規則', f: '相對 60 日線、20/60 日線排列、量價、突破前 60 日高低點、5 日 K 線實體', r: '只在 2023 年後的多頭有效，樣本外 2019–2022 產業內 IC −0.035' },
   ];
   $('#agentList').innerHTML = agents.map(a => `<div class="agent ${a.on ? 'on' : ''}">
     <div class="row1"><h3>${a.n}</h3><code>${esc(a.m)}</code></div>
@@ -371,6 +384,25 @@ flowchart TD
         <td class="n">${r.avg_n_long == null ? '<span class="na">—</span>' : r.avg_n_long.toFixed(1)}</td></tr>`).join('')}</tbody></table></div></div>`;
   }).join('');
 
+  // Signal tests
+  const ST = D.signal_tests;
+  if (ST) {
+    const icCell = (v, pos, of) => v == null ? '<span class="na">—</span>' : `<span class="${v > 0 ? '' : 'ret-neg'}">${v > 0 ? '+' : ''}${v.toFixed(3)}</span>${pos == null ? '' : ` <span class="small">(${pos}/${of})</span>`}`;
+    const pp = (v, d = 2) => v == null ? '<span class="na">—</span>' : (v > 0 ? '+' : '') + (v * 100).toFixed(d) + '%';
+    const tbl = (head, rows) => `<div class="tablebox"><table><thead><tr>${head.map((h, k) => `<th class="${k ? 'n' : ''}">${h}</th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table></div>`;
+    const tr = cells => `<tr style="cursor:default">${cells.map((c, k) => `<td class="${k ? 'n' : ''}">${c}</td>`).join('')}</tr>`;
+    $('#signalPanels').innerHTML = `
+      <div style="display:grid;gap:8px"><h3>產業內選股能力（20 日預測期）</h3><p class="small">${esc(ST.signals_20d.note)}</p>
+      ${tbl(['訊號', '產業內 IC 2019–2022（為正起點）', '產業內 IC 2023–2026', '做多 − 等權 2019–2022', '2023–2026', '每期換手'],
+        ST.signals_20d.rows.map(r => tr([esc(r.label), icCell(r.ic_oos, r.ic_oos_pos, 21), icCell(r.ic_is, r.ic_is_pos, 21), pp(r.ex_oos), pp(r.ex_is), r.to.toFixed(2)])))}</div>
+      <div style="display:grid;gap:8px"><h3>進出場濾網（Sharpe／最大回撤）</h3><p class="small">${esc(ST.timing.note)}</p>
+      ${tbl(['組合', 'Sharpe 2019–2022', '最大回撤 2019–2022', 'Sharpe 2023–2026', '最大回撤 2023–2026', '持股比例 2019–2022'],
+        ST.timing.rows.map(r => tr([esc(r.label), r.sh_oos.toFixed(2), pp(r.mdd_oos, 0), r.sh_is.toFixed(2), pp(r.mdd_is, 0), (r.expo_oos * 100).toFixed(0) + '%'])))}</div>
+      <div style="display:grid;gap:8px"><h3>短期反轉、過度反應、領先落後（5 日預測期）</h3><p class="small">${esc(ST.reversal_5d.note)}</p>
+      ${tbl(['訊號', '產業內 IC 2019–2022', '2023–2026', '做多 − 等權（未扣成本）2019–2022', '扣成本', '每期換手'],
+        ST.reversal_5d.rows.map(r => tr([esc(r.label), `${icCell(r.ic_oos)} <span class="small">t ${r.t_oos.toFixed(1)}</span>`, `${icCell(r.ic_is)} <span class="small">t ${r.t_is.toFixed(1)}</span>`, pp(r.gross_oos), pp(r.net_oos), r.to == null ? '<span class="na">—</span>' : r.to.toFixed(2)])))}</div>`;
+  }
+
   // Timeline
   const TL = [
     ['Phase 1', '財報＋新聞 Agent，5 檔被動元件；精度加權在合成資料有效、真實資料無效'],
@@ -383,6 +415,8 @@ flowchart TD
     ['無偏誤股票池', '每年前 100 檔、含下市股，271 檔；財報 Agent 產業內 IC +0.029（t 2.16）'],
     ['IC 加權', '只合併財報 Agent，依產業內 IC 加權'],
     ['前瞻驗證', '凍結規格 fv1，回填 2026-06～10；Windows 工作排程器每月自動預測、結算、push'],
+    ['產業中性與樣本外', '產業中性組合、回測成績單、2019–2022 樣本外 Sharpe 與 Deflated Sharpe'],
+    ['其他訊號', '估值、技術面 Agent、動能、反轉、進出場濾網、5 日短期反轉：皆未通過兩段一致性'],
   ];
   $('#tl').innerHTML = TL.map(([w, t]) => `<div class="tl"><span class="when">${w}</span><span>${esc(t)}</span></div>`).join('');
 })();
