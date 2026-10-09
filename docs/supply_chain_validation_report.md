@@ -132,7 +132,7 @@ v2 的機率品質稍好、偏多程度降低，樣本內 IC 也略高。
 
 ```bash
 # 樣本內（4 Agent）
-.venv/Scripts/python backtest/run_backtest.py --mode finmind --start-date 2024-01-01 --end-date 2026-05-31 --step-days 21 --output-dir reports/finmind_supply_chain_v2
+.venv/Scripts/python backtest/run_backtest.py --mode finmind --start-date 2024-01-01 --end-date 2026-05-31 --step-days 21 --agents fundamentals_agent,news_agent,macro_agent,supply_chain_agent --output-dir reports/finmind_supply_chain_v2
 # 長期（只有供應鏈 Agent；v1 加 --supply-chain-graph config/supply_chain_graph_v1.json）
 .venv/Scripts/python backtest/run_backtest.py --mode finmind --start-date 2019-01-01 --end-date 2026-05-31 --step-days 21 --agents supply_chain_agent --output-dir reports/finmind_supply_chain_long_v2
 # 分期 IC 與取樣起點穩健性

@@ -143,5 +143,5 @@ look-ahead 防護：股價只用 as_of_date 前一日以前的收盤價，且使
 # 3 Agent LLM + 新聞內文（需 Ollama + qwen3:8b；回應已快取；內文快取只存在本機）
 .venv/Scripts/python backtest/run_backtest.py --mode finmind --start-date 2024-01-01 --end-date 2026-05-31 --step-days 21 --agents fundamentals_agent,news_agent,macro_agent --news-content-offline --llm-provider ollama --llm-model qwen3:8b --llm-think false --llm-num-thread 2 --output-dir reports/finmind_llm_qwen3_content
 # 4 Agent（含供應鏈，只有標題，v1 圖譜）
-.venv/Scripts/python backtest/run_backtest.py --mode finmind --start-date 2024-01-01 --end-date 2026-05-31 --step-days 21 --supply-chain-graph config/supply_chain_graph_v1.json --output-dir reports/finmind_supply_chain
+.venv/Scripts/python backtest/run_backtest.py --mode finmind --start-date 2024-01-01 --end-date 2026-05-31 --step-days 21 --agents fundamentals_agent,news_agent,macro_agent,supply_chain_agent --supply-chain-graph config/supply_chain_graph_v1.json --output-dir reports/finmind_supply_chain
 ```

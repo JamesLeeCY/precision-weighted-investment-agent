@@ -76,7 +76,7 @@
 *重現方式：*
 
 ```bash
-.venv/Scripts/python backtest/run_backtest.py --mode finmind --config config/tickers_expanded.yaml --agent-output continuous --output-dir reports/finmind_expanded_continuous
+.venv/Scripts/python backtest/run_backtest.py --mode finmind --config config/tickers_expanded.yaml --agents fundamentals_agent,macro_agent,supply_chain_agent --agent-output continuous --output-dir reports/finmind_expanded_continuous
 .venv/Scripts/python backtest/run_backtest.py --mode finmind --start-date 2024-01-01 --end-date 2026-05-31 --step-days 21 --agents fundamentals_agent,news_agent,macro_agent --agent-output continuous --output-dir reports/finmind_macro_continuous
 .venv/Scripts/python analysis/phase_robustness_agents.py config/tickers_expanded.yaml daily_expanded.csv
 .venv/Scripts/python analysis/portfolio_phase_robustness.py daily_expanded.csv config/tickers_expanded.yaml

@@ -96,7 +96,7 @@
 
 ```bash
 .venv/bin/python backtest/run_backtest.py --mode finmind \
-  --tickers 2327.TW,2492.TW,3026.TW \
+  --tickers 2327.TW,2492.TW,3026.TW --agents fundamentals_agent,news_agent \
   --start-date 2025-01-01 --end-date 2026-05-31 --step-days 21 \
   --output-dir reports/finmind_scoped
 ```

@@ -38,6 +38,9 @@ backtest:
 # 參與合併的 Agent（--agents 可覆寫）。對照組：
 #   MVP 2 Agent：--agents fundamentals_agent,news_agent
 #   Phase 2 前 3 Agent：--agents fundamentals_agent,news_agent,macro_agent
+#   4 Agent（2026-10-10 前的預設）：--agents fundamentals_agent,news_agent,macro_agent,supply_chain_agent
+# 2026-10-10 起預設只放財報 Agent：無選股偏誤股票池上只有財報 Agent 有產業內排序能力
+# （docs/pit_universe_report.md、docs/sector_neutral_report.md），其餘 Agent 加入合併只會稀釋
 # 規則式 Agent 的輸出模式（--agent-output 可覆寫）：
 #   threshold：門檻化訊號 + 信心公式（原設計，既有報告皆用此模式）
 #   continuous：由規則分數直接映射看多機率 p = σ(ln3 · score · 證據強度)，保留排序資訊
@@ -45,9 +48,6 @@ agent_output: threshold
 
 agents:
   - fundamentals_agent
-  - news_agent
-  - macro_agent
-  - supply_chain_agent
 
 supply_chain:
   graph: "config/supply_chain_graph.json"   # 依 2024 年報修訂的知識圖譜（下游為需求代理，非確認客戶）

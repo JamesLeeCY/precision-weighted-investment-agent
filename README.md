@@ -107,7 +107,13 @@ walk-forward 收縮校準修正各 Agent 的過度自信，LLM 合併 Brier 0.27
 **產業內 IC 加權合併**（詳見[報告](docs/ic_weighting_report.md)）：以已到期預測的產業內 IC
 為權重，自動把總經與供應鏈 Agent 壓到接近 0，3 Agent 合併從每期 −0.44% 回到 +0.30%；
 但沒有勝過直接只用財報 Agent。每期 IC 的標準差是平均的 4 倍，用 2 年資料估計「誰有能力」
-的誤差和訊號一樣大——這也是精度加權在真實資料上從未奏效的根本原因。
+的誤差和訊號一樣大——這也是精度加權在真實資料上從未奏效的根本原因。因此 2026-10-10 起
+config 的預設合併只放財報 Agent。
+
+**產業中性組合**（詳見[報告](docs/sector_neutral_report.md)）：每個產業內依財報 Agent 取前 1/3、
+產業權重與股票池相同，未扣成本相對等權每期 +0.42%（t 2.01）、產業內多空 +0.93%（t 2.42），
+兩個子期間與 21 種取樣起點全部為正；扣成本後做多 +0.26%（加緩衝降低換手後 +0.35%，t 1.91）。
+產業內排序能力能轉成報酬，但訊號小、主要損耗在換手。
 
 **前瞻驗證**（詳見[操作說明](docs/forward_validation.md)、[最新報告](forward/REPORT.md)）：規則（財報 Agent、
 連續輸出、無偏誤股票池、每月第一個交易日預測、持有 20 個交易日）於 2026-10-09 凍結並事先登錄評估
@@ -206,7 +212,7 @@ agents/                 Agent 基底 + 財報/新聞/總經籌碼/供應鏈 Agen
 arbitrator/             精度追蹤（Brier EMA）+ 合併公式 + Agent 層級重新校準 + 產業內 IC 加權
 data/                   FinMind 抓取（快取/節流/額度等待）、含息還原價、總經/籌碼、供應鏈、新聞內文、RSS 新聞、向量庫
 backtest/               walk-forward 回測 + 評估指標 + 報酬層級評估（vs 0050）
-tests/                  148 個單元測試
+tests/                  151 個單元測試
 forward/                前瞻驗證：凍結規格、預測 / 結算紀錄、自動報告
 analysis/               訊號穩定性分析（分期 IC、產業內 IC、取樣起點穩健性）
 site/                   研究網站（股票池、Agent 架構、逐股分析、前瞻驗證）；build_site.py 重新產生
@@ -230,6 +236,8 @@ notebooks/              校準分析 notebook
   135 事件的完整版結果與逐項解讀
 - [Phase 2 回測報告](docs/phase2_macro_report.md) — 加入總經/籌碼 Agent 的
   3 Agent 結果、消融與報酬拆解
+- [產業中性組合報告](docs/sector_neutral_report.md) — 財報 Agent 的產業內排序轉成產業中性做多／多空組合、
+  換手與成本、緩衝規則、敏感度
 - [前瞻驗證操作說明](docs/forward_validation.md) — 凍結規則、每月流程、完整性機制
 - [產業內 IC 加權報告](docs/ic_weighting_report.md) — 以產業內排序能力加權合併、
   權重演變、估計雜訊分析

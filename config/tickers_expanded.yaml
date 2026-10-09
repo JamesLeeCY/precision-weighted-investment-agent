@@ -136,10 +136,9 @@ backtest:
   outcome_basis: total_return
   cost_per_side: 0.0029625
   prediction_step_days: 21
+# 2026-10-10 起預設只放財報 Agent；既有報表的 3 Agent 組成：--agents fundamentals_agent,macro_agent,supply_chain_agent
 agents:
 - fundamentals_agent
-- macro_agent
-- supply_chain_agent
 supply_chain:
   graph: config/supply_chain_graph_expanded.json
   window_days: 20

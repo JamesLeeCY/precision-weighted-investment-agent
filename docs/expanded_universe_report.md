@@ -121,7 +121,7 @@
 *重現方式（FinMind 資料已快取於 data_cache/）：*
 
 ```bash
-.venv/Scripts/python backtest/run_backtest.py --mode finmind --config config/tickers_expanded.yaml --output-dir reports/finmind_expanded
+.venv/Scripts/python backtest/run_backtest.py --mode finmind --config config/tickers_expanded.yaml --agents fundamentals_agent,macro_agent,supply_chain_agent --output-dir reports/finmind_expanded
 .venv/Scripts/python analysis/agent_ic.py reports/finmind_expanded/backtest_results.csv config/tickers_expanded.yaml
 .venv/Scripts/python analysis/phase_robustness_agents.py config/tickers_expanded.yaml daily_expanded.csv
 ```

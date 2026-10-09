@@ -110,7 +110,7 @@
 ```bash
 # 重建成員表（需 FinMind 額度；結果已存於 config/universe_pit_membership.csv）
 .venv/Scripts/python -c "import dotenv; dotenv.load_dotenv('.env'); from data.fetch_financials import FinMindClient; from data.universe import build_membership; build_membership(FinMindClient(), range(2019, 2027), top_n=100).to_csv('config/universe_pit_membership.csv', index=False)"
-.venv/Scripts/python backtest/run_backtest.py --mode finmind --config config/tickers_pit.yaml --output-dir reports/finmind_pit
+.venv/Scripts/python backtest/run_backtest.py --mode finmind --config config/tickers_pit.yaml --agents fundamentals_agent,macro_agent,supply_chain_agent --output-dir reports/finmind_pit
 .venv/Scripts/python analysis/agent_ic.py reports/finmind_pit/backtest_results.csv config/tickers_pit.yaml
 .venv/Scripts/python analysis/phase_robustness_agents.py config/tickers_pit.yaml daily_pit.csv
 .venv/Scripts/python analysis/portfolio_phase_robustness.py daily_pit.csv config/tickers_pit.yaml

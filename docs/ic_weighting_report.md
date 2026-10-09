@@ -86,6 +86,6 @@
 *重現方式（需先依 [無選股偏誤股票池報告](pit_universe_report.md) 下載資料）：*
 
 ```bash
-.venv/Scripts/python backtest/run_backtest.py --mode finmind --config config/tickers_pit.yaml --output-dir reports/finmind_pit
+.venv/Scripts/python backtest/run_backtest.py --mode finmind --config config/tickers_pit.yaml --agents fundamentals_agent,macro_agent,supply_chain_agent --output-dir reports/finmind_pit
 .venv/Scripts/python backtest/run_backtest.py --mode finmind --config config/tickers_pit.yaml --agents fundamentals_agent --output-dir reports/finmind_pit_fundamentals
 ```
