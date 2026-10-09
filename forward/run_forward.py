@@ -23,6 +23,7 @@
     .venv/Scripts/python forward/run_forward.py resolve          # 結算所有已到期的預測
     .venv/Scripts/python forward/run_forward.py report           # 產生 forward/REPORT.md
     .venv/Scripts/python forward/run_forward.py build-universe --year 2027   # 每年 1 月
+    .venv/Scripts/python forward/run_forward.py auto --push                  # Windows 工作排程器每個平日執行
 """
 from __future__ import annotations
 
@@ -378,6 +379,54 @@ def cmd_build_universe(args) -> None:
     print(f"{args.year} 年：{len(new)} 檔已加入 {MEMBERSHIP.name}")
 
 
+def git_publish(message: str, push: bool) -> None:
+    """只 commit 前瞻紀錄三個檔案（不動工作區其他修改），並在本機領先時 push。"""
+    files = ["forward/predictions.csv", "forward/outcomes.csv", "forward/REPORT.md"]
+    run = lambda *cmd: subprocess.run(["git", *cmd], cwd=ROOT, capture_output=True, text=True)  # noqa: E731
+    run("add", "--", *files)
+    if run("diff", "--cached", "--quiet", "--", *files).returncode != 0:
+        result = run("commit", "-m", message, "--", *files)
+        print(f"[auto] git commit：{'成功' if result.returncode == 0 else result.stderr.strip()[:200]}")
+    if push and "ahead" in run("status", "-sb").stdout.splitlines()[0]:
+        result = run("push")
+        print(f"[auto] git push：{'成功' if result.returncode == 0 else '失敗，下次執行再試：' + result.stderr.strip()[:200]}")
+
+
+def cmd_auto(args) -> None:
+    """排程用：需要時建立當年股票池、預測當月、結算到期預測，有變動就產生報告並 commit / push。"""
+    today = dt.date.today()
+    print(f"[auto] {now_utc()} 開始（{today}）")
+    if today.month == 1 and today.day >= 5:
+        m = pd.read_csv(MEMBERSHIP, dtype={"stock_id": str})
+        if not (m["year"] == today.year).any():
+            print(f"[auto] 建立 {today.year} 年股票池")
+            cmd_build_universe(argparse.Namespace(year=today.year))
+    client = snapshot_client(today.strftime("%Y-%m-%d"))
+    month_start = dt.date(today.year, today.month, 1)
+    calendar = trading_calendar(client, (pd.Timestamp(month_start) - pd.Timedelta(days=40)).strftime("%Y-%m-%d"))
+    month_days = [d for d in calendar if d.year == today.year and d.month == today.month]
+    changed = False
+    preds = read_csv(PREDICTIONS, PRED_COLUMNS)
+    if month_days:
+        first = month_days[0].strftime("%Y-%m-%d")
+        if first not in set(preds["as_of_date"]):
+            cmd_predict(argparse.Namespace(as_of=first, mode=None))
+            changed = True
+        else:
+            print(f"[auto] {first} 已預測")
+    else:
+        print("[auto] 本月第一個交易日的資料尚未出現（假日或資料尚未更新），明天再試")
+    n_before = len(read_csv(OUTCOMES, OUTCOME_COLUMNS))
+    cmd_resolve(args)
+    changed |= len(read_csv(OUTCOMES, OUTCOME_COLUMNS)) > n_before
+    if changed:
+        cmd_report(args)
+        git_publish(f"forward: auto update {today}", push=args.push)
+    elif args.push:
+        git_publish("", push=True)  # 只補推先前未成功的 push
+    print(f"[auto] {now_utc()} 結束（{'有更新' if changed else '無更新'}）")
+
+
 def main(argv=None) -> None:
     import dotenv
 
@@ -395,9 +444,11 @@ def main(argv=None) -> None:
     s.add_argument("--start", default="2026-06-01")
     b = sub.add_parser("build-universe")
     b.add_argument("--year", type=int, required=True)
+    au = sub.add_parser("auto", help="排程用：預測當月、結算、報告、commit（--push 時一併 push）")
+    au.add_argument("--push", action="store_true")
     args = parser.parse_args(argv)
     {"freeze": cmd_freeze, "predict": cmd_predict, "resolve": cmd_resolve, "report": cmd_report,
-     "schedule": cmd_schedule, "build-universe": cmd_build_universe}[args.cmd](args)
+     "schedule": cmd_schedule, "build-universe": cmd_build_universe, "auto": cmd_auto}[args.cmd](args)
 
 
 if __name__ == "__main__":

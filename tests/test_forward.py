@@ -95,3 +95,24 @@ def test_period_metrics_sign():
     m = fw.period_metrics(df).iloc[0]
     assert m["ic_within"] == pytest.approx(1.0)
     assert m["excess_long"] == pytest.approx(0.075 - 0.0125)
+
+
+def test_auto_predicts_current_month_once_and_skips_publish_without_push(env, monkeypatch):
+    import datetime as dt
+
+    class Today(dt.date):
+        @classmethod
+        def today(cls):
+            return cls(2026, 8, 20)
+
+    monkeypatch.setattr(fw.dt, "date", Today)
+    published = []
+    monkeypatch.setattr(fw, "git_publish", lambda msg, push: published.append((msg, push)))
+    run("freeze")
+    run("auto")
+    preds = pd.read_csv(fw.PREDICTIONS)
+    assert set(preds["as_of_date"]) == {"2026-08-03"}  # 當月第一個交易日
+    assert published == [("forward: auto update 2026-08-20", False)]
+    run("auto")  # 再跑一次：已預測、沒有可結算的 → 不重複、不 publish
+    assert len(pd.read_csv(fw.PREDICTIONS)) == 3
+    assert len(published) == 1

@@ -16,3 +16,6 @@ reports/**/run.log
 
 # 新聞內文快取：受著作權保護，只存在本機、不隨公開 repo 散布（見 data/fetch_article.py）
 article_cache/
+
+# 排程執行紀錄（forward/run_forward.py auto）
+logs/
