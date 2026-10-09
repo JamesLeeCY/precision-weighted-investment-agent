@@ -249,3 +249,42 @@ class TestDirectionalConfidenceFloor:
         assert neutral.confidence == pytest.approx(0.2)
         assert "confidence_raw" not in neutral.raw_features
         assert _StubAgent("bullish", 0.7).analyze("2327.TW", "2025-01-01").confidence == pytest.approx(0.7)
+
+
+
+class TestContinuousOutput:
+    def test_mapping_monotonic_and_bounded(self):
+        from agents.base import continuous_judgement
+        from backtest.metrics import signal_to_probability
+
+        ps = [continuous_judgement(sc, 1.0)[2] for sc in (-1, -0.5, -0.1, 0.1, 0.5, 1)]
+        assert ps == sorted(ps)
+        assert ps[0] == pytest.approx(0.25) and ps[-1] == pytest.approx(0.75)
+        for sc in (-0.7, 0.05, 0.9):
+            sig, conf, p = continuous_judgement(sc, 0.8)
+            assert conf >= 0.5
+            assert signal_to_probability(sig, conf) == pytest.approx(p)  # 規格 6.1 換算還原 p
+
+    def test_zero_score_or_no_evidence_is_neutral(self):
+        from agents.base import continuous_judgement
+
+        assert continuous_judgement(0.0, 1.0)[0] == "neutral"
+        assert continuous_judgement(0.8, 0.0)[0] == "neutral"
+
+    def test_less_evidence_shrinks_toward_half(self):
+        from agents.base import continuous_judgement
+
+        assert continuous_judgement(0.6, 0.4)[2] < continuous_judgement(0.6, 1.0)[2]
+
+    def test_small_score_keeps_direction_unlike_threshold(self):
+        # 門檻模式下分數 0.1 會是中性；連續模式保留微弱的看多
+        revenues = [100 * (1.005 ** i) for i in range(24)]
+        th = FundamentalsAgent(FixtureFundamentals(revenues)).analyze("2327.TW", "2025-01-15")
+        co = FundamentalsAgent(FixtureFundamentals(revenues), output_mode="continuous").analyze("2327.TW", "2025-01-15")
+        assert th.signal == "neutral"
+        assert co.signal == "bullish" and 0.5 < co.confidence < 0.6
+        assert co.raw_features["output_mode"] == "continuous"
+
+    def test_invalid_mode(self):
+        with pytest.raises(ValueError):
+            FundamentalsAgent(FixtureFundamentals([]), output_mode="fuzzy")

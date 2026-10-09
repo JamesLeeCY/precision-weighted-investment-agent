@@ -295,6 +295,7 @@ def write_report(
     cost_per_side: float = DEFAULT_COST_PER_SIDE,
     outcome_basis: str = "price",
     llm_info: str = "未使用（規則式）",
+    agent_output: str = "threshold",
 ) -> Path:
     pw = summary.set_index("strategy")
     brier_pw = pw.loc["precision_weighted", "mean_brier"]
@@ -310,6 +311,7 @@ def write_report(
         f"- Agent：{', '.join(c[2:] for c in df.columns if c.startswith('p_')) or '—'}",
         f"- 期間：{df['as_of_date'].min()} ~ {df['as_of_date'].max()}",
         f"- LLM 判讀：{llm_info}",
+        f"- 規則式輸出：{agent_output}",
         "- 應驗判定：horizon 期末絕對報酬 > 0（20 個交易日，"
         + ("含息總報酬" if outcome_basis == "total_return" else "未還原收盤價")
         + "）",
@@ -487,6 +489,7 @@ def generate_finmind_events(config: dict, llm=None) -> list[PredictionEvent]:
         from data.fetch_article import ArticleFetcher
 
         fetcher = ArticleFetcher(offline=bool(config["news"].get("content_offline", False)))
+    mode = config.get("agent_output", "threshold")
     builders = {
         "fundamentals_agent": lambda: FundamentalsAgent(
             FinMindFundamentalsProvider(
@@ -494,6 +497,7 @@ def generate_finmind_events(config: dict, llm=None) -> list[PredictionEvent]:
             ),
             llm=llm,
             horizon_days=horizon,
+            output_mode=mode,
         ),
         "news_agent": lambda: NewsAgent(
             FinMindNewsProvider(client),
@@ -502,6 +506,7 @@ def generate_finmind_events(config: dict, llm=None) -> list[PredictionEvent]:
             horizon_days=horizon,
             ticker_names=names,
             content_fetcher=fetcher.fetch if fetcher else None,
+            output_mode=mode,
         ),
         "macro_agent": lambda: MacroAgent(
             FinMindMacroProvider(client, history_start=config.get("macro", {}).get("history_start", "2023-01-01")),
@@ -509,6 +514,7 @@ def generate_finmind_events(config: dict, llm=None) -> list[PredictionEvent]:
             horizon_days=horizon,
             window_days=int(config.get("macro", {}).get("window_days", 20)),
             rate_window_days=int(config.get("macro", {}).get("rate_window_days", 60)),
+            output_mode=mode,
         ),
         "supply_chain_agent": lambda: SupplyChainAgent(
             FinMindSupplyChainProvider(
@@ -518,6 +524,7 @@ def generate_finmind_events(config: dict, llm=None) -> list[PredictionEvent]:
             llm=llm,
             horizon_days=horizon,
             window_days=int(config.get("supply_chain", {}).get("window_days", 20)),
+            output_mode=mode,
         ),
     }
     agent_ids = config.get("agents", ["fundamentals_agent", "news_agent"])
@@ -525,7 +532,7 @@ def generate_finmind_events(config: dict, llm=None) -> list[PredictionEvent]:
     if unknown:
         raise ValueError(f"未知的 agent：{sorted(unknown)}，可用：{sorted(builders)}")
     agents = [builders[a]() for a in agent_ids]
-    print(f"[info] 啟用 Agent：{', '.join(agent_ids)}")
+    print(f"[info] 啟用 Agent：{', '.join(agent_ids)}（規則式輸出：{mode}）")
 
     # 各標的（含 0050 基準）的未還原價與含息還原價，以日期為索引
     bench_ticker = config.get("benchmark", {}).get("ticker", "0050.TW")
@@ -620,6 +627,8 @@ def main(argv: list[str] | None = None) -> Path:
                         help="為入選新聞抓取內文摘要（快取於本機 article_cache/，不納入版控）")
     parser.add_argument("--news-content-offline", action="store_true",
                         help="只用已快取的新聞內文，不連網")
+    parser.add_argument("--agent-output", choices=["threshold", "continuous"], default=None,
+                        help="規則式 Agent 的輸出：threshold（門檻化訊號，預設）或 continuous（由分數直接映射機率）")
     parser.add_argument("--supply-chain-graph", default=None,
                         help="覆寫供應鏈知識圖譜路徑（如 config/supply_chain_graph_v1.json）")
     parser.add_argument(
@@ -648,6 +657,8 @@ def main(argv: list[str] | None = None) -> Path:
     if args.news_content or args.news_content_offline:
         config["news"]["fetch_content"] = True
         config["news"]["content_offline"] = args.news_content_offline
+    if args.agent_output:
+        config["agent_output"] = args.agent_output
     if args.supply_chain_graph:
         config.setdefault("supply_chain", {})["graph"] = args.supply_chain_graph
     if args.agents:
@@ -733,6 +744,7 @@ def main(argv: list[str] | None = None) -> Path:
         summary, df, output_dir, args.mode, returns=returns, cost_per_side=cost,
         outcome_basis=config["backtest"].get("outcome_basis", "price"),
         llm_info=llm_info,
+        agent_output=config.get("agent_output", "threshold"),
     )
 
     print(summary[["label", "mean_brier", "directional_accuracy", "ece"]].to_string(index=False))

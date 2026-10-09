@@ -39,6 +39,7 @@
 - **供應鏈 Agent（`reports/finmind_supply_chain`，4 Agent、只有標題，v1 圖譜）**：Brier 0.2656（最差，偏多：69 多 / 4 空），樣本內橫斷面 IC +0.160（t = 1.71）。4 Agent 簡單平均累積報酬 +59%（多持股的多頭效果，非判讀能力）
 - **供應鏈訊號驗證（`docs/supply_chain_validation_report.md`）**：**訊號不穩定**。2019–2026 長期回測中，2019–2023 樣本外 IC 為負（v1 −0.070、v2 −0.128）；對所有 21 種取樣起點檢查，原本的 +0.160 是最大值（範圍 −0.147 ~ +0.160）。Agent 內部的連續分數在 2024–2026 對所有起點都為正（+0.11），但 2019–2023 反轉為負（−0.07，0/21 起點為正）→ 行情依賴（AI 伺服器熱潮），非穩定訊號。依年報修訂的 v2 圖譜沒有改變結論
 - **擴大股票池（`reports/finmind_expanded`，`config/tickers_expanded.yaml`，詳見 `docs/expanded_universe_report.md`）**：41 檔（被動元件 5、半導體設備 9、功率元件 9、AI 伺服器 6、散熱 3、PCB/CCL 3、電源 2、連接器 2、ASIC 2）× 2019–2026，財報 + 總經/籌碼 + 供應鏈（不含新聞）。結果：三個 Agent 的產業內 IC 都接近 0 或為負；唯一兩期一致的是財報 Agent **連續分數**的產業內 IC（+0.022 / +0.028，單一起點 t 中位數約 0.8，不顯著），轉成看多機率後幾乎消失（門檻化丟資訊）。供應鏈 Agent 跨產業為正、產業內為負 → 族群輪動訊號，非選股。沒有策略顯著贏過等權持有同一股票池；校準後策略平均只持 0.8 檔（機率被收縮到 0.5 附近，很少超過 0.55 門檻）。所有策略 Brier 都比「永遠預測基率 57.6%」（0.2442）差
+- **連續輸出模式（`--agent-output continuous`，詳見 `docs/continuous_output_report.md`）**：規則式 Agent 以 p = σ(ln3 · score · 證據強度) 直接輸出機率（`agents/base.py:continuous_judgement`；證據強度 = 資料覆蓋率，新聞為來源可信度 × 事件數），signal / confidence 由 p 換回、符合規格。預設仍為門檻模式（已驗證既有報告逐筆可重現）。41 檔結果：財報 Agent 產業內 IC +0.022 / +0.028（門檻模式 +0.002 / +0.017）；簡單平均合併相對等權持有每期 +1.31%（t 2.21，扣成本），2019–2023 為 +1.58%（未扣成本，21/21 起點為正，選股 +0.97%、產業配置 +0.72%），2024–2026 約 0。5 檔 × 2024–2026 含新聞沒有改善（合併 Brier 0.2530 → 0.2564）。在選股偏誤、多重比較、兩期不一致下仍是未經證實的弱訊號
 - **選股偏誤**：擴大股票池是 2026 年事後挑選的 AI 贏家（等權持有 +1,493% vs 0050 +566%），絕對報酬與跨產業 IC 都會被高估；以產業內 IC 與相對等權持有為主要指標
 - 擴大圖譜 `config/supply_chain_graph_expanded.json`：36 檔新股票逐一讀 2024 年報，只有辛耘點名客戶（台積電 21.02%）；多數以代號揭露。154 條邊中 111 條為產業預設、9 條年報文字、9 條推論、1 條年報確認。新增美股代理（NVIDIA、Microsoft、Amazon、Alphabet、Meta、Applied Materials；以 SPY 計算超額報酬）
 - **資料修正**：FinMind 有收盤價為 0 的資料列（國巨 2019-11-12、2021-06-30，凱美 2019-03-13，鴻海 2025-07-30），已在資料層視為缺值；重跑 9 份報表，只有 `finmind_supply_chain` 的 5 個事件受影響
@@ -48,22 +49,21 @@
 
 ## 待辦（依建議順序）
 1. **提升 Agent 本身的資訊量**（目前真正的瓶頸）：新聞內文已試過（規則式與 LLM 都變差），若再試應先提升來源品質（主流媒體內文），而非增加篇數；更強的 LLM（雲端 Claude：`--llm-provider anthropic`）或 qwen3 思考模式（`--llm-think true`）
-2. **Agent 輸出連續分數**：財報 Agent 的連續分數有微弱但兩期一致的產業內 IC，門檻化成「訊號 + 信心」後幾乎消失；改以校準過的 logistic 映射直接輸出機率
-3. **無選股偏誤的股票池**：以 FinMind 產業分類，每年依當時資料選股（含下市股票），才能嚴格檢驗
-4. **產業中性的評估與組合**：產業內排序、產業中性多空組合（評估腳本已有 `analysis/agent_ic.py`、`analysis/phase_robustness_agents.py`）
-5. 各 Agent 可個別指定模型（目前所有 Agent 共用同一份 llm 設定）
-6. 合併機率的中性稀釋（規格 5.2 修訂的代價）：讓中性 Agent 棄權不進入平均，或改用對數意見池（中性的 logit 為 0，天然不影響結果）
-7. 合併後再校準：線性池平均已校準機率會信心不足
-8. 規格第 9 節待人工決策：新聞可信度分級、MOPS 爬蟲頻率（horizon 已定為 20 日）
-9. 報酬評估可延伸：機率加權部位（而非 bullish 等權）、相對 0050 的 outcome 定義（超額報酬 > 0）
-10. 總經/籌碼 Agent 可延伸：半導體庫存週期（免費層無資料）、主力分點、借券等個股籌碼
+2. **無選股偏誤的股票池**（最優先）：連續模式在 2019–2023 的選股貢獻要在無偏誤股票池與未看過的期間重現才算數：以 FinMind 產業分類，每年依當時資料選股（含下市股票），才能嚴格檢驗
+3. **產業中性的評估與組合**：產業內排序、產業中性多空組合（評估腳本已有 `analysis/agent_ic.py`、`analysis/phase_robustness_agents.py`）
+4. 各 Agent 可個別指定模型（目前所有 Agent 共用同一份 llm 設定）
+5. 合併機率的中性稀釋（規格 5.2 修訂的代價）：讓中性 Agent 棄權不進入平均，或改用對數意見池（中性的 logit 為 0，天然不影響結果）
+6. 合併後再校準：線性池平均已校準機率會信心不足
+7. 規格第 9 節待人工決策：新聞可信度分級、MOPS 爬蟲頻率（horizon 已定為 20 日）
+8. 報酬評估可延伸：機率加權部位（而非 bullish 等權）、相對 0050 的 outcome 定義（超額報酬 > 0）
+9. 總經/籌碼 Agent 可延伸：半導體庫存週期（免費層無資料）、主力分點、借券等個股籌碼
 
 ## 已知限制
 每檔僅 27 筆樣本；新聞僅標題；期間與族群單一；地端 LLM 僅測過 qwen3:8b（純 CPU；2 執行緒時長新聞 prompt 每次約 5–7 分鐘）；phi4 未跑完整實驗（3 核心估計完整 386 次呼叫約 61 小時，主要卡在冗長輸出）；總經分量同一時點各檔相同（對選股無幫助）；總經 Agent 的門檻為經驗值；組合報酬每期之間有 1 個交易日空檔（step 21 > horizon 20）未計入；p 值為常態近似。
 
 ## 操作
 ```bash
-.venv/Scripts/python -m pytest tests -q          # 127 tests（Windows；macOS/Linux 用 .venv/bin/python）
+.venv/Scripts/python -m pytest tests -q          # 132 tests（Windows；macOS/Linux 用 .venv/bin/python）
 # 3 Agent（config 預設）
 .venv/Scripts/python backtest/run_backtest.py --mode finmind --start-date 2024-01-01 --end-date 2026-05-31 --step-days 21 --agents fundamentals_agent,news_agent,macro_agent --output-dir reports/finmind_macro
 # LLM 判讀（需 Ollama + qwen3:8b；回應已快取，重跑秒完）
@@ -82,6 +82,10 @@
 .venv/Scripts/python backtest/run_backtest.py --mode finmind --config config/tickers_expanded.yaml --output-dir reports/finmind_expanded
 .venv/Scripts/python analysis/agent_ic.py reports/finmind_expanded/backtest_results.csv config/tickers_expanded.yaml
 .venv/Scripts/python analysis/phase_robustness_agents.py config/tickers_expanded.yaml daily_expanded.csv
+# 連續輸出模式（41 檔、5 檔）與組合穩健性
+.venv/Scripts/python backtest/run_backtest.py --mode finmind --config config/tickers_expanded.yaml --agent-output continuous --output-dir reports/finmind_expanded_continuous
+.venv/Scripts/python backtest/run_backtest.py --mode finmind --start-date 2024-01-01 --end-date 2026-05-31 --step-days 21 --agents fundamentals_agent,news_agent,macro_agent --agent-output continuous --output-dir reports/finmind_macro_continuous
+.venv/Scripts/python analysis/portfolio_phase_robustness.py daily_expanded.csv config/tickers_expanded.yaml
 # 2 Agent 對照組
 .venv/Scripts/python backtest/run_backtest.py --mode finmind --start-date 2024-01-01 --end-date 2026-05-31 --step-days 21 --agents fundamentals_agent,news_agent --output-dir reports/finmind_full
 ```

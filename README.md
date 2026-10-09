@@ -92,6 +92,12 @@ walk-forward 收縮校準修正各 Agent 的過度自信，LLM 合併 Brier 0.27
 供應鏈 Agent 只在跨產業排序上為正（族群輪動），產業內為負。股票池為事後挑選的 AI
 贏家，絕對報酬有選股偏誤，比較基準改用等權持有同一股票池。
 
+**連續輸出模式**（`--agent-output continuous`，詳見[報告](docs/continuous_output_report.md)）：
+規則式 Agent 改由分數直接映射機率 p = σ(ln3 · score · 證據強度)，不再門檻化。財報 Agent
+的產業內 IC 從約 0 回到 +0.02 ~ +0.03；41 檔合併組合在 2019–2023 相對等權持有每期 +1.58%
+（21 種取樣起點全為正，選股貢獻 +0.97%），但 2024–2026 完全消失。在選股偏誤與多重比較下，
+仍屬未經證實的弱訊號。
+
 **規格 5.2 修訂**（2026-10-07，詳見[校準報告第 8 節](docs/calibration_report.md#8-訊號公式修訂2026-10-07)）：
 投票權重改為確信度 |2p − 1|，合併分數 = 2 × 合併機率 − 1，門檻為合併機率
 0.55 / 0.45。毫無把握的 Agent 不再投票，訊號與機率一致。
@@ -183,7 +189,7 @@ agents/                 Agent 基底 + 財報/新聞/總經籌碼/供應鏈 Agen
 arbitrator/             精度追蹤（Brier EMA）+ 合併公式 + Agent 層級重新校準
 data/                   FinMind 抓取（快取/節流/額度等待）、含息還原價、總經/籌碼、供應鏈、新聞內文、RSS 新聞、向量庫
 backtest/               walk-forward 回測 + 評估指標 + 報酬層級評估（vs 0050）
-tests/                  127 個單元測試
+tests/                  132 個單元測試
 analysis/               訊號穩定性分析（分期 IC、產業內 IC、取樣起點穩健性）
 reports/                synthetic / finmind_preliminary / finmind_scoped / finmind_full / finmind_macro / finmind_llm_qwen3 / finmind_news_content / finmind_llm_qwen3_content / finmind_supply_chain(_v2 / _long_v1 / _long_v2) 結果
 docs/                   規格、技術筆記、回測報告
@@ -199,6 +205,8 @@ notebooks/              校準分析 notebook
   135 事件的完整版結果與逐項解讀
 - [Phase 2 回測報告](docs/phase2_macro_report.md) — 加入總經/籌碼 Agent 的
   3 Agent 結果、消融與報酬拆解
+- [連續輸出模式報告](docs/continuous_output_report.md) — 分數直接映射機率、
+  排序資訊回收、合併組合的產業配置 / 選股拆解
 - [擴大股票池報告](docs/expanded_universe_report.md) — 41 檔 × 2019–2026、產業內 IC、
   選股偏誤
 - [供應鏈驗證報告](docs/supply_chain_validation_report.md) — 年報修訂圖譜、2019–2026

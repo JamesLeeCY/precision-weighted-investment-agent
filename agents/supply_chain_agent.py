@@ -24,7 +24,7 @@ import math
 import numpy as np
 import pandas as pd
 
-from agents.base import AgentOutput, BaseAgent, describe_features, score_components
+from agents.base import OUTPUT_MODES, AgentOutput, BaseAgent, continuous_judgement, describe_features, score_components
 from agents.llm_client import LLMClient
 from data.fetch_supply_chain import MARKET_INDEX, SupplyChainDataProvider, load_graph, market_index_for
 
@@ -74,7 +74,11 @@ class SupplyChainAgent(BaseAgent):
         llm: LLMClient | None = None,
         horizon_days: int = 20,
         window_days: int = 20,
+        output_mode: str = "threshold",
     ):
+        if output_mode not in OUTPUT_MODES:
+            raise ValueError(f"output_mode 必須是 {OUTPUT_MODES}，收到 {output_mode!r}")
+        self.output_mode = output_mode
         self.provider = data_provider
         self.graph = graph if graph is not None else load_graph()
         self.llm = llm or LLMClient(enabled=False)
@@ -138,6 +142,10 @@ class SupplyChainAgent(BaseAgent):
     def analyze(self, ticker: str, as_of_date: str) -> AgentOutput:
         feats = self.compute_features(ticker, as_of_date)
         signal, confidence, rationale, score = self.rule_based_judgement(feats)
+        coverage = sum(1 for key, _, _ in SCALES if key in feats) / len(SCALES)
+        if self.output_mode == "continuous":
+            signal, confidence, p = continuous_judgement(score, coverage)
+            rationale = f"{rationale}（連續輸出：分數 {score:+.2f}、資料覆蓋 {coverage:.0%}，看多機率 {p:.2f}）"
         edges = self.graph.get("edges", {}).get(ticker, [])
         evidence = [f"graph:{ticker}->{e['to']}({e['relation']})" for e in edges]
 
@@ -167,5 +175,6 @@ class SupplyChainAgent(BaseAgent):
             confidence=confidence,
             rationale=rationale,
             evidence_refs=evidence,
-            raw_features={**feats, "rule_score": score, "llm_used": llm_result is not None},
+            raw_features={**feats, "rule_score": score, "evidence": coverage, "output_mode": self.output_mode,
+                          "llm_used": llm_result is not None},
         )

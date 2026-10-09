@@ -16,7 +16,7 @@ import math
 import numpy as np
 import pandas as pd
 
-from agents.base import AgentOutput, BaseAgent, describe_features, score_components
+from agents.base import OUTPUT_MODES, AgentOutput, BaseAgent, continuous_judgement, describe_features, score_components
 from agents.llm_client import LLMClient
 from data.fetch_financials import FundamentalsDataProvider
 
@@ -45,6 +45,12 @@ FEATURE_LABELS = {
 }
 
 
+# 規則評分使用的 5 個分量（資料覆蓋率 = 有值的分量數 / 5）
+COMPONENT_KEYS = (
+    "revenue_yoy_pct", "revenue_yoy_slope", "gross_margin_slope", "inventory_days_yoy_pct", "receivable_days_yoy_pct",
+)
+
+
 def _slope(values: pd.Series) -> float | None:
     """對最近數期的值做一階線性回歸斜率（每期變化量）。"""
     v = pd.Series(values).dropna().astype(float)
@@ -63,7 +69,11 @@ class FundamentalsAgent(BaseAgent):
         llm: LLMClient | None = None,
         horizon_days: int = 20,
         transcript_provider=None,
+        output_mode: str = "threshold",
     ):
+        if output_mode not in OUTPUT_MODES:
+            raise ValueError(f"output_mode 必須是 {OUTPUT_MODES}，收到 {output_mode!r}")
+        self.output_mode = output_mode
         self.provider = data_provider
         self.llm = llm or LLMClient(enabled=False)
         self.default_horizon_days = horizon_days
@@ -140,6 +150,10 @@ class FundamentalsAgent(BaseAgent):
     def analyze(self, ticker: str, as_of_date: str) -> AgentOutput:
         feats = self.compute_features(ticker, as_of_date)
         signal, confidence, rationale, score = self.rule_based_judgement(feats)
+        coverage = sum(k in feats for k in COMPONENT_KEYS) / len(COMPONENT_KEYS)
+        if self.output_mode == "continuous":
+            signal, confidence, p = continuous_judgement(score, coverage)
+            rationale = f"{rationale}（連續輸出：分數 {score:+.2f}、資料覆蓋 {coverage:.0%}，看多機率 {p:.2f}）"
         evidence = [f"finmind:monthly_revenue:{ticker}", f"finmind:financial_statements:{ticker}"]
 
         transcript = ""
@@ -170,5 +184,6 @@ class FundamentalsAgent(BaseAgent):
             confidence=confidence,
             rationale=rationale,
             evidence_refs=evidence,
-            raw_features={**feats, "rule_score": score, "llm_used": llm_result is not None},
+            raw_features={**feats, "rule_score": score, "evidence": coverage, "output_mode": self.output_mode,
+                          "llm_used": llm_result is not None},
         )

@@ -6,6 +6,7 @@ rationale / evidence_refs / raw_features
 """
 from __future__ import annotations
 
+import math
 import re
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field, asdict
@@ -17,6 +18,10 @@ VALID_SIGNALS = ("bullish", "bearish", "neutral")
 SIGNAL_TO_SCORE = {"bullish": 1, "neutral": 0, "bearish": -1}
 
 RATIONALE_MAX_LEN = 200
+# 連續輸出模式：p = σ(CONTINUOUS_SCALE · score · evidence)；分數 ±1 且證據完整時 p = 0.75 / 0.25。
+# 事先固定，過度自信交給 Agent 層級校準（arbitrator/calibration.py）收縮
+CONTINUOUS_SCALE = math.log(3.0)
+OUTPUT_MODES = ("threshold", "continuous")
 MIN_DIRECTIONAL_CONFIDENCE = 0.5
 _DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
@@ -87,6 +92,25 @@ def score_components(
         f"{name}{'偏多' if v > 0.1 else '偏空' if v < -0.1 else '中性'}({v:+.2f})" for name, v in components
     )
     return signal, confidence, score, conflict, parts
+
+
+def continuous_judgement(score: float, evidence: float) -> tuple[str, float, float]:
+    """連續輸出：由規則分數直接映射成看多機率，回傳 (signal, confidence, p)。
+
+    門檻模式會把 |score| 小於門檻的判斷一律歸為中性（p = 0.5），並以另一條公式算
+    信心，丟掉了排序資訊（擴大股票池分析：財報 Agent 連續分數的產業內 IC 約 +0.02 ~
+    +0.03，門檻化後幾乎消失）。連續模式保留分數的順序：
+      p = σ(CONTINUOUS_SCALE · score · evidence)，evidence ∈ [0, 1] 為證據強度
+    signal 取 p 在 0.5 的哪一側，confidence = max(p, 1 − p)（≥ 0.5），
+    使規格 6.1 的換算 signal_to_probability(signal, confidence) 恰好還原 p。
+    """
+    z = CONTINUOUS_SCALE * max(-1.0, min(1.0, float(score))) * max(0.0, min(1.0, float(evidence)))
+    p = 1.0 / (1.0 + math.exp(-z))
+    if z > 0:
+        return "bullish", p, p
+    if z < 0:
+        return "bearish", 1.0 - p, p
+    return "neutral", 0.2, 0.5
 
 
 def describe_features(feats: dict, labels: dict[str, str]) -> str:

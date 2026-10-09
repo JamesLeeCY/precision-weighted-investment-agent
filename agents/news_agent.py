@@ -16,7 +16,7 @@ import math
 import numpy as np
 import pandas as pd
 
-from agents.base import AgentOutput, BaseAgent
+from agents.base import OUTPUT_MODES, AgentOutput, BaseAgent, continuous_judgement
 from agents.llm_client import LLMClient
 from data.fetch_news import NewsItem, NewsProvider
 from data.vector_store import SimpleVectorStore
@@ -98,7 +98,11 @@ class NewsAgent(BaseAgent):
         horizon_days: int = 20,
         ticker_names: dict[str, str] | None = None,
         content_fetcher=None,
+        output_mode: str = "threshold",
     ):
+        if output_mode not in OUTPUT_MODES:
+            raise ValueError(f"output_mode 必須是 {OUTPUT_MODES}，收到 {output_mode!r}")
+        self.output_mode = output_mode
         self.provider = news_provider
         # 可選：callable(url) -> str，於檢索之後為入選新聞補上內文摘要。
         # 放在檢索之後，使「挑哪些新聞」與只有標題時完全相同，可單獨衡量內文的效果
@@ -178,6 +182,13 @@ class NewsAgent(BaseAgent):
                     it.summary = self.content_fetcher(it.url)
 
         signal, confidence, rationale, score, event_log = self.rule_based_judgement(items, as_of_date)
+        # 證據強度：平均來源可信度 × 事件數（5 個事件以上視為充分）
+        strength = (
+            float(np.mean([e["source_tier"] for e in event_log])) * min(1.0, len(event_log) / 5.0) if event_log else 0.0
+        )
+        if self.output_mode == "continuous":
+            signal, confidence, p = continuous_judgement(score, strength)
+            rationale = f"{rationale}（連續輸出：證據強度 {strength:.2f}，看多機率 {p:.2f}）"
         evidence = [it.url or it.title[:60] for it in items[:10]]
 
         llm_result = None
@@ -208,6 +219,8 @@ class NewsAgent(BaseAgent):
             raw_features={
                 "n_news": len(items),
                 "n_with_content": sum(1 for it in items if it.summary),
+                "evidence": strength,
+                "output_mode": self.output_mode,
                 "rule_score": score,
                 "events": event_log[:20],
                 "llm_used": llm_result is not None,

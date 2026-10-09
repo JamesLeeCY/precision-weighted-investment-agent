@@ -6,6 +6,7 @@
     .venv/Scripts/python analysis/phase_robustness_agents.py config/tickers_expanded.yaml daily_outputs.csv
 
 只用規則式判斷（不呼叫 LLM）；資料全部來自 data_cache/。
+輸出三種：p = 門檻模式的看多機率、pc = 連續模式的看多機率、score = 規則分數。
 """
 import sys
 from pathlib import Path
@@ -15,6 +16,7 @@ import pandas as pd
 import yaml
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from agents.base import continuous_judgement  # noqa: E402
 from agents.fundamentals_agent import FundamentalsAgent  # noqa: E402
 from agents.macro_agent import MacroAgent  # noqa: E402
 from agents.supply_chain_agent import SupplyChainAgent  # noqa: E402
@@ -91,6 +93,8 @@ def main(config_path, out_path):
                 o = agent.analyze(t, d0.strftime("%Y-%m-%d"))
                 row[f"p_{name}"] = signal_to_probability(o.signal, o.confidence)
                 row[f"score_{name}"] = o.raw_features.get("rule_score", 0.0)
+                # 連續輸出模式的看多機率（由同一次判斷的分數與證據強度換算）
+                row[f"pc_{name}"] = continuous_judgement(row[f"score_{name}"], o.raw_features.get("evidence", 1.0))[2]
             rows.append(row)
         if i % 200 == 0:
             print(f"  {d0:%Y-%m-%d}（{i}/{len(calendar) - HORIZON}）", flush=True)
@@ -101,7 +105,7 @@ def main(config_path, out_path):
     oos = pd.to_datetime(dates) < "2024-01-01"
     print(f"\n{len(df)} 筆，{df['ticker'].nunique()} 檔，{df['date'].min():%Y-%m-%d} ~ {df['date'].max():%Y-%m-%d}")
     for name in agents:
-        for kind in ("p", "score"):
+        for kind in ("p", "pc", "score"):
             col = f"{kind}_{name}"
             for scope, sec in (("全體", None), ("產業內", sectors)):
                 ic = daily_ic(df, col, sec)
