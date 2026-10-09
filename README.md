@@ -209,6 +209,7 @@ backtest/               walk-forward 回測 + 評估指標 + 報酬層級評估�
 tests/                  146 個單元測試
 forward/                前瞻驗證：凍結規格、預測 / 結算紀錄、自動報告
 analysis/               訊號穩定性分析（分期 IC、產業內 IC、取樣起點穩健性）
+site/                   研究網站（股票池、Agent 架構、逐股分析、前瞻驗證）；build_site.py 重新產生
 reports/                synthetic / finmind_preliminary / finmind_scoped / finmind_full / finmind_macro / finmind_llm_qwen3 / finmind_news_content / finmind_llm_qwen3_content / finmind_supply_chain(_v2 / _long_v1 / _long_v2) 結果
 docs/                   規格、技術筆記、回測報告
 notebooks/              校準分析 notebook
@@ -216,6 +217,9 @@ notebooks/              校準分析 notebook
 
 ## 文件
 
+- [研究網站](site/research-dashboard.html) — 單一 HTML（下載後用瀏覽器開啟）：目前股票池、
+  Agent 架構圖、2026 前瞻股票池 100 檔的財報特徵與預測、前瞻驗證 IC。
+  更新：`.venv/Scripts/python site/build_site.py`（架構圖為 mermaid，本機開啟時顯示原始碼）
 - [技術規格](docs/spec.md) — 系統的原始設計規格（v0.1）
 - [技術筆記](docs/technical_note.md) — 預測處理框架的理論對應、synthetic
   實驗、誠實分析（M5 交付物）

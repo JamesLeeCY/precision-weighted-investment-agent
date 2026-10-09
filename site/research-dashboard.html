@@ -1,0 +1,482 @@
+<meta charset="utf-8">
+<title>多代理人精度加權投資研究系統</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;900&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: research ledger — one reading column for prose, full-width ledgers for tables; sticky section index on top. */
+:root {
+  --bg: #f6f7f5;
+  --panel: #ffffff;
+  --ink: #15201c;
+  --ink-2: #4b5751;
+  --ink-3: #7b8781;
+  --rule: #dde2de;
+  --accent: #1f5d4c;        /* deep jade: the house color of a ledger book */
+  --accent-soft: #e3eee9;
+  --pos: #2a78d6;           /* diverging pole: above 0.5 / positive */
+  --neg: #e34948;           /* diverging pole: below 0.5 / negative */
+  --mid: #f0efec;
+  --pos-tint: rgba(42, 120, 214, 0.12);
+  --neg-tint: rgba(227, 73, 72, 0.12);
+  --good: #0ca30c;
+  --warn: #c98500;
+  --font-display: "Noto Serif TC", "Songti TC", "PMingLiU", serif;
+  --font-body: "Noto Sans TC", "Microsoft JhengHei", "PingFang TC", system-ui, sans-serif;
+  --font-data: "IBM Plex Mono", ui-monospace, "Consolas", monospace;
+  --radius: 6px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #131816; --panel: #1b211e; --ink: #edf1ee; --ink-2: #b6c0bb; --ink-3: #85918b; --rule: #2d3531;
+    --accent: #7cc7ae; --accent-soft: #1f2e28; --pos: #3987e5; --neg: #e66767; --mid: #383835;
+    --pos-tint: rgba(57, 135, 229, 0.20); --neg-tint: rgba(230, 103, 103, 0.20); --good: #2cc12c; --warn: #e0a326;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #131816; --panel: #1b211e; --ink: #edf1ee; --ink-2: #b6c0bb; --ink-3: #85918b; --rule: #2d3531;
+  --accent: #7cc7ae; --accent-soft: #1f2e28; --pos: #3987e5; --neg: #e66767; --mid: #383835;
+  --pos-tint: rgba(57, 135, 229, 0.20); --neg-tint: rgba(230, 103, 103, 0.20); --good: #2cc12c; --warn: #e0a326;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.7; }
+.wrap { max-width: 1180px; margin: 0 auto; padding-inline: 20px; padding-block: 28px 64px; }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; line-height: 1.3; margin: 0; }
+h1 { font-size: clamp(26px, 4vw, 38px); font-weight: 900; letter-spacing: 0.02em; }
+h2 { font-size: 24px; font-weight: 900; }
+h3 { font-size: 17px; font-weight: 600; }
+p { margin: 0; max-width: 68ch; }
+.eyebrow { font-family: var(--font-data); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); }
+.muted { color: var(--ink-2); }
+.small { font-size: 13px; color: var(--ink-3); }
+.num, td.n, .mono { font-family: var(--font-data); font-variant-numeric: tabular-nums; }
+a { color: var(--accent); }
+
+/* header */
+header.top { display: grid; gap: 14px; padding-block: 8px 24px; border-bottom: 2px solid var(--ink); }
+.status { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 13px; color: var(--ink-2); }
+.status b { color: var(--ink); font-weight: 500; }
+nav.index { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); border-bottom: 1px solid var(--rule); }
+nav.index ul { list-style: none; margin: 0; padding: 10px 0; display: flex; gap: 6px 20px; flex-wrap: wrap; font-size: 14px; }
+nav.index a { text-decoration: none; color: var(--ink-2); }
+nav.index a:hover, nav.index a:focus-visible { color: var(--accent); }
+section { padding-block: 40px 8px; display: grid; gap: 18px; scroll-margin-top: 56px; }
+.lede { font-size: 16px; color: var(--ink-2); }
+
+/* findings strip */
+.findings { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.finding { background: var(--panel); border: 1px solid var(--rule); border-radius: var(--radius); padding: 16px; display: grid; gap: 6px; align-content: start; }
+.finding .big { font-family: var(--font-data); font-size: 26px; font-weight: 500; font-variant-numeric: tabular-nums; }
+.finding .lab { font-size: 13px; color: var(--ink-2); }
+.verdict { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; padding: 2px 8px; border-radius: 99px; border: 1px solid currentColor; width: fit-content; }
+.v-yes { color: var(--good); }
+.v-no { color: var(--ink-3); }
+.v-wait { color: var(--warn); }
+
+/* architecture */
+.arch { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+@media (max-width: 860px) { .arch { grid-template-columns: 1fr; } }
+.diagram { background: var(--panel); border: 1px solid var(--rule); border-radius: var(--radius); padding: 12px; overflow-x: auto; }
+pre.mermaid { margin: 0; background: transparent; text-align: center; }
+.agents { display: grid; gap: 10px; }
+.agent { border-left: 3px solid var(--rule); padding: 4px 0 4px 14px; display: grid; gap: 2px; }
+.agent.on { border-left-color: var(--accent); }
+.agent .row1 { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: baseline; }
+.agent code { font-family: var(--font-data); font-size: 12px; color: var(--ink-3); }
+
+/* tables */
+.toolbar { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
+.seg { display: inline-flex; flex-wrap: wrap; gap: 4px; }
+.seg button, .chip { font: inherit; font-size: 13px; padding: 4px 10px; border-radius: 99px; border: 1px solid var(--rule); background: var(--panel); color: var(--ink-2); cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--panel); }
+.seg button:focus-visible, .chip:focus-visible, input:focus-visible, th button:focus-visible, tr:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+input[type="search"] { font: inherit; font-size: 14px; padding: 5px 10px; border: 1px solid var(--rule); border-radius: var(--radius); background: var(--panel); color: var(--ink); min-width: 0; width: 200px; max-width: 100%; }
+.tablebox { overflow-x: auto; background: var(--panel); border: 1px solid var(--rule); border-radius: var(--radius); }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+th, td { padding: 7px 10px; text-align: left; border-bottom: 1px solid var(--rule); white-space: nowrap; }
+th { font-weight: 500; color: var(--ink-2); font-size: 12px; background: var(--panel); position: sticky; top: 0; }
+th button { all: unset; cursor: pointer; display: inline-flex; gap: 4px; align-items: center; }
+th[aria-sort="ascending"] button::after { content: "▲"; font-size: 9px; }
+th[aria-sort="descending"] button::after { content: "▼"; font-size: 9px; }
+td.n, th.n { text-align: right; }
+tbody tr { cursor: pointer; }
+tbody tr:hover, tbody tr.sel { background: var(--accent-soft); }
+.name { font-weight: 500; }
+.tk { font-family: var(--font-data); color: var(--ink-3); font-size: 12px; margin-right: 6px; }
+.sector-tag { font-size: 12px; color: var(--ink-2); }
+.pbar { display: inline-grid; grid-template-columns: 56px 56px; align-items: center; height: 14px; vertical-align: middle; margin-right: 8px; }
+.pbar span { height: 10px; }
+.pbar .l { justify-self: end; background: var(--neg); border-radius: 3px 0 0 3px; }
+.pbar .r { justify-self: start; background: var(--pos); border-radius: 0 3px 3px 0; }
+.pbar { background: linear-gradient(var(--rule), var(--rule)) center / 1px 100% no-repeat; }
+td.ret-pos { background: var(--pos-tint); }
+td.ret-neg { background: var(--neg-tint); }
+.na { color: var(--ink-3); }
+
+/* detail */
+.detail { background: var(--panel); border: 1px solid var(--rule); border-radius: var(--radius); padding: 18px; display: grid; gap: 14px; }
+.detail .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px 18px; }
+.kv { display: grid; gap: 0; }
+.kv .k { font-size: 12px; color: var(--ink-3); }
+.kv .v { font-family: var(--font-data); font-variant-numeric: tabular-nums; font-size: 16px; }
+
+/* chart */
+.chartbox { background: var(--panel); border: 1px solid var(--rule); border-radius: var(--radius); padding: 14px; position: relative; }
+.chartbox svg { width: 100%; height: auto; display: block; }
+.chartbox svg text { fill: var(--ink-2); font-family: var(--font-data); font-size: 11px; }
+.tip { position: absolute; pointer-events: none; background: var(--ink); color: var(--bg); font-size: 12px; padding: 6px 9px; border-radius: 4px; line-height: 1.5; max-width: 240px; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12px; color: var(--ink-2); }
+.sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+.two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; }
+@media (max-width: 860px) { .two { grid-template-columns: 1fr; } }
+ul.plain { margin: 0; padding-left: 1.2em; display: grid; gap: 4px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { cursor: default; }
+.timeline { display: grid; gap: 0; border-left: 2px solid var(--rule); margin-left: 6px; }
+.tl { position: relative; padding: 0 0 16px 18px; display: grid; gap: 2px; }
+.tl::before { content: ""; position: absolute; left: -6px; top: 8px; width: 10px; height: 10px; border-radius: 50%; background: var(--panel); border: 2px solid var(--accent); }
+.tl .when { font-family: var(--font-data); font-size: 12px; color: var(--ink-3); }
+footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--rule); font-size: 12px; color: var(--ink-3); display: grid; gap: 4px; }
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition: none !important; } }
+@media (max-width: 520px) { .wrap { padding-inline: 16px; } th, td { padding: 6px 8px; } }
+</style>
+<div class="wrap">
+<header class="top">
+  <div class="eyebrow">Precision-Weighted Investment Agent · 研究紀錄</div>
+  <h1>多代理人精度加權投資研究系統</h1>
+  <p class="lede">台股電子／半導體多代理人預測研究：每個 Agent 輸出「20 個交易日後含息報酬為正」的機率，再依過往準確度合併。本頁整理目前的股票池、Agent 架構與財報 Agent 的逐股分析數據。</p>
+  <div class="status">
+    <span>資料截至 <b class="mono">2026-10-10</b></span>
+    <span>前瞻規格 <b class="mono">fv1</b>（凍結於 git 57c364d）</span>
+    <span>預測 <b class="mono">5</b> 批／已結算 <b class="mono">4</b> 批</span>
+    <span>下次自動預測 <b class="mono">2026-11-02</b>（工作排程器，平日 18:30 檢查）</span>
+  </div>
+</header>
+
+<nav class="index" aria-label="章節">
+  <ul>
+    <li><a href="#findings">重點結論</a></li>
+    <li><a href="#architecture">Agent 架構</a></li>
+    <li><a href="#universe">股票池</a></li>
+    <li><a href="#stocks">逐股分析</a></li>
+    <li><a href="#forward">前瞻驗證</a></li>
+    <li><a href="#timeline">研究歷程</a></li>
+  </ul>
+</nav>
+
+<section id="findings">
+  <div class="eyebrow">01 · Findings</div>
+  <h2>重點結論</h2>
+  <div class="findings">
+    <div class="finding">
+      <span class="lab">財報 Agent 產業內 IC（無偏誤股票池 2019–2026）</span>
+      <span class="big">+0.029</span>
+      <span class="small">t = 2.16，85 期中 55 期為正；21 個取樣相位全部為正</span>
+      <span class="verdict v-yes">✓ 唯一穩定訊號</span>
+    </div>
+    <div class="finding">
+      <span class="lab">財報 Agent 看多組合 vs 等權（扣成本，每期）</span>
+      <span class="big">+0.26%</span>
+      <span class="small">t = 1.90；三 Agent 合併為 −0.44%，產業內 IC 加權 +0.30%</span>
+      <span class="verdict v-wait">△ 邊際顯著</span>
+    </div>
+    <div class="finding">
+      <span class="lab">精度加權（核心假說）</span>
+      <span class="big">未成立</span>
+      <span class="small">合成資料 17/20 有效；真實資料各 Agent Brier 從未優於基準率，精度權重無從發揮</span>
+      <span class="verdict v-no">✗ 真實資料未成立</span>
+    </div>
+    <div class="finding">
+      <span class="lab">前瞻驗證（回填 4 期平均 IC）</span>
+      <span class="big">+0.005</span>
+      <span class="small">每期標準差 ≈ 0.122，需約 73 期才能達 t = 2；正式檢定只算 live 期數</span>
+      <span class="verdict v-wait">… 累積中</span>
+    </div>
+  </div>
+</section>
+
+<section id="architecture">
+  <div class="eyebrow">02 · Architecture</div>
+  <h2>Agent 架構</h2>
+  <p class="muted">四個領域 Agent 各自輸出方向與信心，轉成機率後經校準、合併。前瞻驗證只凍結了財報 Agent 一條路徑（綠色）。</p>
+  <div class="arch">
+    <div class="diagram">
+<pre class="mermaid">
+flowchart TD
+  D1[(FinMind<br/>月營收・財報・股價)] --> F
+  D2[(新聞 RSS<br/>標題＋內文)] --> N
+  D3[(法人籌碼・融資<br/>匯率・美債)] --> M
+  D4[(年報大客戶<br/>供應鏈圖譜)] --> S
+  F[財報 Agent<br/>規則評分]:::on
+  N[新聞 Agent<br/>LLM 判讀]
+  M[總經／籌碼 Agent<br/>規則或 LLM]
+  S[供應鏈 Agent<br/>上下游相對報酬]
+  F --> P{{機率映射<br/>連續輸出 p = σ（ln3·score·evidence）}}:::on
+  N --> P
+  M --> P
+  S --> P
+  P --> C[Agent 層級校準<br/>p' = σ（a·logit p）]
+  C --> W[合併<br/>精度加權 Brier EMA<br/>或產業內 IC 加權]
+  W --> O[最終訊號<br/>p > 0.55 看多・p < 0.45 看空]
+  P --> FV[前瞻驗證 fv1<br/>只用財報 Agent・凍結 SHA-256]:::on
+  FV --> R[每月預測 → 20 日後結算<br/>append-only CSV ＋ git push]:::on
+  classDef on stroke:#1f5d4c,stroke-width:3px
+</pre>
+    </div>
+    <div class="agents" id="agentList"></div>
+  </div>
+</section>
+
+<section id="universe">
+  <div class="eyebrow">03 · Universe</div>
+  <h2>股票池</h2>
+  <p class="muted">研究過程用過三個股票池。正式結論以「無選股偏誤」股票池為準：每年 1 月依前 60 個交易日平均成交金額，從當時上市櫃電子／半導體股（含之後下市者）取前 100 檔。</p>
+  <div class="two">
+    <div class="detail">
+      <h3>無選股偏誤股票池（2019–2026）</h3>
+      <p class="small">8 年共 <span class="mono">271</span> 檔曾入選，每年 100 檔。2026 年的 100 檔就是目前前瞻驗證的股票，見下方逐股表。</p>
+      <div class="tablebox" id="sectorYears"></div>
+    </div>
+    <div class="detail">
+      <h3>早期手選股票池</h3>
+      <p class="small">原始 5 檔（被動元件）與擴充 41 檔（半導體設備、功率元件、AI 供應鏈）。手選名單有事後挑選偏誤，只作開發用。</p>
+      <div><div class="small" style="margin-bottom:6px">原始 5 檔</div><div class="chips" id="origChips"></div></div>
+      <div><div class="small" style="margin-bottom:6px">擴充 41 檔（依族群）</div><div id="expGroups" style="display:grid;gap:8px"></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="stocks">
+  <div class="eyebrow">04 · Stock analysis</div>
+  <h2>逐股分析：2026 前瞻股票池 100 檔</h2>
+  <p class="muted">「10 月 p」是財報 Agent 在 2026-10-01 對「之後 20 個交易日含息報酬為正」的機率（尚未結算）。6–9 月欄位顯示當期預測 p 與實際 20 日報酬。點選任一列看完整財報特徵。</p>
+  <div class="toolbar">
+    <input type="search" id="q" placeholder="搜尋代號或名稱" aria-label="搜尋代號或名稱">
+    <div class="seg" id="sectorSeg" role="group" aria-label="產業篩選"></div>
+  </div>
+  <div class="legend">
+    <span><span class="sw" style="background:var(--neg)"></span>p &lt; 0.5（偏空）</span>
+    <span><span class="sw" style="background:var(--pos)"></span>p &gt; 0.5（偏多）</span>
+    <span><span class="sw" style="background:var(--pos-tint);border:1px solid var(--rule)"></span>實際報酬 &gt; 0</span>
+    <span><span class="sw" style="background:var(--neg-tint);border:1px solid var(--rule)"></span>實際報酬 &lt; 0</span>
+    <span id="countLabel"></span>
+  </div>
+  <div class="tablebox" style="max-height:620px">
+    <table id="stockTable">
+      <thead><tr></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  <div class="detail" id="stockDetail"><p class="small">點選上表任一列，顯示該股的財報特徵與歷次預測。</p></div>
+</section>
+
+<section id="forward">
+  <div class="eyebrow">05 · Forward validation</div>
+  <h2>前瞻驗證</h2>
+  <p class="muted">規則凍結後才產生預測，結果出來再對答案。2026-06 至 09 為回填（backfill，凍結後補做，不計入正式檢定）；2026-10-01 待 20 個交易日後結算。</p>
+  <div class="two">
+    <div class="chartbox" id="icChart"></div>
+    <div class="detail">
+      <h3>事先登錄的評估標準</h3>
+      <ul class="plain">
+        <li>主要指標：產業內 Spearman IC（財報 Agent p vs 20 日含息報酬）</li>
+        <li>回測預期：平均 <span class="mono">+0.029</span>，每期標準差 <span class="mono">0.122</span></li>
+        <li>24 個 live 期數（約 2 年）時平均 IC &lt; 0 → 失效警訊</li>
+        <li>73 個 live 期數（約 6 年）時正式檢定，t &gt; 2 才算確認</li>
+        <li>任何規則程式碼變動 → SHA-256 指紋不符，<span class="mono">predict</span> 拒絕執行</li>
+      </ul>
+      <div class="tablebox" id="fwdTable"></div>
+      <p class="small">7 月為真實急跌：加權指數 −15%，股票池平均 −26%。</p>
+    </div>
+  </div>
+</section>
+
+<section id="timeline">
+  <div class="eyebrow">06 · Timeline</div>
+  <h2>研究歷程</h2>
+  <div class="timeline" id="tl"></div>
+</section>
+
+<footer>
+  <span>研究用途，不構成投資建議。機率為模型輸出，回測與前瞻驗證皆顯示訊號微弱（IC ≈ 0.03）。</span>
+  <span>資料來源：FinMind（月營收、財報、股價、除權息）；含息報酬由除權息與分割事件還原。</span>
+</footer>
+</div>
+
+<script id="data" type="application/json">{"original":[{"t":"2327","n":"國巨","s":"MLCC / 晶片電阻"},{"t":"2492","n":"華新科","s":"MLCC / 晶片電阻"},{"t":"3026","n":"禾伸堂","s":"高壓 MLCC / 電子零組件通路"},{"t":"2375","n":"凱美","s":"電容 / 被動元件（國巨集團）"},{"t":"2478","n":"大毅","s":"晶片電阻 / 保護元件"}],"expanded":[{"t":"2327","n":"國巨","s":"被動元件"},{"t":"2492","n":"華新科","s":"被動元件"},{"t":"3026","n":"禾伸堂","s":"被動元件"},{"t":"2375","n":"凱美","s":"被動元件"},{"t":"2478","n":"大毅","s":"被動元件"},{"t":"3131","n":"弘塑","s":"半導體設備"},{"t":"3583","n":"辛耘","s":"半導體設備"},{"t":"6187","n":"萬潤","s":"半導體設備"},{"t":"6640","n":"均華","s":"半導體設備"},{"t":"3413","n":"京鼎","s":"半導體設備"},{"t":"6196","n":"帆宣","s":"半導體設備"},{"t":"2404","n":"漢唐","s":"半導體設備"},{"t":"3680","n":"家登","s":"半導體設備"},{"t":"5443","n":"均豪","s":"半導體設備"},{"t":"2342","n":"茂矽","s":"功率元件"},{"t":"2481","n":"強茂","s":"功率元件"},{"t":"8261","n":"富鼎","s":"功率元件"},{"t":"6435","n":"大中","s":"功率元件"},{"t":"5299","n":"杰力","s":"功率元件"},{"t":"3317","n":"尼克森","s":"功率元件"},{"t":"8255","n":"朋程","s":"功率元件"},{"t":"5425","n":"台半","s":"功率元件"},{"t":"3675","n":"德微","s":"功率元件"},{"t":"2382","n":"廣達","s":"AI伺服器"},{"t":"3231","n":"緯創","s":"AI伺服器"},{"t":"6669","n":"緯穎","s":"AI伺服器"},{"t":"2356","n":"英業達","s":"AI伺服器"},{"t":"2376","n":"技嘉","s":"AI伺服器"},{"t":"3706","n":"神達","s":"AI伺服器"},{"t":"3017","n":"奇鋐","s":"散熱"},{"t":"3324","n":"雙鴻","s":"散熱"},{"t":"3653","n":"健策","s":"散熱"},{"t":"2383","n":"台光電","s":"PCB/CCL"},{"t":"2368","n":"金像電","s":"PCB/CCL"},{"t":"3037","n":"欣興","s":"PCB/CCL"},{"t":"2308","n":"台達電","s":"電源"},{"t":"2301","n":"光寶科","s":"電源"},{"t":"3665","n":"貿聯-KY","s":"連接器"},{"t":"3533","n":"嘉澤","s":"連接器"},{"t":"3661","n":"世芯-KY","s":"ASIC"},{"t":"3443","n":"創意","s":"ASIC"}],"pit_years":{"2019":100,"2020":100,"2021":100,"2022":100,"2023":100,"2024":100,"2025":100,"2026":100},"pit_unique":271,"pit_sector_by_year":{"2019":{"半導體業":38,"電子零組件業":22,"電子工業":12,"通信網路業":11,"電腦及週邊設備業":11,"其他電子業":5,"其他電子類":1},"2020":{"半導體業":39,"電子零組件業":26,"電子工業":11,"電腦及週邊設備業":11,"通信網路業":6,"其他電子業":5,"其他電子類":2},"2021":{"半導體業":47,"電子零組件業":19,"電腦及週邊設備業":12,"電子工業":11,"通信網路業":6,"其他電子類":3,"其他電子業":2},"2022":{"半導體業":56,"電子零組件業":14,"電子工業":11,"電腦及週邊設備業":8,"通信網路業":7,"其他電子業":3,"其他電子類":1},"2023":{"半導體業":48,"電子零組件業":14,"電腦及週邊設備業":14,"通信網路業":12,"電子工業":7,"其他電子業":3,"其他電子類":2},"2024":{"半導體業":45,"電子零組件業":21,"電腦及週邊設備業":20,"通信網路業":6,"電子工業":5,"其他電子業":2,"其他電子類":1},"2025":{"半導體業":39,"電子零組件業":18,"電腦及週邊設備業":14,"通信網路業":11,"其他電子業":9,"電子工業":8,"其他電子類":1},"2026":{"半導體業":38,"電子零組件業":28,"電腦及週邊設備業":13,"其他電子業":7,"通信網路業":7,"電子工業":5,"其他電子類":2}},"stocks":[{"t":"2330","n":"台積電","s":"半導體業","rank":1,"tv":489.57,"revenue_yoy_pct":44.69,"revenue_mom_pct":5.62,"revenue_yoy_slope":11.93,"gross_margin_pct":67.72,"gross_margin_slope":2.87,"inventory_days_yoy_pct":19.43,"receivable_days_yoy_pct":37.23,"score":0.27,"cov":1.0,"h":{"2026-06-01":{"p":0.657,"r":0.0261},"2026-07-01":{"p":0.558,"r":-0.1198},"2026-08-03":{"p":0.596,"r":0.0148},"2026-09-01":{"p":0.64,"r":0.0317},"2026-10-01":{"p":0.574,"r":null}},"p":0.574},{"t":"2408","n":"南亞科","s":"半導體業","rank":2,"tv":205.2,"revenue_yoy_pct":719.61,"revenue_mom_pct":49.27,"revenue_yoy_slope":-10.2,"gross_margin_pct":79.49,"gross_margin_slope":20.2,"inventory_days_yoy_pct":-54.58,"receivable_days_yoy_pct":-13.58,"score":0.491,"cov":1.0,"h":{"2026-06-01":{"p":0.725,"r":0.1861},"2026-07-01":{"p":0.74,"r":-0.2184},"2026-08-03":{"p":0.74,"r":0.3695},"2026-09-01":{"p":0.74,"r":0.0019},"2026-10-01":{"p":0.632,"r":null}},"p":0.632},{"t":"2317","n":"鴻海","s":"其他電子業","rank":3,"tv":161.47,"revenue_yoy_pct":54.19,"revenue_mom_pct":15.18,"revenue_yoy_slope":8.59,"gross_margin_pct":6.12,"gross_margin_slope":-0.04,"inventory_days_yoy_pct":3.72,"receivable_days_yoy_pct":6.4,"score":0.3,"cov":1.0,"h":{"2026-06-01":{"p":0.574,"r":-0.1448},"2026-07-01":{"p":0.606,"r":-0.047},"2026-08-03":{"p":0.636,"r":-0.0119},"2026-09-01":{"p":0.611,"r":-0.0078},"2026-10-01":{"p":0.582,"r":null}},"p":0.582},{"t":"2344","n":"華邦電","s":"半導體業","rank":4,"tv":150.77,"revenue_yoy_pct":291.55,"revenue_mom_pct":29.99,"revenue_yoy_slope":33.59,"gross_margin_pct":66.25,"gross_margin_slope":7.02,"inventory_days_yoy_pct":-4.05,"receivable_days_yoy_pct":10.98,"score":0.554,"cov":1.0,"h":{"2026-06-01":{"p":0.649,"r":0.2351},"2026-07-01":{"p":0.681,"r":-0.3763},"2026-08-03":{"p":0.681,"r":0.2762},"2026-09-01":{"p":0.681,"r":0.0227},"2026-10-01":{"p":0.648,"r":null}},"p":0.648},{"t":"2308","n":"台達電","s":"電子零組件業","rank":5,"tv":120.89,"revenue_yoy_pct":47.75,"revenue_mom_pct":2.24,"revenue_yoy_slope":2.33,"gross_margin_pct":35.64,"gross_margin_slope":0.47,"inventory_days_yoy_pct":15.95,"receivable_days_yoy_pct":5.57,"score":0.15,"cov":1.0,"h":{"2026-06-01":{"p":0.597,"r":-0.19},"2026-07-01":{"p":0.557,"r":-0.2312},"2026-08-03":{"p":0.559,"r":0.1646},"2026-09-01":{"p":0.564,"r":0.0214},"2026-10-01":{"p":0.541,"r":null}},"p":0.541},{"t":"2454","n":"聯發科","s":"半導體業","rank":6,"tv":102.29,"revenue_yoy_pct":12.16,"revenue_mom_pct":-16.44,"revenue_yoy_slope":4.67,"gross_margin_pct":46.2,"gross_margin_slope":-0.08,"inventory_days_yoy_pct":65.73,"receivable_days_yoy_pct":9.06,"score":-0.094,"cov":1.0,"h":{"2026-06-01":{"p":0.423,"r":-0.0681},"2026-07-01":{"p":0.431,"r":-0.2493},"2026-08-03":{"p":0.449,"r":0.0038},"2026-09-01":{"p":0.41,"r":0.1541},"2026-10-01":{"p":0.474,"r":null}},"p":0.474},{"t":"2327","n":"國巨*","s":"電子零組件業","rank":7,"tv":97.68,"revenue_yoy_pct":51.51,"revenue_mom_pct":5.03,"revenue_yoy_slope":7.99,"gross_margin_pct":38.5,"gross_margin_slope":0.77,"inventory_days_yoy_pct":3.79,"receivable_days_yoy_pct":1.38,"score":0.403,"cov":1.0,"h":{"2026-06-01":{"p":0.529,"r":0.4534},"2026-07-01":{"p":0.547,"r":-0.5996},"2026-08-03":{"p":0.614,"r":-0.0127},"2026-09-01":{"p":0.606,"r":0.0599},"2026-10-01":{"p":0.609,"r":null}},"p":0.609},{"t":"6770","n":"力積電","s":"半導體業","rank":8,"tv":91.84,"revenue_yoy_pct":70.54,"revenue_mom_pct":3.01,"revenue_yoy_slope":12.41,"gross_margin_pct":28.28,"gross_margin_slope":10.83,"inventory_days_yoy_pct":10.06,"receivable_days_yoy_pct":-14.06,"score":0.627,"cov":1.0,"h":{"2026-06-01":{"p":0.625,"r":-0.0839},"2026-07-01":{"p":0.648,"r":-0.3331},"2026-08-03":{"p":0.68,"r":0.3389},"2026-09-01":{"p":0.68,"r":0.0523},"2026-10-01":{"p":0.666,"r":null}},"p":0.666},{"t":"3017","n":"奇鋐","s":"電腦及週邊設備業","rank":9,"tv":89.9,"revenue_yoy_pct":57.39,"revenue_mom_pct":5.52,"revenue_yoy_slope":-3.72,"gross_margin_pct":32.57,"gross_margin_slope":2.27,"inventory_days_yoy_pct":-7.61,"receivable_days_yoy_pct":-25.4,"score":0.546,"cov":1.0,"h":{"2026-06-01":{"p":0.629,"r":-0.0934},"2026-07-01":{"p":0.545,"r":-0.1947},"2026-08-03":{"p":0.554,"r":0.3524},"2026-09-01":{"p":0.545,"r":0.0293},"2026-10-01":{"p":0.646,"r":null}},"p":0.646},{"t":"8299","n":"群聯","s":"半導體業","rank":10,"tv":86.53,"revenue_yoy_pct":377.55,"revenue_mom_pct":9.29,"revenue_yoy_slope":42.25,"gross_margin_pct":65.35,"gross_margin_slope":11.82,"inventory_days_yoy_pct":69.91,"receivable_days_yoy_pct":3.87,"score":0.374,"cov":1.0,"h":{"2026-06-01":{"p":0.686,"r":-0.1327},"2026-07-01":{"p":0.624,"r":-0.3414},"2026-08-03":{"p":0.624,"r":0.2301},"2026-09-01":{"p":0.624,"r":-0.0071},"2026-10-01":{"p":0.601,"r":null}},"p":0.601},{"t":"3443","n":"創意","s":"半導體業","rank":11,"tv":75.3,"revenue_yoy_pct":158.38,"revenue_mom_pct":17.06,"revenue_yoy_slope":-2.38,"gross_margin_pct":21.55,"gross_margin_slope":0.01,"inventory_days_yoy_pct":-11.24,"receivable_days_yoy_pct":10.2,"score":0.161,"cov":1.0,"h":{"2026-06-01":{"p":0.422,"r":0.0456},"2026-07-01":{"p":0.445,"r":-0.3142},"2026-08-03":{"p":0.445,"r":0.4576},"2026-09-01":{"p":0.445,"r":0.3178},"2026-10-01":{"p":0.544,"r":null}},"p":0.544},{"t":"1815","n":"富喬","s":"電子零組件業","rank":12,"tv":74.46,"revenue_yoy_pct":68.11,"revenue_mom_pct":24.01,"revenue_yoy_slope":4.13,"gross_margin_pct":39.97,"gross_margin_slope":4.63,"inventory_days_yoy_pct":4.07,"receivable_days_yoy_pct":14.24,"score":0.361,"cov":1.0,"h":{"2026-06-01":{"p":0.56,"r":0.0183},"2026-07-01":{"p":0.638,"r":-0.4202},"2026-08-03":{"p":0.592,"r":0.7353},"2026-09-01":{"p":0.618,"r":-0.0523},"2026-10-01":{"p":0.598,"r":null}},"p":0.598},{"t":"3231","n":"緯創","s":"電腦及週邊設備業","rank":13,"tv":73.11,"revenue_yoy_pct":60.76,"revenue_mom_pct":-4.23,"revenue_yoy_slope":-13.91,"gross_margin_pct":5.66,"gross_margin_slope":-0.56,"inventory_days_yoy_pct":-4.49,"receivable_days_yoy_pct":11.39,"score":-0.102,"cov":1.0,"h":{"2026-06-01":{"p":0.581,"r":-0.0891},"2026-07-01":{"p":0.493,"r":0.04},"2026-08-03":{"p":0.493,"r":-0.043},"2026-09-01":{"p":0.493,"r":0.0467},"2026-10-01":{"p":0.472,"r":null}},"p":0.472},{"t":"6669","n":"緯穎","s":"電腦及週邊設備業","rank":14,"tv":72.83,"revenue_yoy_pct":39.23,"revenue_mom_pct":5.67,"revenue_yoy_slope":4.03,"gross_margin_pct":9.26,"gross_margin_slope":0.17,"inventory_days_yoy_pct":30.85,"receivable_days_yoy_pct":-12.25,"score":0.179,"cov":1.0,"h":{"2026-06-01":{"p":0.551,"r":-0.1352},"2026-07-01":{"p":0.509,"r":-0.0268},"2026-08-03":{"p":0.488,"r":0.1975},"2026-09-01":{"p":0.583,"r":-0.1931},"2026-10-01":{"p":0.549,"r":null}},"p":0.549},{"t":"3661","n":"世芯-KY","s":"半導體業","rank":15,"tv":71.52,"revenue_yoy_pct":181.78,"revenue_mom_pct":108.07,"revenue_yoy_slope":69.11,"gross_margin_pct":34.84,"gross_margin_slope":2.84,"inventory_days_yoy_pct":2023.14,"receivable_days_yoy_pct":223.2,"score":0.2,"cov":1.0,"h":{"2026-06-01":{"p":0.422,"r":-0.139},"2026-07-01":{"p":0.445,"r":-0.3742},"2026-08-03":{"p":0.445,"r":0.2538},"2026-09-01":{"p":0.528,"r":-0.1124},"2026-10-01":{"p":0.555,"r":null}},"p":0.555},{"t":"2449","n":"京元電子","s":"半導體業","rank":16,"tv":64.17,"revenue_yoy_pct":36.75,"revenue_mom_pct":10.19,"revenue_yoy_slope":-0.14,"gross_margin_pct":39.49,"gross_margin_slope":1.25,"inventory_days_yoy_pct":106.39,"receivable_days_yoy_pct":50.93,"score":-0.078,"cov":1.0,"h":{"2026-06-01":{"p":0.614,"r":0.0613},"2026-07-01":{"p":0.518,"r":-0.3521},"2026-08-03":{"p":0.523,"r":0.1006},"2026-09-01":{"p":0.518,"r":0.0609},"2026-10-01":{"p":0.479,"r":null}},"p":0.479},{"t":"2345","n":"智邦","s":"通信網路業","rank":17,"tv":62.96,"revenue_yoy_pct":71.69,"revenue_mom_pct":-0.21,"revenue_yoy_slope":5.8,"gross_margin_pct":19.7,"gross_margin_slope":0.93,"inventory_days_yoy_pct":90.39,"receivable_days_yoy_pct":-7.19,"score":0.257,"cov":1.0,"h":{"2026-06-01":{"p":0.54,"r":-0.006},"2026-07-01":{"p":0.485,"r":-0.2668},"2026-08-03":{"p":0.498,"r":-0.1285},"2026-09-01":{"p":0.565,"r":-0.1383},"2026-10-01":{"p":0.57,"r":null}},"p":0.57},{"t":"2368","n":"金像電","s":"電子零組件業","rank":18,"tv":61.06,"revenue_yoy_pct":77.38,"revenue_mom_pct":21.31,"revenue_yoy_slope":4.78,"gross_margin_pct":34.65,"gross_margin_slope":-0.16,"inventory_days_yoy_pct":-6.45,"receivable_days_yoy_pct":9.28,"score":0.261,"cov":1.0,"h":{"2026-06-01":{"p":0.602,"r":-0.0879},"2026-07-01":{"p":0.582,"r":-0.409},"2026-08-03":{"p":0.643,"r":0.336},"2026-09-01":{"p":0.632,"r":-0.1061},"2026-10-01":{"p":0.571,"r":null}},"p":0.571},{"t":"6274","n":"台燿","s":"電子零組件業","rank":19,"tv":59.24,"revenue_yoy_pct":121.52,"revenue_mom_pct":20.69,"revenue_yoy_slope":6.1,"gross_margin_pct":29.72,"gross_margin_slope":2.1,"inventory_days_yoy_pct":44.17,"receivable_days_yoy_pct":4.62,"score":0.291,"cov":1.0,"h":{"2026-06-01":{"p":0.479,"r":-0.0147},"2026-07-01":{"p":0.575,"r":-0.4024},"2026-08-03":{"p":0.575,"r":0.1762},"2026-09-01":{"p":0.575,"r":0.0586},"2026-10-01":{"p":0.579,"r":null}},"p":0.579},{"t":"3037","n":"欣興","s":"電子零組件業","rank":20,"tv":57.26,"revenue_yoy_pct":43.69,"revenue_mom_pct":9.11,"revenue_yoy_slope":5.21,"gross_margin_pct":24.8,"gross_margin_slope":3.65,"inventory_days_yoy_pct":27.32,"receivable_days_yoy_pct":0.48,"score":0.319,"cov":1.0,"h":{"2026-06-01":{"p":0.537,"r":0.019},"2026-07-01":{"p":0.573,"r":-0.3101},"2026-08-03":{"p":0.613,"r":0.1549},"2026-09-01":{"p":0.608,"r":0.2513},"2026-10-01":{"p":0.587,"r":null}},"p":0.587},{"t":"3711","n":"日月光投控","s":"半導體業","rank":21,"tv":56.31,"revenue_yoy_pct":43.15,"revenue_mom_pct":12.16,"revenue_yoy_slope":7.61,"gross_margin_pct":21.0,"gross_margin_slope":1.21,"inventory_days_yoy_pct":25.27,"receivable_days_yoy_pct":9.68,"score":0.241,"cov":1.0,"h":{"2026-06-01":{"p":0.537,"r":0.1314},"2026-07-01":{"p":0.543,"r":-0.2751},"2026-08-03":{"p":0.587,"r":-0.0426},"2026-09-01":{"p":0.601,"r":0.1639},"2026-10-01":{"p":0.566,"r":null}},"p":0.566},{"t":"2383","n":"台光電","s":"電子零組件業","rank":22,"tv":54.76,"revenue_yoy_pct":129.4,"revenue_mom_pct":8.31,"revenue_yoy_slope":11.34,"gross_margin_pct":33.85,"gross_margin_slope":1.2,"inventory_days_yoy_pct":8.48,"receivable_days_yoy_pct":1.83,"score":0.451,"cov":1.0,"h":{"2026-06-01":{"p":0.506,"r":0.0631},"2026-07-01":{"p":0.544,"r":-0.2204},"2026-08-03":{"p":0.544,"r":0.1064},"2026-09-01":{"p":0.544,"r":-0.1179},"2026-10-01":{"p":0.621,"r":null}},"p":0.621},{"t":"2382","n":"廣達","s":"電腦及週邊設備業","rank":23,"tv":54.39,"revenue_yoy_pct":131.32,"revenue_mom_pct":-4.91,"revenue_yoy_slope":4.03,"gross_margin_pct":5.02,"gross_margin_slope":-0.7,"inventory_days_yoy_pct":31.37,"receivable_days_yoy_pct":-5.63,"score":0.048,"cov":1.0,"h":{"2026-06-01":{"p":0.492,"r":-0.0121},"2026-07-01":{"p":0.557,"r":-0.218},"2026-08-03":{"p":0.557,"r":0.1417},"2026-09-01":{"p":0.512,"r":-0.0234},"2026-10-01":{"p":0.513,"r":null}},"p":0.513},{"t":"3665","n":"貿聯-KY","s":"其他電子業","rank":24,"tv":54.04,"revenue_yoy_pct":59.59,"revenue_mom_pct":13.06,"revenue_yoy_slope":14.56,"gross_margin_pct":30.73,"gross_margin_slope":-1.07,"inventory_days_yoy_pct":17.26,"receivable_days_yoy_pct":7.08,"score":0.13,"cov":1.0,"h":{"2026-06-01":{"p":0.533,"r":-0.0967},"2026-07-01":{"p":0.473,"r":-0.0415},"2026-08-03":{"p":0.543,"r":0.0358},"2026-09-01":{"p":0.577,"r":0.1037},"2026-10-01":{"p":0.536,"r":null}},"p":0.536},{"t":"8046","n":"南電","s":"電子零組件業","rank":25,"tv":53.84,"revenue_yoy_pct":50.24,"revenue_mom_pct":16.13,"revenue_yoy_slope":4.65,"gross_margin_pct":24.75,"gross_margin_slope":4.89,"inventory_days_yoy_pct":25.81,"receivable_days_yoy_pct":2.48,"score":0.304,"cov":1.0,"h":{"2026-06-01":{"p":0.587,"r":0.3121},"2026-07-01":{"p":0.596,"r":-0.2877},"2026-08-03":{"p":0.627,"r":0.2907},"2026-09-01":{"p":0.606,"r":0.1592},"2026-10-01":{"p":0.583,"r":null}},"p":0.583},{"t":"2337","n":"旺宏","s":"半導體業","rank":26,"tv":51.91,"revenue_yoy_pct":180.48,"revenue_mom_pct":11.05,"revenue_yoy_slope":12.06,"gross_margin_pct":64.42,"gross_margin_slope":16.93,"inventory_days_yoy_pct":-32.3,"receivable_days_yoy_pct":6.67,"score":0.756,"cov":1.0,"h":{"2026-06-01":{"p":0.688,"r":-0.0716},"2026-07-01":{"p":0.711,"r":-0.3603},"2026-08-03":{"p":0.711,"r":0.1403},"2026-09-01":{"p":0.711,"r":-0.0122},"2026-10-01":{"p":0.696,"r":null}},"p":0.696},{"t":"8021","n":"尖點","s":"其他電子業","rank":27,"tv":50.81,"revenue_yoy_pct":102.56,"revenue_mom_pct":7.33,"revenue_yoy_slope":12.2,"gross_margin_pct":41.78,"gross_margin_slope":3.31,"inventory_days_yoy_pct":27.18,"receivable_days_yoy_pct":4.01,"score":0.392,"cov":1.0,"h":{"2026-06-01":{"p":0.627,"r":0.2371},"2026-07-01":{"p":0.611,"r":-0.4738},"2026-08-03":{"p":0.651,"r":0.2254},"2026-09-01":{"p":0.651,"r":0.1178},"2026-10-01":{"p":0.606,"r":null}},"p":0.606},{"t":"4979","n":"華星光","s":"通信網路業","rank":28,"tv":45.96,"revenue_yoy_pct":31.01,"revenue_mom_pct":11.8,"revenue_yoy_slope":7.64,"gross_margin_pct":22.44,"gross_margin_slope":0.65,"inventory_days_yoy_pct":43.71,"receivable_days_yoy_pct":29.17,"score":0.023,"cov":1.0,"h":{"2026-06-01":{"p":0.472,"r":-0.2708},"2026-07-01":{"p":0.528,"r":-0.2269},"2026-08-03":{"p":0.61,"r":0.4963},"2026-09-01":{"p":0.598,"r":-0.0717},"2026-10-01":{"p":0.506,"r":null}},"p":0.506},{"t":"6442","n":"光聖","s":"通信網路業","rank":29,"tv":45.93,"revenue_yoy_pct":49.25,"revenue_mom_pct":14.96,"revenue_yoy_slope":8.2,"gross_margin_pct":62.51,"gross_margin_slope":0.43,"inventory_days_yoy_pct":65.81,"receivable_days_yoy_pct":1.35,"score":0.198,"cov":1.0,"h":{"2026-06-01":{"p":0.623,"r":-0.13},"2026-07-01":{"p":0.315,"r":-0.3276},"2026-08-03":{"p":0.445,"r":0.2835},"2026-09-01":{"p":0.301,"r":-0.0948},"2026-10-01":{"p":0.554,"r":null}},"p":0.554},{"t":"8358","n":"金居","s":"電子零組件業","rank":30,"tv":45.22,"revenue_yoy_pct":54.87,"revenue_mom_pct":4.82,"revenue_yoy_slope":5.92,"gross_margin_pct":27.39,"gross_margin_slope":2.31,"inventory_days_yoy_pct":23.95,"receivable_days_yoy_pct":17.54,"score":0.242,"cov":1.0,"h":{"2026-06-01":{"p":0.599,"r":-0.1018},"2026-07-01":{"p":0.546,"r":-0.5362},"2026-08-03":{"p":0.547,"r":0.6489},"2026-09-01":{"p":0.57,"r":-0.0399},"2026-10-01":{"p":0.566,"r":null}},"p":0.566},{"t":"3653","n":"健策","s":"電子零組件業","rank":31,"tv":44.53,"revenue_yoy_pct":90.96,"revenue_mom_pct":21.26,"revenue_yoy_slope":21.2,"gross_margin_pct":46.81,"gross_margin_slope":2.4,"inventory_days_yoy_pct":19.99,"receivable_days_yoy_pct":3.64,"score":0.443,"cov":1.0,"h":{"2026-06-01":{"p":0.45,"r":-0.1068},"2026-07-01":{"p":0.543,"r":-0.0722},"2026-08-03":{"p":0.588,"r":0.5889},"2026-09-01":{"p":0.588,"r":0.1682},"2026-10-01":{"p":0.619,"r":null}},"p":0.619},{"t":"3260","n":"威剛","s":"半導體業","rank":32,"tv":42.78,"revenue_yoy_pct":331.29,"revenue_mom_pct":25.36,"revenue_yoy_slope":48.7,"gross_margin_pct":42.11,"gross_margin_slope":6.53,"inventory_days_yoy_pct":60.86,"receivable_days_yoy_pct":5.01,"score":0.367,"cov":1.0,"h":{"2026-06-01":{"p":0.6,"r":-0.0422},"2026-07-01":{"p":0.492,"r":-0.0502},"2026-08-03":{"p":0.558,"r":0.0562},"2026-09-01":{"p":0.558,"r":-0.0205},"2026-10-01":{"p":0.599,"r":null}},"p":0.599},{"t":"3715","n":"定穎投控","s":"電子零組件業","rank":33,"tv":41.98,"revenue_yoy_pct":69.65,"revenue_mom_pct":10.55,"revenue_yoy_slope":9.17,"gross_margin_pct":14.02,"gross_margin_slope":-1.78,"inventory_days_yoy_pct":-2.73,"receivable_days_yoy_pct":15.25,"score":0.122,"cov":1.0,"h":{"2026-06-01":{"p":0.539,"r":-0.033},"2026-07-01":{"p":0.53,"r":-0.4682},"2026-08-03":{"p":0.537,"r":0.1531},"2026-09-01":{"p":0.509,"r":-0.0264},"2026-10-01":{"p":0.534,"r":null}},"p":0.534},{"t":"3324","n":"雙鴻","s":"其他電子類","rank":34,"tv":41.1,"revenue_yoy_pct":116.7,"revenue_mom_pct":38.54,"revenue_yoy_slope":19.58,"gross_margin_pct":28.42,"gross_margin_slope":-0.08,"inventory_days_yoy_pct":33.7,"receivable_days_yoy_pct":-1.36,"score":0.202,"cov":1.0,"h":{"2026-06-01":{"p":0.458,"r":-0.1078},"2026-07-01":{"p":0.489,"r":-0.1881},"2026-08-03":{"p":0.56,"r":0.3242},"2026-09-01":{"p":0.525,"r":0.1091},"2026-10-01":{"p":0.555,"r":null}},"p":0.555},{"t":"2301","n":"光寶科","s":"電腦及週邊設備業","rank":35,"tv":39.95,"revenue_yoy_pct":37.61,"revenue_mom_pct":1.88,"revenue_yoy_slope":4.67,"gross_margin_pct":27.22,"gross_margin_slope":0.65,"inventory_days_yoy_pct":74.75,"receivable_days_yoy_pct":13.61,"score":0.068,"cov":1.0,"h":{"2026-06-01":{"p":0.548,"r":-0.0533},"2026-07-01":{"p":0.48,"r":-0.1344},"2026-08-03":{"p":0.493,"r":0.3412},"2026-09-01":{"p":0.498,"r":-0.0532},"2026-10-01":{"p":0.519,"r":null}},"p":0.519},{"t":"3706","n":"神達","s":"電腦及週邊設備業","rank":36,"tv":38.84,"revenue_yoy_pct":49.73,"revenue_mom_pct":-18.17,"revenue_yoy_slope":8.52,"gross_margin_pct":9.15,"gross_margin_slope":-1.32,"inventory_days_yoy_pct":37.97,"receivable_days_yoy_pct":11.0,"score":-0.035,"cov":1.0,"h":{"2026-06-01":{"p":0.599,"r":-0.0663},"2026-07-01":{"p":0.531,"r":-0.0789},"2026-08-03":{"p":0.558,"r":0.0335},"2026-09-01":{"p":0.579,"r":-0.0242},"2026-10-01":{"p":0.49,"r":null}},"p":0.49},{"t":"2360","n":"致茂","s":"其他電子業","rank":37,"tv":37.26,"revenue_yoy_pct":175.26,"revenue_mom_pct":32.09,"revenue_yoy_slope":7.9,"gross_margin_pct":60.5,"gross_margin_slope":0.38,"inventory_days_yoy_pct":-22.7,"receivable_days_yoy_pct":15.2,"score":0.446,"cov":1.0,"h":{"2026-06-01":{"p":0.536,"r":-0.1557},"2026-07-01":{"p":0.55,"r":-0.1586},"2026-08-03":{"p":0.55,"r":0.0},"2026-09-01":{"p":0.513,"r":0.0246},"2026-10-01":{"p":0.62,"r":null}},"p":0.62},{"t":"3450","n":"聯鈞","s":"半導體業","rank":38,"tv":36.58,"revenue_yoy_pct":98.0,"revenue_mom_pct":7.02,"revenue_yoy_slope":19.58,"gross_margin_pct":32.37,"gross_margin_slope":2.69,"inventory_days_yoy_pct":-28.97,"receivable_days_yoy_pct":27.61,"score":0.609,"cov":1.0,"h":{"2026-06-01":{"p":0.269,"r":-0.011},"2026-07-01":{"p":0.486,"r":-0.3389},"2026-08-03":{"p":0.486,"r":0.5795},"2026-09-01":{"p":0.486,"r":-0.176},"2026-10-01":{"p":0.661,"r":null}},"p":0.661},{"t":"7769","n":"鴻勁","s":"半導體業","rank":39,"tv":35.97,"revenue_yoy_pct":null,"revenue_mom_pct":null,"revenue_yoy_slope":null,"gross_margin_pct":56.09,"gross_margin_slope":-0.09,"inventory_days_yoy_pct":-32.12,"receivable_days_yoy_pct":55.62,"score":-0.015,"cov":0.6,"h":{"2026-06-01":{"p":0.405,"r":-0.1391},"2026-07-01":{"p":0.531,"r":-0.1823},"2026-08-03":{"p":0.531,"r":-0.0879},"2026-09-01":{"p":0.531,"r":-0.0647},"2026-10-01":{"p":0.497,"r":null}},"p":0.497},{"t":"6805","n":"富世達","s":"電子零組件業","rank":40,"tv":35.41,"revenue_yoy_pct":17.07,"revenue_mom_pct":12.75,"revenue_yoy_slope":-13.05,"gross_margin_pct":34.05,"gross_margin_slope":2.24,"inventory_days_yoy_pct":-26.93,"receivable_days_yoy_pct":25.35,"score":0.124,"cov":1.0,"h":{"2026-06-01":{"p":0.749,"r":-0.2075},"2026-07-01":{"p":0.608,"r":-0.2765},"2026-08-03":{"p":0.62,"r":0.579},"2026-09-01":{"p":0.608,"r":0.046},"2026-10-01":{"p":0.534,"r":null}},"p":0.534},{"t":"3189","n":"景碩","s":"半導體業","rank":41,"tv":33.08,"revenue_yoy_pct":35.85,"revenue_mom_pct":7.69,"revenue_yoy_slope":2.65,"gross_margin_pct":26.09,"gross_margin_slope":2.04,"inventory_days_yoy_pct":7.01,"receivable_days_yoy_pct":9.57,"score":0.343,"cov":1.0,"h":{"2026-06-01":{"p":0.498,"r":0.1512},"2026-07-01":{"p":0.511,"r":-0.348},"2026-08-03":{"p":0.593,"r":0.1734},"2026-09-01":{"p":0.57,"r":0.1556},"2026-10-01":{"p":0.593,"r":null}},"p":0.593},{"t":"3163","n":"波若威","s":"通信網路業","rank":42,"tv":31.46,"revenue_yoy_pct":28.65,"revenue_mom_pct":15.94,"revenue_yoy_slope":-0.5,"gross_margin_pct":15.19,"gross_margin_slope":-1.07,"inventory_days_yoy_pct":65.08,"receivable_days_yoy_pct":1.39,"score":-0.136,"cov":1.0,"h":{"2026-06-01":{"p":0.538,"r":-0.2528},"2026-07-01":{"p":0.481,"r":-0.2227},"2026-08-03":{"p":0.583,"r":0.2391},"2026-09-01":{"p":0.422,"r":-0.1445},"2026-10-01":{"p":0.463,"r":null}},"p":0.463},{"t":"6139","n":"亞翔","s":"其他電子業","rank":43,"tv":30.5,"revenue_yoy_pct":62.28,"revenue_mom_pct":28.8,"revenue_yoy_slope":-7.85,"gross_margin_pct":21.3,"gross_margin_slope":0.9,"inventory_days_yoy_pct":89.78,"receivable_days_yoy_pct":140.45,"score":-0.267,"cov":1.0,"h":{"2026-06-01":{"p":0.655,"r":0.1879},"2026-07-01":{"p":0.453,"r":-0.295},"2026-08-03":{"p":0.549,"r":-0.0131},"2026-09-01":{"p":0.522,"r":0.0161},"2026-10-01":{"p":0.427,"r":null}},"p":0.427},{"t":"2059","n":"川湖","s":"電子零組件業","rank":44,"tv":30.42,"revenue_yoy_pct":355.52,"revenue_mom_pct":44.22,"revenue_yoy_slope":87.76,"gross_margin_pct":87.42,"gross_margin_slope":4.02,"inventory_days_yoy_pct":5.79,"receivable_days_yoy_pct":10.21,"score":0.493,"cov":1.0,"h":{"2026-06-01":{"p":0.582,"r":0.4113},"2026-07-01":{"p":0.616,"r":-0.0673},"2026-08-03":{"p":0.616,"r":0.6479},"2026-09-01":{"p":0.616,"r":-0.1636},"2026-10-01":{"p":0.632,"r":null}},"p":0.632},{"t":"6223","n":"旺矽","s":"半導體業","rank":45,"tv":30.32,"revenue_yoy_pct":66.5,"revenue_mom_pct":-1.5,"revenue_yoy_slope":4.9,"gross_margin_pct":58.37,"gross_margin_slope":2.06,"inventory_days_yoy_pct":3.55,"receivable_days_yoy_pct":9.97,"score":0.408,"cov":1.0,"h":{"2026-06-01":{"p":0.52,"r":0.0722},"2026-07-01":{"p":0.546,"r":-0.2806},"2026-08-03":{"p":0.546,"r":-0.1163},"2026-09-01":{"p":0.564,"r":-0.0702},"2026-10-01":{"p":0.61,"r":null}},"p":0.61},{"t":"2313","n":"華通","s":"電子零組件業","rank":46,"tv":29.93,"revenue_yoy_pct":16.01,"revenue_mom_pct":0.58,"revenue_yoy_slope":6.46,"gross_margin_pct":18.51,"gross_margin_slope":-0.5,"inventory_days_yoy_pct":50.29,"receivable_days_yoy_pct":10.16,"score":-0.082,"cov":1.0,"h":{"2026-06-01":{"p":0.455,"r":-0.1613},"2026-07-01":{"p":0.422,"r":-0.3},"2026-08-03":{"p":0.52,"r":0.3396},"2026-09-01":{"p":0.545,"r":-0.1091},"2026-10-01":{"p":0.477,"r":null}},"p":0.477},{"t":"5274","n":"信驊","s":"半導體業","rank":47,"tv":28.3,"revenue_yoy_pct":97.59,"revenue_mom_pct":16.32,"revenue_yoy_slope":4.67,"gross_margin_pct":72.0,"gross_margin_slope":0.9,"inventory_days_yoy_pct":33.83,"receivable_days_yoy_pct":1.05,"score":0.176,"cov":1.0,"h":{"2026-06-01":{"p":0.679,"r":-0.1043},"2026-07-01":{"p":0.659,"r":-0.1528},"2026-08-03":{"p":0.622,"r":0.0056},"2026-09-01":{"p":0.608,"r":0.1121},"2026-10-01":{"p":0.548,"r":null}},"p":0.548},{"t":"6781","n":"AES-KY","s":"電子零組件業","rank":48,"tv":27.78,"revenue_yoy_pct":28.24,"revenue_mom_pct":2.26,"revenue_yoy_slope":3.97,"gross_margin_pct":39.06,"gross_margin_slope":1.45,"inventory_days_yoy_pct":13.0,"receivable_days_yoy_pct":-48.74,"score":0.526,"cov":1.0,"h":{"2026-06-01":{"p":0.562,"r":-0.0167},"2026-07-01":{"p":0.568,"r":-0.2745},"2026-08-03":{"p":0.611,"r":0.167},"2026-09-01":{"p":0.633,"r":-0.1126},"2026-10-01":{"p":0.641,"r":null}},"p":0.641},{"t":"2357","n":"華碩","s":"電腦及週邊設備業","rank":49,"tv":26.04,"revenue_yoy_pct":53.33,"revenue_mom_pct":-21.17,"revenue_yoy_slope":6.92,"gross_margin_pct":17.17,"gross_margin_slope":0.74,"inventory_days_yoy_pct":80.03,"receivable_days_yoy_pct":3.77,"score":0.187,"cov":1.0,"h":{"2026-06-01":{"p":0.496,"r":-0.1637},"2026-07-01":{"p":0.509,"r":0.1218},"2026-08-03":{"p":0.51,"r":0.2503},"2026-09-01":{"p":0.573,"r":-0.0446},"2026-10-01":{"p":0.551,"r":null}},"p":0.551},{"t":"6515","n":"穎崴","s":"半導體業","rank":50,"tv":25.84,"revenue_yoy_pct":155.57,"revenue_mom_pct":9.6,"revenue_yoy_slope":48.33,"gross_margin_pct":38.33,"gross_margin_slope":-0.99,"inventory_days_yoy_pct":-32.92,"receivable_days_yoy_pct":3.82,"score":0.475,"cov":1.0,"h":{"2026-06-01":{"p":0.532,"r":-0.0712},"2026-07-01":{"p":0.541,"r":-0.4005},"2026-08-03":{"p":0.541,"r":0.0056},"2026-09-01":{"p":0.541,"r":-0.165},"2026-10-01":{"p":0.628,"r":null}},"p":0.628},{"t":"2481","n":"強茂","s":"半導體業","rank":51,"tv":25.84,"revenue_yoy_pct":30.98,"revenue_mom_pct":4.23,"revenue_yoy_slope":8.04,"gross_margin_pct":33.22,"gross_margin_slope":0.58,"inventory_days_yoy_pct":6.66,"receivable_days_yoy_pct":11.37,"score":0.299,"cov":1.0,"h":{"2026-06-01":{"p":0.585,"r":0.1624},"2026-07-01":{"p":0.541,"r":-0.4499},"2026-08-03":{"p":0.567,"r":0.1705},"2026-09-01":{"p":0.59,"r":0.1306},"2026-10-01":{"p":0.581,"r":null}},"p":0.581},{"t":"8112","n":"至上","s":"電子工業","rank":52,"tv":25.31,"revenue_yoy_pct":333.48,"revenue_mom_pct":24.74,"revenue_yoy_slope":81.06,"gross_margin_pct":3.77,"gross_margin_slope":0.27,"inventory_days_yoy_pct":77.82,"receivable_days_yoy_pct":-4.97,"score":0.26,"cov":1.0,"h":{"2026-06-01":{"p":0.586,"r":0.0109},"2026-07-01":{"p":0.654,"r":-0.1055},"2026-08-03":{"p":0.7,"r":0.1155},"2026-09-01":{"p":0.7,"r":-0.0821},"2026-10-01":{"p":0.571,"r":null}},"p":0.571},{"t":"2404","n":"漢唐","s":"其他電子業","rank":53,"tv":24.5,"revenue_yoy_pct":63.77,"revenue_mom_pct":13.75,"revenue_yoy_slope":-14.95,"gross_margin_pct":23.64,"gross_margin_slope":1.65,"inventory_days_yoy_pct":-39.57,"receivable_days_yoy_pct":-15.23,"score":0.467,"cov":1.0,"h":{"2026-06-01":{"p":0.596,"r":0.1234},"2026-07-01":{"p":0.714,"r":-0.1981},"2026-08-03":{"p":0.691,"r":-0.0407},"2026-09-01":{"p":0.616,"r":0.1864},"2026-10-01":{"p":0.625,"r":null}},"p":0.625},{"t":"5439","n":"高技","s":"電子零組件業","rank":54,"tv":23.86,"revenue_yoy_pct":4.48,"revenue_mom_pct":-4.78,"revenue_yoy_slope":-10.12,"gross_margin_pct":22.46,"gross_margin_slope":-1.13,"inventory_days_yoy_pct":-24.85,"receivable_days_yoy_pct":17.16,"score":-0.232,"cov":1.0,"h":{"2026-06-01":{"p":0.56,"r":-0.1829},"2026-07-01":{"p":0.54,"r":-0.397},"2026-08-03":{"p":0.575,"r":0.25},"2026-09-01":{"p":0.542,"r":-0.0873},"2026-10-01":{"p":0.437,"r":null}},"p":0.437},{"t":"5289","n":"宜鼎","s":"電腦及週邊設備業","rank":55,"tv":23.8,"revenue_yoy_pct":636.53,"revenue_mom_pct":3.49,"revenue_yoy_slope":21.58,"gross_margin_pct":65.01,"gross_margin_slope":12.25,"inventory_days_yoy_pct":56.99,"receivable_days_yoy_pct":35.8,"score":0.2,"cov":1.0,"h":{"2026-06-01":{"p":0.543,"r":-0.1522},"2026-07-01":{"p":0.572,"r":-0.2508},"2026-08-03":{"p":0.572,"r":0.0799},"2026-09-01":{"p":0.572,"r":-0.1103},"2026-10-01":{"p":0.555,"r":null}},"p":0.555},{"t":"8110","n":"華東","s":"半導體業","rank":56,"tv":23.05,"revenue_yoy_pct":18.51,"revenue_mom_pct":4.22,"revenue_yoy_slope":0.68,"gross_margin_pct":9.1,"gross_margin_slope":1.72,"inventory_days_yoy_pct":82.03,"receivable_days_yoy_pct":77.68,"score":-0.091,"cov":1.0,"h":{"2026-06-01":{"p":0.492,"r":-0.1212},"2026-07-01":{"p":0.481,"r":-0.3574},"2026-08-03":{"p":0.505,"r":0.1189},"2026-09-01":{"p":0.485,"r":0.0786},"2026-10-01":{"p":0.475,"r":null}},"p":0.475},{"t":"3105","n":"穩懋","s":"半導體業","rank":57,"tv":22.87,"revenue_yoy_pct":31.18,"revenue_mom_pct":7.03,"revenue_yoy_slope":-6.39,"gross_margin_pct":28.24,"gross_margin_slope":-0.13,"inventory_days_yoy_pct":26.38,"receivable_days_yoy_pct":8.08,"score":-0.171,"cov":1.0,"h":{"2026-06-01":{"p":0.63,"r":-0.1928},"2026-07-01":{"p":0.636,"r":-0.3581},"2026-08-03":{"p":0.624,"r":0.4389},"2026-09-01":{"p":0.581,"r":0.0935},"2026-10-01":{"p":0.453,"r":null}},"p":0.453},{"t":"8210","n":"勤誠","s":"電腦及週邊設備業","rank":58,"tv":22.68,"revenue_yoy_pct":41.51,"revenue_mom_pct":-23.95,"revenue_yoy_slope":17.14,"gross_margin_pct":32.65,"gross_margin_slope":0.72,"inventory_days_yoy_pct":-5.5,"receivable_days_yoy_pct":19.81,"score":0.377,"cov":1.0,"h":{"2026-06-01":{"p":0.489,"r":-0.0723},"2026-07-01":{"p":0.503,"r":-0.2656},"2026-08-03":{"p":0.562,"r":-0.1151},"2026-09-01":{"p":0.655,"r":-0.1465},"2026-10-01":{"p":0.602,"r":null}},"p":0.602},{"t":"4967","n":"十銓","s":"半導體業","rank":59,"tv":22.56,"revenue_yoy_pct":98.75,"revenue_mom_pct":-15.68,"revenue_yoy_slope":-1.72,"gross_margin_pct":42.77,"gross_margin_slope":10.4,"inventory_days_yoy_pct":173.8,"receivable_days_yoy_pct":28.55,"score":-0.025,"cov":1.0,"h":{"2026-06-01":{"p":0.511,"r":-0.0882},"2026-07-01":{"p":0.561,"r":-0.1517},"2026-08-03":{"p":0.593,"r":0.1872},"2026-09-01":{"p":0.484,"r":-0.0145},"2026-10-01":{"p":0.493,"r":null}},"p":0.493},{"t":"3211","n":"順達","s":"電腦及週邊設備業","rank":60,"tv":22.46,"revenue_yoy_pct":20.88,"revenue_mom_pct":-3.1,"revenue_yoy_slope":3.83,"gross_margin_pct":13.85,"gross_margin_slope":-0.7,"inventory_days_yoy_pct":88.73,"receivable_days_yoy_pct":16.41,"score":-0.163,"cov":1.0,"h":{"2026-06-01":{"p":0.61,"r":-0.0528},"2026-07-01":{"p":0.573,"r":-0.28},"2026-08-03":{"p":0.484,"r":0.2508},"2026-09-01":{"p":0.536,"r":-0.0296},"2026-10-01":{"p":0.455,"r":null}},"p":0.455},{"t":"2303","n":"聯電","s":"半導體業","rank":61,"tv":21.71,"revenue_yoy_pct":18.98,"revenue_mom_pct":3.11,"revenue_yoy_slope":2.96,"gross_margin_pct":32.48,"gross_margin_slope":0.65,"inventory_days_yoy_pct":0.58,"receivable_days_yoy_pct":0.68,"score":0.243,"cov":1.0,"h":{"2026-06-01":{"p":0.561,"r":0.1267},"2026-07-01":{"p":0.529,"r":-0.338},"2026-08-03":{"p":0.556,"r":0.0932},"2026-09-01":{"p":0.576,"r":0.2189},"2026-10-01":{"p":0.566,"r":null}},"p":0.566},{"t":"6191","n":"精成科","s":"電子零組件業","rank":62,"tv":21.4,"revenue_yoy_pct":18.97,"revenue_mom_pct":13.72,"revenue_yoy_slope":6.43,"gross_margin_pct":15.31,"gross_margin_slope":-1.17,"inventory_days_yoy_pct":54.79,"receivable_days_yoy_pct":4.24,"score":-0.09,"cov":1.0,"h":{"2026-06-01":{"p":0.539,"r":0.1071},"2026-07-01":{"p":0.41,"r":-0.2333},"2026-08-03":{"p":0.403,"r":0.0182},"2026-09-01":{"p":0.426,"r":0.0},"2026-10-01":{"p":0.475,"r":null}},"p":0.475},{"t":"6531","n":"愛普*","s":"半導體業","rank":63,"tv":20.02,"revenue_yoy_pct":144.57,"revenue_mom_pct":36.08,"revenue_yoy_slope":12.52,"gross_margin_pct":49.06,"gross_margin_slope":0.55,"inventory_days_yoy_pct":6.27,"receivable_days_yoy_pct":-12.68,"score":0.498,"cov":1.0,"h":{"2026-06-01":{"p":0.731,"r":-0.1068},"2026-07-01":{"p":0.679,"r":-0.3684},"2026-08-03":{"p":0.648,"r":0.2647},"2026-09-01":{"p":0.648,"r":-0.0261},"2026-10-01":{"p":0.633,"r":null}},"p":0.633},{"t":"2492","n":"華新科","s":"電子零組件業","rank":64,"tv":19.13,"revenue_yoy_pct":41.95,"revenue_mom_pct":12.2,"revenue_yoy_slope":8.71,"gross_margin_pct":20.29,"gross_margin_slope":1.06,"inventory_days_yoy_pct":11.58,"receivable_days_yoy_pct":1.2,"score":0.395,"cov":1.0,"h":{"2026-06-01":{"p":0.515,"r":0.3582},"2026-07-01":{"p":0.538,"r":-0.6691},"2026-08-03":{"p":0.573,"r":0.2317},"2026-09-01":{"p":0.579,"r":0.0876},"2026-10-01":{"p":0.607,"r":null}},"p":0.607},{"t":"3529","n":"力旺","s":"半導體業","rank":65,"tv":18.75,"revenue_yoy_pct":23.77,"revenue_mom_pct":278.73,"revenue_yoy_slope":6.75,"gross_margin_pct":100.0,"gross_margin_slope":0.0,"inventory_days_yoy_pct":null,"receivable_days_yoy_pct":52.25,"score":0.117,"cov":0.8,"h":{"2026-06-01":{"p":0.648,"r":-0.1024},"2026-07-01":{"p":0.476,"r":-0.2237},"2026-08-03":{"p":0.47,"r":0.0042},"2026-09-01":{"p":0.539,"r":0.2292},"2026-10-01":{"p":0.526,"r":null}},"p":0.526},{"t":"6239","n":"力成","s":"半導體業","rank":66,"tv":18.07,"revenue_yoy_pct":29.37,"revenue_mom_pct":8.49,"revenue_yoy_slope":-1.79,"gross_margin_pct":21.76,"gross_margin_slope":1.77,"inventory_days_yoy_pct":11.37,"receivable_days_yoy_pct":12.12,"score":0.18,"cov":1.0,"h":{"2026-06-01":{"p":0.568,"r":-0.0779},"2026-07-01":{"p":0.574,"r":-0.3481},"2026-08-03":{"p":0.582,"r":0.1614},"2026-09-01":{"p":0.553,"r":0.0299},"2026-10-01":{"p":0.549,"r":null}},"p":0.549},{"t":"4958","n":"臻鼎-KY","s":"電子零組件業","rank":67,"tv":17.67,"revenue_yoy_pct":31.82,"revenue_mom_pct":3.33,"revenue_yoy_slope":5.54,"gross_margin_pct":23.1,"gross_margin_slope":0.24,"inventory_days_yoy_pct":48.01,"receivable_days_yoy_pct":35.97,"score":-0.065,"cov":1.0,"h":{"2026-06-01":{"p":0.521,"r":0.1575},"2026-07-01":{"p":0.526,"r":-0.3765},"2026-08-03":{"p":0.589,"r":0.1862},"2026-09-01":{"p":0.589,"r":-0.0467},"2026-10-01":{"p":0.482,"r":null}},"p":0.482},{"t":"6282","n":"康舒","s":"電子零組件業","rank":68,"tv":17.43,"revenue_yoy_pct":42.45,"revenue_mom_pct":-4.66,"revenue_yoy_slope":2.56,"gross_margin_pct":21.24,"gross_margin_slope":-1.41,"inventory_days_yoy_pct":19.37,"receivable_days_yoy_pct":-2.16,"score":-0.005,"cov":1.0,"h":{"2026-06-01":{"p":0.541,"r":-0.1155},"2026-07-01":{"p":0.563,"r":-0.3325},"2026-08-03":{"p":0.573,"r":0.0227},"2026-09-01":{"p":0.562,"r":-0.0356},"2026-10-01":{"p":0.499,"r":null}},"p":0.499},{"t":"3006","n":"晶豪科","s":"半導體業","rank":69,"tv":17.43,"revenue_yoy_pct":491.06,"revenue_mom_pct":40.02,"revenue_yoy_slope":45.71,"gross_margin_pct":68.7,"gross_margin_slope":18.25,"inventory_days_yoy_pct":-25.88,"receivable_days_yoy_pct":-24.36,"score":0.935,"cov":1.0,"h":{"2026-06-01":{"p":0.693,"r":-0.096},"2026-07-01":{"p":0.725,"r":-0.2264},"2026-08-03":{"p":0.725,"r":0.4773},"2026-09-01":{"p":0.725,"r":0.009},"2026-10-01":{"p":0.736,"r":null}},"p":0.736},{"t":"5536","n":"聖暉*","s":"其他電子類","rank":70,"tv":17.21,"revenue_yoy_pct":3.41,"revenue_mom_pct":-18.62,"revenue_yoy_slope":-3.82,"gross_margin_pct":20.64,"gross_margin_slope":1.34,"inventory_days_yoy_pct":0.06,"receivable_days_yoy_pct":8.97,"score":0.02,"cov":1.0,"h":{"2026-06-01":{"p":0.655,"r":0.2836},"2026-07-01":{"p":0.618,"r":-0.317},"2026-08-03":{"p":0.662,"r":-0.0828},"2026-09-01":{"p":0.594,"r":0.0861},"2026-10-01":{"p":0.505,"r":null}},"p":0.505},{"t":"6510","n":"精測","s":"半導體業","rank":71,"tv":17.13,"revenue_yoy_pct":49.87,"revenue_mom_pct":7.09,"revenue_yoy_slope":6.51,"gross_margin_pct":57.52,"gross_margin_slope":0.43,"inventory_days_yoy_pct":47.42,"receivable_days_yoy_pct":11.74,"score":0.095,"cov":1.0,"h":{"2026-06-01":{"p":0.618,"r":-0.0775},"2026-07-01":{"p":0.553,"r":-0.3053},"2026-08-03":{"p":0.571,"r":0.0716},"2026-09-01":{"p":0.552,"r":-0.04},"2026-10-01":{"p":0.526,"r":null}},"p":0.526},{"t":"6290","n":"良維","s":"電子零組件業","rank":72,"tv":16.83,"revenue_yoy_pct":14.36,"revenue_mom_pct":6.38,"revenue_yoy_slope":2.11,"gross_margin_pct":30.23,"gross_margin_slope":-0.31,"inventory_days_yoy_pct":45.85,"receivable_days_yoy_pct":10.26,"score":-0.161,"cov":1.0,"h":{"2026-06-01":{"p":0.584,"r":-0.1594},"2026-07-01":{"p":0.484,"r":-0.3691},"2026-08-03":{"p":0.475,"r":0.1655},"2026-09-01":{"p":0.444,"r":0.0694},"2026-10-01":{"p":0.456,"r":null}},"p":0.456},{"t":"8039","n":"台虹","s":"電子零組件業","rank":73,"tv":16.51,"revenue_yoy_pct":-6.06,"revenue_mom_pct":1.44,"revenue_yoy_slope":-2.13,"gross_margin_pct":23.13,"gross_margin_slope":1.63,"inventory_days_yoy_pct":5.58,"receivable_days_yoy_pct":8.26,"score":-0.012,"cov":1.0,"h":{"2026-06-01":{"p":0.516,"r":-0.0118},"2026-07-01":{"p":0.504,"r":0.0859},"2026-08-03":{"p":0.534,"r":0.7165},"2026-09-01":{"p":0.492,"r":-0.0956},"2026-10-01":{"p":0.497,"r":null}},"p":0.497},{"t":"3081","n":"聯亞","s":"通信網路業","rank":74,"tv":16.46,"revenue_yoy_pct":176.54,"revenue_mom_pct":19.19,"revenue_yoy_slope":19.28,"gross_margin_pct":57.45,"gross_margin_slope":4.75,"inventory_days_yoy_pct":7.37,"receivable_days_yoy_pct":47.77,"score":0.351,"cov":1.0,"h":{"2026-06-01":{"p":0.598,"r":-0.2477},"2026-07-01":{"p":0.523,"r":-0.1737},"2026-08-03":{"p":0.591,"r":0.9721},"2026-09-01":{"p":0.591,"r":-0.2234},"2026-10-01":{"p":0.595,"r":null}},"p":0.595},{"t":"6488","n":"環球晶","s":"半導體業","rank":75,"tv":15.96,"revenue_yoy_pct":19.59,"revenue_mom_pct":-11.5,"revenue_yoy_slope":9.09,"gross_margin_pct":20.64,"gross_margin_slope":0.2,"inventory_days_yoy_pct":14.79,"receivable_days_yoy_pct":9.91,"score":0.167,"cov":1.0,"h":{"2026-06-01":{"p":0.455,"r":0.0579},"2026-07-01":{"p":0.477,"r":-0.2932},"2026-08-03":{"p":0.491,"r":0.0531},"2026-09-01":{"p":0.477,"r":0.0915},"2026-10-01":{"p":0.546,"r":null}},"p":0.546},{"t":"3008","n":"大立光","s":"電子工業","rank":76,"tv":15.3,"revenue_yoy_pct":-9.9,"revenue_mom_pct":31.39,"revenue_yoy_slope":-14.97,"gross_margin_pct":49.42,"gross_margin_slope":0.79,"inventory_days_yoy_pct":-10.41,"receivable_days_yoy_pct":-6.64,"score":-0.073,"cov":1.0,"h":{"2026-06-01":{"p":0.468,"r":0.1186},"2026-07-01":{"p":0.554,"r":-0.142},"2026-08-03":{"p":0.596,"r":0.9495},"2026-09-01":{"p":0.443,"r":-0.1814},"2026-10-01":{"p":0.48,"r":null}},"p":0.48},{"t":"3363","n":"上詮","s":"通信網路業","rank":77,"tv":15.14,"revenue_yoy_pct":12.09,"revenue_mom_pct":8.51,"revenue_yoy_slope":15.73,"gross_margin_pct":0.23,"gross_margin_slope":-8.13,"inventory_days_yoy_pct":28.05,"receivable_days_yoy_pct":41.6,"score":-0.306,"cov":1.0,"h":{"2026-06-01":{"p":0.339,"r":-0.2855},"2026-07-01":{"p":0.297,"r":-0.1862},"2026-08-03":{"p":0.305,"r":0.4229},"2026-09-01":{"p":0.391,"r":-0.1845},"2026-10-01":{"p":0.417,"r":null}},"p":0.417},{"t":"3131","n":"弘塑","s":"半導體業","rank":78,"tv":13.75,"revenue_yoy_pct":42.41,"revenue_mom_pct":25.65,"revenue_yoy_slope":14.84,"gross_margin_pct":38.86,"gross_margin_slope":-1.39,"inventory_days_yoy_pct":16.28,"receivable_days_yoy_pct":-7.83,"score":0.204,"cov":1.0,"h":{"2026-06-01":{"p":0.554,"r":0.1118},"2026-07-01":{"p":0.441,"r":-0.4052},"2026-08-03":{"p":0.462,"r":-0.0041},"2026-09-01":{"p":0.562,"r":-0.0403},"2026-10-01":{"p":0.556,"r":null}},"p":0.556},{"t":"5314","n":"世紀*","s":"半導體業","rank":79,"tv":13.72,"revenue_yoy_pct":149.63,"revenue_mom_pct":-4.5,"revenue_yoy_slope":4.34,"gross_margin_pct":42.08,"gross_margin_slope":-7.34,"inventory_days_yoy_pct":269.23,"receivable_days_yoy_pct":584.36,"score":-0.313,"cov":1.0,"h":{"2026-06-01":{"p":0.341,"r":0.023},"2026-07-01":{"p":0.348,"r":-0.2948},"2026-08-03":{"p":0.436,"r":1.7153},"2026-09-01":{"p":0.453,"r":-0.1317},"2026-10-01":{"p":0.415,"r":null}},"p":0.415},{"t":"3481","n":"群創","s":"電子工業","rank":80,"tv":13.57,"revenue_yoy_pct":-1.94,"revenue_mom_pct":-12.96,"revenue_yoy_slope":-3.42,"gross_margin_pct":14.56,"gross_margin_slope":2.54,"inventory_days_yoy_pct":18.19,"receivable_days_yoy_pct":12.94,"score":-0.089,"cov":1.0,"h":{"2026-06-01":{"p":0.547,"r":0.2529},"2026-07-01":{"p":0.59,"r":-0.3858},"2026-08-03":{"p":0.579,"r":0.0884},"2026-09-01":{"p":0.57,"r":0.0609},"2026-10-01":{"p":0.476,"r":null}},"p":0.476},{"t":"8271","n":"宇瞻","s":"半導體業","rank":81,"tv":13.42,"revenue_yoy_pct":164.99,"revenue_mom_pct":-4.2,"revenue_yoy_slope":-61.13,"gross_margin_pct":51.25,"gross_margin_slope":11.73,"inventory_days_yoy_pct":148.25,"receivable_days_yoy_pct":13.87,"score":-0.092,"cov":1.0,"h":{"2026-06-01":{"p":0.574,"r":-0.2173},"2026-07-01":{"p":0.619,"r":0.1333},"2026-08-03":{"p":0.619,"r":0.0364},"2026-09-01":{"p":0.511,"r":-0.1106},"2026-10-01":{"p":0.475,"r":null}},"p":0.475},{"t":"3036","n":"文曄","s":"電子工業","rank":82,"tv":12.91,"revenue_yoy_pct":94.85,"revenue_mom_pct":0.67,"revenue_yoy_slope":8.39,"gross_margin_pct":3.41,"gross_margin_slope":-0.13,"inventory_days_yoy_pct":-23.18,"receivable_days_yoy_pct":17.82,"score":0.391,"cov":1.0,"h":{"2026-06-01":{"p":0.574,"r":-0.2344},"2026-07-01":{"p":0.549,"r":-0.1303},"2026-08-03":{"p":0.654,"r":-0.0416},"2026-09-01":{"p":0.654,"r":0.0842},"2026-10-01":{"p":0.606,"r":null}},"p":0.606},{"t":"2376","n":"技嘉","s":"電腦及週邊設備業","rank":83,"tv":12.48,"revenue_yoy_pct":59.67,"revenue_mom_pct":3.08,"revenue_yoy_slope":2.16,"gross_margin_pct":9.62,"gross_margin_slope":0.09,"inventory_days_yoy_pct":116.38,"receivable_days_yoy_pct":-34.57,"score":0.252,"cov":1.0,"h":{"2026-06-01":{"p":0.549,"r":-0.1111},"2026-07-01":{"p":0.618,"r":-0.0563},"2026-08-03":{"p":0.477,"r":0.1032},"2026-09-01":{"p":0.529,"r":0.0265},"2026-10-01":{"p":0.569,"r":null}},"p":0.569},{"t":"4991","n":"環宇-KY","s":"半導體業","rank":84,"tv":12.42,"revenue_yoy_pct":-6.93,"revenue_mom_pct":-55.41,"revenue_yoy_slope":-22.39,"gross_margin_pct":43.27,"gross_margin_slope":-1.1,"inventory_days_yoy_pct":-24.1,"receivable_days_yoy_pct":-46.25,"score":0.004,"cov":1.0,"h":{"2026-06-01":{"p":0.581,"r":-0.2789},"2026-07-01":{"p":0.555,"r":-0.4088},"2026-08-03":{"p":0.659,"r":0.3892},"2026-09-01":{"p":0.625,"r":-0.1075},"2026-10-01":{"p":0.501,"r":null}},"p":0.501},{"t":"2379","n":"瑞昱","s":"半導體業","rank":85,"tv":12.34,"revenue_yoy_pct":32.54,"revenue_mom_pct":4.75,"revenue_yoy_slope":6.25,"gross_margin_pct":47.0,"gross_margin_slope":-0.65,"inventory_days_yoy_pct":17.79,"receivable_days_yoy_pct":6.64,"score":0.098,"cov":1.0,"h":{"2026-06-01":{"p":0.42,"r":0.3235},"2026-07-01":{"p":0.446,"r":-0.1592},"2026-08-03":{"p":0.516,"r":0.0241},"2026-09-01":{"p":0.494,"r":0.0606},"2026-10-01":{"p":0.527,"r":null}},"p":0.527},{"t":"4749","n":"新應材","s":"半導體業","rank":86,"tv":12.22,"revenue_yoy_pct":22.53,"revenue_mom_pct":-8.69,"revenue_yoy_slope":11.9,"gross_margin_pct":44.53,"gross_margin_slope":0.82,"inventory_days_yoy_pct":71.95,"receivable_days_yoy_pct":22.26,"score":0.083,"cov":1.0,"h":{"2026-06-01":{"p":0.614,"r":-0.1695},"2026-07-01":{"p":0.39,"r":-0.2583},"2026-08-03":{"p":0.427,"r":0.0052},"2026-09-01":{"p":0.506,"r":-0.0526},"2026-10-01":{"p":0.523,"r":null}},"p":0.523},{"t":"6409","n":"旭隼","s":"其他電子業","rank":87,"tv":12.13,"revenue_yoy_pct":25.81,"revenue_mom_pct":3.82,"revenue_yoy_slope":12.15,"gross_margin_pct":25.28,"gross_margin_slope":-1.39,"inventory_days_yoy_pct":16.59,"receivable_days_yoy_pct":9.6,"score":0.058,"cov":1.0,"h":{"2026-06-01":{"p":0.415,"r":0.5217},"2026-07-01":{"p":0.388,"r":-0.1841},"2026-08-03":{"p":0.45,"r":0.1081},"2026-09-01":{"p":0.481,"r":-0.135},"2026-10-01":{"p":0.516,"r":null}},"p":0.516},{"t":"2421","n":"建準","s":"電子零組件業","rank":88,"tv":12.03,"revenue_yoy_pct":31.65,"revenue_mom_pct":14.25,"revenue_yoy_slope":5.37,"gross_margin_pct":31.25,"gross_margin_slope":-0.14,"inventory_days_yoy_pct":30.89,"receivable_days_yoy_pct":7.84,"score":0.041,"cov":1.0,"h":{"2026-06-01":{"p":0.561,"r":-0.1102},"2026-07-01":{"p":0.501,"r":-0.1747},"2026-08-03":{"p":0.542,"r":0.315},"2026-09-01":{"p":0.526,"r":-0.0734},"2026-10-01":{"p":0.511,"r":null}},"p":0.511},{"t":"2324","n":"仁寶","s":"電腦及週邊設備業","rank":89,"tv":11.93,"revenue_yoy_pct":38.26,"revenue_mom_pct":-15.49,"revenue_yoy_slope":10.43,"gross_margin_pct":4.62,"gross_margin_slope":-0.37,"inventory_days_yoy_pct":10.05,"receivable_days_yoy_pct":2.99,"score":0.276,"cov":1.0,"h":{"2026-06-01":{"p":0.496,"r":-0.1252},"2026-07-01":{"p":0.526,"r":-0.0246},"2026-08-03":{"p":0.558,"r":0.11},"2026-09-01":{"p":0.572,"r":-0.0815},"2026-10-01":{"p":0.575,"r":null}},"p":0.575},{"t":"8054","n":"安國","s":"半導體業","rank":90,"tv":11.8,"revenue_yoy_pct":97.88,"revenue_mom_pct":142.19,"revenue_yoy_slope":-25.26,"gross_margin_pct":16.9,"gross_margin_slope":-0.89,"inventory_days_yoy_pct":-49.64,"receivable_days_yoy_pct":-66.67,"score":0.311,"cov":1.0,"h":{"2026-06-01":{"p":0.491,"r":0.1667},"2026-07-01":{"p":0.555,"r":-0.3616},"2026-08-03":{"p":0.659,"r":0.0441},"2026-09-01":{"p":0.462,"r":0.0729},"2026-10-01":{"p":0.585,"r":null}},"p":0.585},{"t":"5469","n":"瀚宇博","s":"電子零組件業","rank":91,"tv":11.59,"revenue_yoy_pct":24.09,"revenue_mom_pct":12.71,"revenue_yoy_slope":6.59,"gross_margin_pct":15.06,"gross_margin_slope":-1.64,"inventory_days_yoy_pct":30.27,"receivable_days_yoy_pct":8.78,"score":-0.13,"cov":1.0,"h":{"2026-06-01":{"p":0.536,"r":0.0384},"2026-07-01":{"p":0.414,"r":-0.2522},"2026-08-03":{"p":0.41,"r":0.0979},"2026-09-01":{"p":0.432,"r":0.0081},"2026-10-01":{"p":0.464,"r":null}},"p":0.464},{"t":"6173","n":"信昌電","s":"電子零組件業","rank":92,"tv":11.57,"revenue_yoy_pct":47.87,"revenue_mom_pct":6.62,"revenue_yoy_slope":8.6,"gross_margin_pct":28.84,"gross_margin_slope":1.47,"inventory_days_yoy_pct":42.21,"receivable_days_yoy_pct":9.06,"score":0.259,"cov":1.0,"h":{"2026-06-01":{"p":0.531,"r":0.3101},"2026-07-01":{"p":0.547,"r":-0.6094},"2026-08-03":{"p":0.588,"r":0.5375},"2026-09-01":{"p":0.574,"r":0.1568},"2026-10-01":{"p":0.571,"r":null}},"p":0.571},{"t":"8150","n":"南茂","s":"半導體業","rank":93,"tv":11.41,"revenue_yoy_pct":43.6,"revenue_mom_pct":11.21,"revenue_yoy_slope":5.36,"gross_margin_pct":17.96,"gross_margin_slope":1.62,"inventory_days_yoy_pct":31.73,"receivable_days_yoy_pct":-1.9,"score":0.282,"cov":1.0,"h":{"2026-06-01":{"p":0.575,"r":-0.0538},"2026-07-01":{"p":0.557,"r":-0.3832},"2026-08-03":{"p":0.53,"r":0.1482},"2026-09-01":{"p":0.57,"r":0.2393},"2026-10-01":{"p":0.577,"r":null}},"p":0.577},{"t":"4931","n":"新盛力","s":"電腦及週邊設備業","rank":94,"tv":11.18,"revenue_yoy_pct":159.52,"revenue_mom_pct":13.95,"revenue_yoy_slope":15.29,"gross_margin_pct":23.33,"gross_margin_slope":0.74,"inventory_days_yoy_pct":9.62,"receivable_days_yoy_pct":28.67,"score":0.219,"cov":1.0,"h":{"2026-06-01":{"p":0.542,"r":0.0021},"2026-07-01":{"p":0.604,"r":-0.3084},"2026-08-03":{"p":0.604,"r":0.356},"2026-09-01":{"p":0.604,"r":-0.0461},"2026-10-01":{"p":0.56,"r":null}},"p":0.56},{"t":"8028","n":"昇陽半導體","s":"半導體業","rank":95,"tv":11.17,"revenue_yoy_pct":36.53,"revenue_mom_pct":6.59,"revenue_yoy_slope":0.37,"gross_margin_pct":37.89,"gross_margin_slope":1.75,"inventory_days_yoy_pct":-13.25,"receivable_days_yoy_pct":-10.68,"score":0.542,"cov":1.0,"h":{"2026-06-01":{"p":0.597,"r":-0.1028},"2026-07-01":{"p":0.652,"r":-0.2708},"2026-08-03":{"p":0.671,"r":-0.0749},"2026-09-01":{"p":0.647,"r":0.098},"2026-10-01":{"p":0.645,"r":null}},"p":0.645},{"t":"3533","n":"嘉澤","s":"電子零組件業","rank":96,"tv":11.03,"revenue_yoy_pct":18.6,"revenue_mom_pct":8.88,"revenue_yoy_slope":1.84,"gross_margin_pct":45.47,"gross_margin_slope":-1.92,"inventory_days_yoy_pct":24.27,"receivable_days_yoy_pct":9.03,"score":-0.253,"cov":1.0,"h":{"2026-06-01":{"p":0.501,"r":-0.2112},"2026-07-01":{"p":0.462,"r":-0.2176},"2026-08-03":{"p":0.469,"r":-0.1422},"2026-09-01":{"p":0.469,"r":0.063},"2026-10-01":{"p":0.431,"r":null}},"p":0.431},{"t":"5309","n":"系統電","s":"電子零組件業","rank":97,"tv":10.99,"revenue_yoy_pct":29.2,"revenue_mom_pct":8.5,"revenue_yoy_slope":5.35,"gross_margin_pct":22.23,"gross_margin_slope":0.31,"inventory_days_yoy_pct":3.07,"receivable_days_yoy_pct":1.44,"score":0.303,"cov":1.0,"h":{"2026-06-01":{"p":0.45,"r":-0.1646},"2026-07-01":{"p":0.453,"r":-0.2945},"2026-08-03":{"p":0.505,"r":0.0673},"2026-09-01":{"p":0.467,"r":0.1738},"2026-10-01":{"p":0.582,"r":null}},"p":0.582},{"t":"2375","n":"凱美","s":"電子零組件業","rank":98,"tv":10.99,"revenue_yoy_pct":37.92,"revenue_mom_pct":14.34,"revenue_yoy_slope":13.1,"gross_margin_pct":19.09,"gross_margin_slope":-0.54,"inventory_days_yoy_pct":14.69,"receivable_days_yoy_pct":1.59,"score":0.238,"cov":1.0,"h":{"2026-06-01":{"p":0.471,"r":0.2896},"2026-07-01":{"p":0.433,"r":-0.5441},"2026-08-03":{"p":0.475,"r":0.0599},"2026-09-01":{"p":0.539,"r":-0.0197},"2026-10-01":{"p":0.565,"r":null}},"p":0.565},{"t":"2486","n":"一詮","s":"電子工業","rank":99,"tv":10.89,"revenue_yoy_pct":42.52,"revenue_mom_pct":5.53,"revenue_yoy_slope":6.74,"gross_margin_pct":20.97,"gross_margin_slope":2.59,"inventory_days_yoy_pct":34.5,"receivable_days_yoy_pct":-0.24,"score":0.336,"cov":1.0,"h":{"2026-06-01":{"p":0.524,"r":-0.1051},"2026-07-01":{"p":0.547,"r":-0.2597},"2026-08-03":{"p":0.619,"r":0.2736},"2026-09-01":{"p":0.606,"r":-0.0996},"2026-10-01":{"p":0.591,"r":null}},"p":0.591},{"t":"3045","n":"台灣大","s":"通信網路業","rank":100,"tv":10.86,"revenue_yoy_pct":7.14,"revenue_mom_pct":-6.65,"revenue_yoy_slope":1.87,"gross_margin_pct":22.16,"gross_margin_slope":0.44,"inventory_days_yoy_pct":-6.34,"receivable_days_yoy_pct":7.46,"score":0.122,"cov":1.0,"h":{"2026-06-01":{"p":0.5,"r":0.0219},"2026-07-01":{"p":0.515,"r":0.0085},"2026-08-03":{"p":0.524,"r":0.0357},"2026-09-01":{"p":0.527,"r":0.0563},"2026-10-01":{"p":0.533,"r":null}},"p":0.533}],"forward":[{"d":"2026-06-01","ic":-0.084,"ex":-0.0012,"nl":75,"n":100,"um":-0.0141},{"d":"2026-07-01","ic":-0.081,"ex":-0.0035,"nl":71,"n":100,"um":-0.2615},{"d":"2026-08-03","ic":0.195,"ex":0.0003,"nl":77,"n":100,"um":0.21},{"d":"2026-09-01","ic":-0.012,"ex":0.0019,"nl":78,"n":100,"um":0.0034}],"forward_pending":["2026-10-01"]}</script>
+<script>
+(function () {
+  const D = JSON.parse(document.getElementById('data').textContent);
+  const $ = (s) => document.querySelector(s);
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const fmt = (v, d = 1, sign = false) => v == null || isNaN(v) ? '<span class="na">—</span>' : (sign && v > 0 ? '+' : '') + Number(v).toFixed(d);
+  const pct = (v, d = 1) => v == null ? '<span class="na">—</span>' : (v > 0 ? '+' : '') + (v * 100).toFixed(d) + '%';
+  const HD = ['2026-06-01', '2026-07-01', '2026-08-03', '2026-09-01'];
+
+  // Agents
+  const agents = [
+    { n: '財報 Agent', on: true, m: '規則評分（可選 LLM）', f: '營收 YoY、YoY 斜率、毛利率斜率、存貨天數 YoY、應收天數 YoY', r: '唯一有產業內選股能力的 Agent（IC ≈ +0.03）；前瞻驗證唯一使用者' },
+    { n: '新聞 Agent', m: 'LLM：Anthropic 或本機 Ollama qwen3:8b', f: 'RSS 標題 + 內文摘要（robots.txt 規範下抓取）', r: '訊號微弱；加入內文後反而變差' },
+    { n: '總經／籌碼 Agent', m: '規則（LLM 版本幾乎全判空）', f: '外資持股、投信買賣超、融資（反向）、美元台幣、美 10 年債、外資大盤買賣超', r: '無預測力；同日所有個股訊號相近，無法選股' },
+    { n: '供應鏈 Agent', m: '規則', f: '下游客戶超額報酬、下游營收 YoY、龍頭超額報酬（年報大客戶圖譜）', r: '只捕捉產業輪動，產業內 IC ≈ 0' },
+  ];
+  $('#agentList').innerHTML = agents.map(a => `<div class="agent ${a.on ? 'on' : ''}">
+    <div class="row1"><h3>${a.n}</h3><code>${esc(a.m)}</code></div>
+    <span class="small">特徵：${esc(a.f)}</span>
+    <span class="muted" style="font-size:14px">${esc(a.r)}</span></div>`).join('') +
+    `<div class="agent"><div class="row1"><h3>合併層</h3><code>arbitrator/</code></div>
+    <span class="muted" style="font-size:14px">精度 = 1/(Brier EMA + 0.01)；final = Σ(精度·κ·s)/Σ精度 = 2p−1；另有 Agent 校準與產業內 IC 加權（近 24 期，負 IC 權重為 0）。</span></div>`;
+
+  // Sector by year
+  const yrs = Object.keys(D.pit_sector_by_year).sort();
+  const secs = Object.keys(D.pit_sector_by_year[String(yrs[yrs.length - 1])]);
+  $('#sectorYears').innerHTML = `<table><thead><tr><th>產業</th>${yrs.map(y => `<th class="n">${y}</th>`).join('')}</tr></thead><tbody>${secs.map(s => `<tr style="cursor:default"><td>${esc(s)}</td>${yrs.map(y => `<td class="n">${D.pit_sector_by_year[String(y)][s] ?? 0}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+
+  $('#origChips').innerHTML = D.original.map(o => `<span class="chip" title="${esc(o.s)}"><span class="tk">${o.t}</span>${esc(o.n)}</span>`).join('');
+  const groups = {};
+  D.expanded.forEach(o => (groups[o.s] = groups[o.s] || []).push(o));
+  $('#expGroups').innerHTML = Object.entries(groups).map(([g, list]) => `<div><div class="small">${esc(g)}（${list.length}）</div><div class="chips">${list.map(o => `<span class="chip"><span class="tk">${o.t}</span>${esc(o.n)}</span>`).join('')}</div></div>`).join('');
+
+  // Stock table
+  const cols = [
+    { k: 'rank', l: '成交值排名', n: true, v: s => s.rank, h: s => s.rank },
+    { k: 'name', l: '股票', v: s => s.t, h: s => `<span class="tk">${s.t}</span><span class="name">${esc(s.n)}</span>` },
+    { k: 's', l: '產業', v: s => s.s, h: s => `<span class="sector-tag">${esc(s.s)}</span>` },
+    { k: 'p', l: '10 月 p', v: s => s.p, h: s => pbar(s.p) },
+    { k: 'revenue_yoy_pct', l: '營收 YoY %', n: true, v: s => s.revenue_yoy_pct, h: s => fmt(s.revenue_yoy_pct, 1, true) },
+    { k: 'gross_margin_pct', l: '毛利率 %', n: true, v: s => s.gross_margin_pct, h: s => fmt(s.gross_margin_pct, 1) },
+    { k: 'tv', l: '日均成交值（億）', n: true, v: s => s.tv, h: s => fmt(s.tv, 1) },
+    ...HD.map(d => ({ k: 'h' + d, l: d.slice(5, 7) + ' 月 p／報酬', n: true, v: s => s.h[d] ? s.h[d].r : null, h: s => hcell(s.h[d]), td: s => { const r = s.h[d] && s.h[d].r; return r == null ? '' : r > 0 ? 'ret-pos' : r < 0 ? 'ret-neg' : ''; } })),
+  ];
+  function pbar(p) {
+    if (p == null) return '<span class="na">—</span>';
+    const w = Math.min(56, Math.abs(p - 0.5) * 2 * 56 / 0.5 * 0.5 * 2);
+    const left = p < 0.5 ? `<span class="l" style="width:${w}px"></span>` : '<span></span>';
+    const right = p > 0.5 ? `<span class="r" style="width:${w}px"></span>` : '<span></span>';
+    return `<span class="pbar" aria-hidden="true">${left}${right}</span><span class="mono">${p.toFixed(3)}</span>`;
+  }
+  function hcell(h) {
+    if (!h) return '<span class="na">—</span>';
+    return `<span class="mono">${h.p == null ? '—' : h.p.toFixed(2)}</span> <span class="small">／</span> <span class="mono">${pct(h.r)}</span>`;
+  }
+  let sortK = 'rank', sortDir = 1, sector = '全部', query = '', selected = null;
+  const thead = $('#stockTable thead tr');
+  thead.innerHTML = cols.map(c => `<th class="${c.n || c.k === 'p' ? 'n' : ''}" data-k="${c.k}" aria-sort="${c.k === sortK ? 'ascending' : 'none'}"><button type="button">${c.l}</button></th>`).join('');
+  thead.addEventListener('click', e => {
+    const th = e.target.closest('th'); if (!th) return;
+    const k = th.dataset.k;
+    if (k === sortK) sortDir = -sortDir; else { sortK = k; sortDir = (k === 'rank' || k === 'name' || k === 's') ? 1 : -1; }
+    thead.querySelectorAll('th').forEach(t => t.setAttribute('aria-sort', t.dataset.k === sortK ? (sortDir > 0 ? 'ascending' : 'descending') : 'none'));
+    render();
+  });
+  const sectorCounts = {};
+  D.stocks.forEach(s => sectorCounts[s.s] = (sectorCounts[s.s] || 0) + 1);
+  const sectorList = ['全部', ...Object.keys(sectorCounts).sort((a, b) => sectorCounts[b] - sectorCounts[a])];
+  $('#sectorSeg').innerHTML = sectorList.map(s => `<button type="button" data-s="${esc(s)}" aria-pressed="${s === sector}">${esc(s)} <span class="mono">${s === '全部' ? D.stocks.length : sectorCounts[s]}</span></button>`).join('');
+  $('#sectorSeg').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    sector = b.dataset.s;
+    $('#sectorSeg').querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x.dataset.s === sector));
+    render();
+  });
+  $('#q').addEventListener('input', e => { query = e.target.value.trim(); render(); });
+  const tbody = $('#stockTable tbody');
+  function render() {
+    const col = cols.find(c => c.k === sortK);
+    const rows = D.stocks.filter(s => (sector === '全部' || s.s === sector) && (!query || s.t.includes(query) || s.n.includes(query)))
+      .sort((a, b) => {
+        const va = col.v(a), vb = col.v(b);
+        if (va == null && vb == null) return 0; if (va == null) return 1; if (vb == null) return -1;
+        return (typeof va === 'string' ? va.localeCompare(vb) : va - vb) * sortDir;
+      });
+    $('#countLabel').textContent = `顯示 ${rows.length} 檔`;
+    tbody.innerHTML = rows.map(s => `<tr tabindex="0" data-t="${s.t}" class="${s.t === selected ? 'sel' : ''}">${cols.map(c => `<td class="${c.n || c.k === 'p' ? 'n' : ''} ${c.td ? c.td(s) : ''}">${c.h(s)}</td>`).join('')}</tr>`).join('');
+  }
+  function showDetail(t) {
+    selected = t;
+    tbody.querySelectorAll('tr').forEach(r => r.classList.toggle('sel', r.dataset.t === t));
+    const s = D.stocks.find(x => x.t === t); if (!s) return;
+    const kv = (k, v) => `<div class="kv"><span class="k">${k}</span><span class="v">${v}</span></div>`;
+    const hist = Object.entries(s.h).map(([d, h]) => `<tr style="cursor:default"><td class="mono">${d}</td><td class="n">${h.p == null ? '—' : pbar(h.p)}</td><td class="n ${h.r == null ? '' : h.r > 0 ? 'ret-pos' : 'ret-neg'}">${h.r == null ? '<span class="na">待結算</span>' : pct(h.r)}</td></tr>`).join('');
+    $('#stockDetail').innerHTML = `
+      <div><span class="tk">${s.t}</span><h3 style="display:inline">${esc(s.n)}</h3> <span class="sector-tag">· ${esc(s.s)} · 2026 成交值排名 ${s.rank}</span></div>
+      <div class="grid2">
+        ${kv('10 月 p（財報 Agent）', s.p == null ? '—' : s.p.toFixed(3))}
+        ${kv('規則分數 score', fmt(s.score, 2, true))}
+        ${kv('特徵覆蓋率 evidence', fmt(s.cov, 2))}
+        ${kv('營收 YoY %', fmt(s.revenue_yoy_pct, 1, true))}
+        ${kv('營收 MoM %', fmt(s.revenue_mom_pct, 1, true))}
+        ${kv('營收 YoY 斜率（pp）', fmt(s.revenue_yoy_slope, 2, true))}
+        ${kv('毛利率 %', fmt(s.gross_margin_pct, 1))}
+        ${kv('毛利率斜率（pp）', fmt(s.gross_margin_slope, 2, true))}
+        ${kv('存貨天數 YoY %', fmt(s.inventory_days_yoy_pct, 1, true))}
+        ${kv('應收天數 YoY %', fmt(s.receivable_days_yoy_pct, 1, true))}
+        ${kv('日均成交值（億元）', fmt(s.tv, 1))}
+      </div>
+      <div class="tablebox"><table><thead><tr><th>預測日</th><th class="n">p</th><th class="n">20 日含息報酬</th></tr></thead><tbody>${hist}</tbody></table></div>
+      <p class="small">score 為五項特徵（營收 YoY、YoY 斜率、毛利率斜率、存貨天數 YoY 反向、應收天數 YoY 反向）的標準化加總；p = σ(ln3 · score · evidence)。</p>`;
+  }
+  tbody.addEventListener('click', e => { const r = e.target.closest('tr'); if (r) showDetail(r.dataset.t); });
+  tbody.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { const r = e.target.closest('tr'); if (r) { e.preventDefault(); showDetail(r.dataset.t); } } });
+  render();
+
+  // Forward IC chart
+  const F = D.forward;
+  const W = 520, H = 280, ml = 48, mr = 14, mt = 18, mb = 44;
+  const ymin = -0.15, ymax = 0.25;
+  const y = v => mt + (ymax - v) / (ymax - ymin) * (H - mt - mb);
+  const all = [...F.map(f => f.d), ...D.forward_pending];
+  const bw = (W - ml - mr) / all.length;
+  const ticks = [-0.1, 0, 0.1, 0.2];
+  let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="前瞻驗證各期產業內 IC 長條圖">`;
+  ticks.forEach(t => { svg += `<line x1="${ml}" x2="${W - mr}" y1="${y(t)}" y2="${y(t)}" stroke="var(--rule)" stroke-width="${t === 0 ? 1.5 : 1}"/><text x="${ml - 6}" y="${y(t) + 4}" text-anchor="end">${t > 0 ? '+' : ''}${t.toFixed(2)}</text>`; });
+  svg += `<line x1="${ml}" x2="${W - mr}" y1="${y(0.029)}" y2="${y(0.029)}" stroke="var(--ink-2)" stroke-dasharray="4 4" stroke-width="1.2"/><text x="${ml + 4}" y="${y(0.029) - 6}">回測預期 +0.029</text>`;
+  all.forEach((d, i) => {
+    const f = F.find(x => x.d === d);
+    const cx = ml + bw * i + bw / 2, w = Math.min(46, bw * 0.55);
+    if (f) {
+      const y0 = y(0), y1 = y(f.ic);
+      const top = Math.min(y0, y1), h = Math.max(1, Math.abs(y1 - y0));
+      svg += `<rect class="bar" data-i="${i}" x="${cx - w / 2}" y="${top}" width="${w}" height="${h}" rx="3" fill="${f.ic >= 0 ? 'var(--pos)' : 'var(--neg)'}"/>`;
+      svg += `<text x="${cx}" y="${f.ic >= 0 ? top - 5 : top + h + 13}" text-anchor="middle">${f.ic > 0 ? '+' : ''}${f.ic.toFixed(3)}</text>`;
+      svg += `<rect class="hit" data-i="${i}" x="${cx - bw / 2}" y="${mt}" width="${bw}" height="${H - mt - mb}" fill="transparent"/>`;
+    } else {
+      svg += `<rect x="${cx - w / 2}" y="${y(0) - 18}" width="${w}" height="18" rx="3" fill="none" stroke="var(--ink-3)" stroke-dasharray="3 3"/><text x="${cx}" y="${y(0) - 24}" text-anchor="middle">待結算</text>`;
+    }
+    svg += `<text x="${cx}" y="${H - mb + 18}" text-anchor="middle">${d.slice(0, 7)}</text>`;
+  });
+  svg += `<text x="${ml}" y="${H - 6}">產業內 IC（回填期，不計入正式檢定）</text></svg>`;
+  const box = $('#icChart');
+  box.innerHTML = svg + '<div class="tip" hidden></div>';
+  const tip = box.querySelector('.tip');
+  box.querySelectorAll('.hit').forEach(el => {
+    el.addEventListener('mousemove', e => {
+      const f = F[+el.dataset.i];
+      tip.innerHTML = `<b>${f.d}</b><br>產業內 IC ${f.ic > 0 ? '+' : ''}${f.ic.toFixed(3)}<br>看多組合超額 ${pct(f.ex, 2)}（${f.nl}/${f.n} 檔看多）<br>股票池平均報酬 ${pct(f.um)}`;
+      tip.hidden = false;
+      const r = box.getBoundingClientRect();
+      let x = e.clientX - r.left + 12; if (x > r.width - 200) x -= 220;
+      tip.style.left = x + 'px'; tip.style.top = (e.clientY - r.top - 10) + 'px';
+    });
+    el.addEventListener('mouseleave', () => tip.hidden = true);
+  });
+  $('#fwdTable').innerHTML = `<table><thead><tr><th>預測日</th><th class="n">IC</th><th class="n">看多超額</th><th class="n">股票池平均</th></tr></thead><tbody>${F.map(f => `<tr style="cursor:default"><td class="mono">${f.d}</td><td class="n">${fmt(f.ic, 3, true)}</td><td class="n">${pct(f.ex, 2)}</td><td class="n">${pct(f.um)}</td></tr>`).join('')}${D.forward_pending.map(d => `<tr style="cursor:default"><td class="mono">${d}</td><td class="n na" colspan="3">待結算（約 10/29 後）</td></tr>`).join('')}</tbody></table>`;
+
+  // Timeline
+  const TL = [
+    ['Phase 1', '財報＋新聞 Agent，5 檔被動元件；精度加權在合成資料有效、真實資料無效'],
+    ['報酬評估', '改用含息總報酬與共同交易日曆；修正收盤價 0 造成的 −100% 報酬'],
+    ['Phase 2', '加入總經／籌碼 Agent；方向信心下限 0.5'],
+    ['LLM 實驗', '本機 qwen3:8b 判讀；總經 LLM 幾乎全判空，加入特徵中文定義'],
+    ['校準', 'Agent 層級校準 p\' = σ(a·logit p)；合併公式修正為 2p−1、門檻 0.55／0.45'],
+    ['新聞內文＋供應鏈', '抓取新聞內文（反而變差）；以年報大客戶建立供應鏈圖譜'],
+    ['擴大股票池', '41 檔（設備、功率、AI 供應鏈），2019–2026 回測'],
+    ['無偏誤股票池', '每年前 100 檔、含下市股，271 檔；財報 Agent 產業內 IC +0.029（t 2.16）'],
+    ['IC 加權', '只合併財報 Agent，依產業內 IC 加權'],
+    ['前瞻驗證', '凍結規格 fv1，回填 2026-06～10；Windows 工作排程器每月自動預測、結算、push'],
+  ];
+  $('#tl').innerHTML = TL.map(([w, t]) => `<div class="tl"><span class="when">${w}</span><span>${esc(t)}</span></div>`).join('');
+})();
+</script>

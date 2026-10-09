@@ -1,0 +1,338 @@
+<div class="wrap">
+<header class="top">
+  <div class="eyebrow">Precision-Weighted Investment Agent · 研究紀錄</div>
+  <h1>多代理人精度加權投資研究系統</h1>
+  <p class="lede">台股電子／半導體多代理人預測研究：每個 Agent 輸出「20 個交易日後含息報酬為正」的機率，再依過往準確度合併。本頁整理目前的股票池、Agent 架構與財報 Agent 的逐股分析數據。</p>
+  <div class="status">
+    <span>資料截至 <b class="mono">2026-10-10</b></span>
+    <span>前瞻規格 <b class="mono">fv1</b>（凍結於 git 57c364d）</span>
+    <span>預測 <b class="mono">5</b> 批／已結算 <b class="mono">4</b> 批</span>
+    <span>下次自動預測 <b class="mono">2026-11-02</b>（工作排程器，平日 18:30 檢查）</span>
+  </div>
+</header>
+
+<nav class="index" aria-label="章節">
+  <ul>
+    <li><a href="#findings">重點結論</a></li>
+    <li><a href="#architecture">Agent 架構</a></li>
+    <li><a href="#universe">股票池</a></li>
+    <li><a href="#stocks">逐股分析</a></li>
+    <li><a href="#forward">前瞻驗證</a></li>
+    <li><a href="#timeline">研究歷程</a></li>
+  </ul>
+</nav>
+
+<section id="findings">
+  <div class="eyebrow">01 · Findings</div>
+  <h2>重點結論</h2>
+  <div class="findings">
+    <div class="finding">
+      <span class="lab">財報 Agent 產業內 IC（無偏誤股票池 2019–2026）</span>
+      <span class="big">+0.029</span>
+      <span class="small">t = 2.16，85 期中 55 期為正；21 個取樣相位全部為正</span>
+      <span class="verdict v-yes">✓ 唯一穩定訊號</span>
+    </div>
+    <div class="finding">
+      <span class="lab">財報 Agent 看多組合 vs 等權（扣成本，每期）</span>
+      <span class="big">+0.26%</span>
+      <span class="small">t = 1.90；三 Agent 合併為 −0.44%，產業內 IC 加權 +0.30%</span>
+      <span class="verdict v-wait">△ 邊際顯著</span>
+    </div>
+    <div class="finding">
+      <span class="lab">精度加權（核心假說）</span>
+      <span class="big">未成立</span>
+      <span class="small">合成資料 17/20 有效；真實資料各 Agent Brier 從未優於基準率，精度權重無從發揮</span>
+      <span class="verdict v-no">✗ 真實資料未成立</span>
+    </div>
+    <div class="finding">
+      <span class="lab">前瞻驗證（回填 4 期平均 IC）</span>
+      <span class="big">+0.005</span>
+      <span class="small">每期標準差 ≈ 0.122，需約 73 期才能達 t = 2；正式檢定只算 live 期數</span>
+      <span class="verdict v-wait">… 累積中</span>
+    </div>
+  </div>
+</section>
+
+<section id="architecture">
+  <div class="eyebrow">02 · Architecture</div>
+  <h2>Agent 架構</h2>
+  <p class="muted">四個領域 Agent 各自輸出方向與信心，轉成機率後經校準、合併。前瞻驗證只凍結了財報 Agent 一條路徑（綠色）。</p>
+  <div class="arch">
+    <div class="diagram">
+<pre class="mermaid">
+flowchart TD
+  D1[(FinMind<br/>月營收・財報・股價)] --> F
+  D2[(新聞 RSS<br/>標題＋內文)] --> N
+  D3[(法人籌碼・融資<br/>匯率・美債)] --> M
+  D4[(年報大客戶<br/>供應鏈圖譜)] --> S
+  F[財報 Agent<br/>規則評分]:::on
+  N[新聞 Agent<br/>LLM 判讀]
+  M[總經／籌碼 Agent<br/>規則或 LLM]
+  S[供應鏈 Agent<br/>上下游相對報酬]
+  F --> P{{機率映射<br/>連續輸出 p = σ（ln3·score·evidence）}}:::on
+  N --> P
+  M --> P
+  S --> P
+  P --> C[Agent 層級校準<br/>p' = σ（a·logit p）]
+  C --> W[合併<br/>精度加權 Brier EMA<br/>或產業內 IC 加權]
+  W --> O[最終訊號<br/>p > 0.55 看多・p < 0.45 看空]
+  P --> FV[前瞻驗證 fv1<br/>只用財報 Agent・凍結 SHA-256]:::on
+  FV --> R[每月預測 → 20 日後結算<br/>append-only CSV ＋ git push]:::on
+  classDef on stroke:#1f5d4c,stroke-width:3px
+</pre>
+    </div>
+    <div class="agents" id="agentList"></div>
+  </div>
+</section>
+
+<section id="universe">
+  <div class="eyebrow">03 · Universe</div>
+  <h2>股票池</h2>
+  <p class="muted">研究過程用過三個股票池。正式結論以「無選股偏誤」股票池為準：每年 1 月依前 60 個交易日平均成交金額，從當時上市櫃電子／半導體股（含之後下市者）取前 100 檔。</p>
+  <div class="two">
+    <div class="detail">
+      <h3>無選股偏誤股票池（2019–2026）</h3>
+      <p class="small">8 年共 <span class="mono">271</span> 檔曾入選，每年 100 檔。2026 年的 100 檔就是目前前瞻驗證的股票，見下方逐股表。</p>
+      <div class="tablebox" id="sectorYears"></div>
+    </div>
+    <div class="detail">
+      <h3>早期手選股票池</h3>
+      <p class="small">原始 5 檔（被動元件）與擴充 41 檔（半導體設備、功率元件、AI 供應鏈）。手選名單有事後挑選偏誤，只作開發用。</p>
+      <div><div class="small" style="margin-bottom:6px">原始 5 檔</div><div class="chips" id="origChips"></div></div>
+      <div><div class="small" style="margin-bottom:6px">擴充 41 檔（依族群）</div><div id="expGroups" style="display:grid;gap:8px"></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="stocks">
+  <div class="eyebrow">04 · Stock analysis</div>
+  <h2>逐股分析：2026 前瞻股票池 100 檔</h2>
+  <p class="muted">「10 月 p」是財報 Agent 在 2026-10-01 對「之後 20 個交易日含息報酬為正」的機率（尚未結算）。6–9 月欄位顯示當期預測 p 與實際 20 日報酬。點選任一列看完整財報特徵。</p>
+  <div class="toolbar">
+    <input type="search" id="q" placeholder="搜尋代號或名稱" aria-label="搜尋代號或名稱">
+    <div class="seg" id="sectorSeg" role="group" aria-label="產業篩選"></div>
+  </div>
+  <div class="legend">
+    <span><span class="sw" style="background:var(--neg)"></span>p &lt; 0.5（偏空）</span>
+    <span><span class="sw" style="background:var(--pos)"></span>p &gt; 0.5（偏多）</span>
+    <span><span class="sw" style="background:var(--pos-tint);border:1px solid var(--rule)"></span>實際報酬 &gt; 0</span>
+    <span><span class="sw" style="background:var(--neg-tint);border:1px solid var(--rule)"></span>實際報酬 &lt; 0</span>
+    <span id="countLabel"></span>
+  </div>
+  <div class="tablebox" style="max-height:620px">
+    <table id="stockTable">
+      <thead><tr></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  <div class="detail" id="stockDetail"><p class="small">點選上表任一列，顯示該股的財報特徵與歷次預測。</p></div>
+</section>
+
+<section id="forward">
+  <div class="eyebrow">05 · Forward validation</div>
+  <h2>前瞻驗證</h2>
+  <p class="muted">規則凍結後才產生預測，結果出來再對答案。2026-06 至 09 為回填（backfill，凍結後補做，不計入正式檢定）；2026-10-01 待 20 個交易日後結算。</p>
+  <div class="two">
+    <div class="chartbox" id="icChart"></div>
+    <div class="detail">
+      <h3>事先登錄的評估標準</h3>
+      <ul class="plain">
+        <li>主要指標：產業內 Spearman IC（財報 Agent p vs 20 日含息報酬）</li>
+        <li>回測預期：平均 <span class="mono">+0.029</span>，每期標準差 <span class="mono">0.122</span></li>
+        <li>24 個 live 期數（約 2 年）時平均 IC &lt; 0 → 失效警訊</li>
+        <li>73 個 live 期數（約 6 年）時正式檢定，t &gt; 2 才算確認</li>
+        <li>任何規則程式碼變動 → SHA-256 指紋不符，<span class="mono">predict</span> 拒絕執行</li>
+      </ul>
+      <div class="tablebox" id="fwdTable"></div>
+      <p class="small">7 月為真實急跌：加權指數 −15%，股票池平均 −26%。</p>
+    </div>
+  </div>
+</section>
+
+<section id="timeline">
+  <div class="eyebrow">06 · Timeline</div>
+  <h2>研究歷程</h2>
+  <div class="timeline" id="tl"></div>
+</section>
+
+<footer>
+  <span>研究用途，不構成投資建議。機率為模型輸出，回測與前瞻驗證皆顯示訊號微弱（IC ≈ 0.03）。</span>
+  <span>資料來源：FinMind（月營收、財報、股價、除權息）；含息報酬由除權息與分割事件還原。</span>
+</footer>
+</div>
+
+<script id="data" type="application/json">__DATA__</script>
+<script>
+(function () {
+  const D = JSON.parse(document.getElementById('data').textContent);
+  const $ = (s) => document.querySelector(s);
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const fmt = (v, d = 1, sign = false) => v == null || isNaN(v) ? '<span class="na">—</span>' : (sign && v > 0 ? '+' : '') + Number(v).toFixed(d);
+  const pct = (v, d = 1) => v == null ? '<span class="na">—</span>' : (v > 0 ? '+' : '') + (v * 100).toFixed(d) + '%';
+  const HD = ['2026-06-01', '2026-07-01', '2026-08-03', '2026-09-01'];
+
+  // Agents
+  const agents = [
+    { n: '財報 Agent', on: true, m: '規則評分（可選 LLM）', f: '營收 YoY、YoY 斜率、毛利率斜率、存貨天數 YoY、應收天數 YoY', r: '唯一有產業內選股能力的 Agent（IC ≈ +0.03）；前瞻驗證唯一使用者' },
+    { n: '新聞 Agent', m: 'LLM：Anthropic 或本機 Ollama qwen3:8b', f: 'RSS 標題 + 內文摘要（robots.txt 規範下抓取）', r: '訊號微弱；加入內文後反而變差' },
+    { n: '總經／籌碼 Agent', m: '規則（LLM 版本幾乎全判空）', f: '外資持股、投信買賣超、融資（反向）、美元台幣、美 10 年債、外資大盤買賣超', r: '無預測力；同日所有個股訊號相近，無法選股' },
+    { n: '供應鏈 Agent', m: '規則', f: '下游客戶超額報酬、下游營收 YoY、龍頭超額報酬（年報大客戶圖譜）', r: '只捕捉產業輪動，產業內 IC ≈ 0' },
+  ];
+  $('#agentList').innerHTML = agents.map(a => `<div class="agent ${a.on ? 'on' : ''}">
+    <div class="row1"><h3>${a.n}</h3><code>${esc(a.m)}</code></div>
+    <span class="small">特徵：${esc(a.f)}</span>
+    <span class="muted" style="font-size:14px">${esc(a.r)}</span></div>`).join('') +
+    `<div class="agent"><div class="row1"><h3>合併層</h3><code>arbitrator/</code></div>
+    <span class="muted" style="font-size:14px">精度 = 1/(Brier EMA + 0.01)；final = Σ(精度·κ·s)/Σ精度 = 2p−1；另有 Agent 校準與產業內 IC 加權（近 24 期，負 IC 權重為 0）。</span></div>`;
+
+  // Sector by year
+  const yrs = Object.keys(D.pit_sector_by_year).sort();
+  const secs = Object.keys(D.pit_sector_by_year[String(yrs[yrs.length - 1])]);
+  $('#sectorYears').innerHTML = `<table><thead><tr><th>產業</th>${yrs.map(y => `<th class="n">${y}</th>`).join('')}</tr></thead><tbody>${secs.map(s => `<tr style="cursor:default"><td>${esc(s)}</td>${yrs.map(y => `<td class="n">${D.pit_sector_by_year[String(y)][s] ?? 0}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+
+  $('#origChips').innerHTML = D.original.map(o => `<span class="chip" title="${esc(o.s)}"><span class="tk">${o.t}</span>${esc(o.n)}</span>`).join('');
+  const groups = {};
+  D.expanded.forEach(o => (groups[o.s] = groups[o.s] || []).push(o));
+  $('#expGroups').innerHTML = Object.entries(groups).map(([g, list]) => `<div><div class="small">${esc(g)}（${list.length}）</div><div class="chips">${list.map(o => `<span class="chip"><span class="tk">${o.t}</span>${esc(o.n)}</span>`).join('')}</div></div>`).join('');
+
+  // Stock table
+  const cols = [
+    { k: 'rank', l: '成交值排名', n: true, v: s => s.rank, h: s => s.rank },
+    { k: 'name', l: '股票', v: s => s.t, h: s => `<span class="tk">${s.t}</span><span class="name">${esc(s.n)}</span>` },
+    { k: 's', l: '產業', v: s => s.s, h: s => `<span class="sector-tag">${esc(s.s)}</span>` },
+    { k: 'p', l: '10 月 p', v: s => s.p, h: s => pbar(s.p) },
+    { k: 'revenue_yoy_pct', l: '營收 YoY %', n: true, v: s => s.revenue_yoy_pct, h: s => fmt(s.revenue_yoy_pct, 1, true) },
+    { k: 'gross_margin_pct', l: '毛利率 %', n: true, v: s => s.gross_margin_pct, h: s => fmt(s.gross_margin_pct, 1) },
+    { k: 'tv', l: '日均成交值（億）', n: true, v: s => s.tv, h: s => fmt(s.tv, 1) },
+    ...HD.map(d => ({ k: 'h' + d, l: d.slice(5, 7) + ' 月 p／報酬', n: true, v: s => s.h[d] ? s.h[d].r : null, h: s => hcell(s.h[d]), td: s => { const r = s.h[d] && s.h[d].r; return r == null ? '' : r > 0 ? 'ret-pos' : r < 0 ? 'ret-neg' : ''; } })),
+  ];
+  function pbar(p) {
+    if (p == null) return '<span class="na">—</span>';
+    const w = Math.min(56, Math.abs(p - 0.5) * 2 * 56 / 0.5 * 0.5 * 2);
+    const left = p < 0.5 ? `<span class="l" style="width:${w}px"></span>` : '<span></span>';
+    const right = p > 0.5 ? `<span class="r" style="width:${w}px"></span>` : '<span></span>';
+    return `<span class="pbar" aria-hidden="true">${left}${right}</span><span class="mono">${p.toFixed(3)}</span>`;
+  }
+  function hcell(h) {
+    if (!h) return '<span class="na">—</span>';
+    return `<span class="mono">${h.p == null ? '—' : h.p.toFixed(2)}</span> <span class="small">／</span> <span class="mono">${pct(h.r)}</span>`;
+  }
+  let sortK = 'rank', sortDir = 1, sector = '全部', query = '', selected = null;
+  const thead = $('#stockTable thead tr');
+  thead.innerHTML = cols.map(c => `<th class="${c.n || c.k === 'p' ? 'n' : ''}" data-k="${c.k}" aria-sort="${c.k === sortK ? 'ascending' : 'none'}"><button type="button">${c.l}</button></th>`).join('');
+  thead.addEventListener('click', e => {
+    const th = e.target.closest('th'); if (!th) return;
+    const k = th.dataset.k;
+    if (k === sortK) sortDir = -sortDir; else { sortK = k; sortDir = (k === 'rank' || k === 'name' || k === 's') ? 1 : -1; }
+    thead.querySelectorAll('th').forEach(t => t.setAttribute('aria-sort', t.dataset.k === sortK ? (sortDir > 0 ? 'ascending' : 'descending') : 'none'));
+    render();
+  });
+  const sectorCounts = {};
+  D.stocks.forEach(s => sectorCounts[s.s] = (sectorCounts[s.s] || 0) + 1);
+  const sectorList = ['全部', ...Object.keys(sectorCounts).sort((a, b) => sectorCounts[b] - sectorCounts[a])];
+  $('#sectorSeg').innerHTML = sectorList.map(s => `<button type="button" data-s="${esc(s)}" aria-pressed="${s === sector}">${esc(s)} <span class="mono">${s === '全部' ? D.stocks.length : sectorCounts[s]}</span></button>`).join('');
+  $('#sectorSeg').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    sector = b.dataset.s;
+    $('#sectorSeg').querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x.dataset.s === sector));
+    render();
+  });
+  $('#q').addEventListener('input', e => { query = e.target.value.trim(); render(); });
+  const tbody = $('#stockTable tbody');
+  function render() {
+    const col = cols.find(c => c.k === sortK);
+    const rows = D.stocks.filter(s => (sector === '全部' || s.s === sector) && (!query || s.t.includes(query) || s.n.includes(query)))
+      .sort((a, b) => {
+        const va = col.v(a), vb = col.v(b);
+        if (va == null && vb == null) return 0; if (va == null) return 1; if (vb == null) return -1;
+        return (typeof va === 'string' ? va.localeCompare(vb) : va - vb) * sortDir;
+      });
+    $('#countLabel').textContent = `顯示 ${rows.length} 檔`;
+    tbody.innerHTML = rows.map(s => `<tr tabindex="0" data-t="${s.t}" class="${s.t === selected ? 'sel' : ''}">${cols.map(c => `<td class="${c.n || c.k === 'p' ? 'n' : ''} ${c.td ? c.td(s) : ''}">${c.h(s)}</td>`).join('')}</tr>`).join('');
+  }
+  function showDetail(t) {
+    selected = t;
+    tbody.querySelectorAll('tr').forEach(r => r.classList.toggle('sel', r.dataset.t === t));
+    const s = D.stocks.find(x => x.t === t); if (!s) return;
+    const kv = (k, v) => `<div class="kv"><span class="k">${k}</span><span class="v">${v}</span></div>`;
+    const hist = Object.entries(s.h).map(([d, h]) => `<tr style="cursor:default"><td class="mono">${d}</td><td class="n">${h.p == null ? '—' : pbar(h.p)}</td><td class="n ${h.r == null ? '' : h.r > 0 ? 'ret-pos' : 'ret-neg'}">${h.r == null ? '<span class="na">待結算</span>' : pct(h.r)}</td></tr>`).join('');
+    $('#stockDetail').innerHTML = `
+      <div><span class="tk">${s.t}</span><h3 style="display:inline">${esc(s.n)}</h3> <span class="sector-tag">· ${esc(s.s)} · 2026 成交值排名 ${s.rank}</span></div>
+      <div class="grid2">
+        ${kv('10 月 p（財報 Agent）', s.p == null ? '—' : s.p.toFixed(3))}
+        ${kv('規則分數 score', fmt(s.score, 2, true))}
+        ${kv('特徵覆蓋率 evidence', fmt(s.cov, 2))}
+        ${kv('營收 YoY %', fmt(s.revenue_yoy_pct, 1, true))}
+        ${kv('營收 MoM %', fmt(s.revenue_mom_pct, 1, true))}
+        ${kv('營收 YoY 斜率（pp）', fmt(s.revenue_yoy_slope, 2, true))}
+        ${kv('毛利率 %', fmt(s.gross_margin_pct, 1))}
+        ${kv('毛利率斜率（pp）', fmt(s.gross_margin_slope, 2, true))}
+        ${kv('存貨天數 YoY %', fmt(s.inventory_days_yoy_pct, 1, true))}
+        ${kv('應收天數 YoY %', fmt(s.receivable_days_yoy_pct, 1, true))}
+        ${kv('日均成交值（億元）', fmt(s.tv, 1))}
+      </div>
+      <div class="tablebox"><table><thead><tr><th>預測日</th><th class="n">p</th><th class="n">20 日含息報酬</th></tr></thead><tbody>${hist}</tbody></table></div>
+      <p class="small">score 為五項特徵（營收 YoY、YoY 斜率、毛利率斜率、存貨天數 YoY 反向、應收天數 YoY 反向）的標準化加總；p = σ(ln3 · score · evidence)。</p>`;
+  }
+  tbody.addEventListener('click', e => { const r = e.target.closest('tr'); if (r) showDetail(r.dataset.t); });
+  tbody.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { const r = e.target.closest('tr'); if (r) { e.preventDefault(); showDetail(r.dataset.t); } } });
+  render();
+
+  // Forward IC chart
+  const F = D.forward;
+  const W = 520, H = 280, ml = 48, mr = 14, mt = 18, mb = 44;
+  const ymin = -0.15, ymax = 0.25;
+  const y = v => mt + (ymax - v) / (ymax - ymin) * (H - mt - mb);
+  const all = [...F.map(f => f.d), ...D.forward_pending];
+  const bw = (W - ml - mr) / all.length;
+  const ticks = [-0.1, 0, 0.1, 0.2];
+  let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="前瞻驗證各期產業內 IC 長條圖">`;
+  ticks.forEach(t => { svg += `<line x1="${ml}" x2="${W - mr}" y1="${y(t)}" y2="${y(t)}" stroke="var(--rule)" stroke-width="${t === 0 ? 1.5 : 1}"/><text x="${ml - 6}" y="${y(t) + 4}" text-anchor="end">${t > 0 ? '+' : ''}${t.toFixed(2)}</text>`; });
+  svg += `<line x1="${ml}" x2="${W - mr}" y1="${y(0.029)}" y2="${y(0.029)}" stroke="var(--ink-2)" stroke-dasharray="4 4" stroke-width="1.2"/><text x="${ml + 4}" y="${y(0.029) - 6}">回測預期 +0.029</text>`;
+  all.forEach((d, i) => {
+    const f = F.find(x => x.d === d);
+    const cx = ml + bw * i + bw / 2, w = Math.min(46, bw * 0.55);
+    if (f) {
+      const y0 = y(0), y1 = y(f.ic);
+      const top = Math.min(y0, y1), h = Math.max(1, Math.abs(y1 - y0));
+      svg += `<rect class="bar" data-i="${i}" x="${cx - w / 2}" y="${top}" width="${w}" height="${h}" rx="3" fill="${f.ic >= 0 ? 'var(--pos)' : 'var(--neg)'}"/>`;
+      svg += `<text x="${cx}" y="${f.ic >= 0 ? top - 5 : top + h + 13}" text-anchor="middle">${f.ic > 0 ? '+' : ''}${f.ic.toFixed(3)}</text>`;
+      svg += `<rect class="hit" data-i="${i}" x="${cx - bw / 2}" y="${mt}" width="${bw}" height="${H - mt - mb}" fill="transparent"/>`;
+    } else {
+      svg += `<rect x="${cx - w / 2}" y="${y(0) - 18}" width="${w}" height="18" rx="3" fill="none" stroke="var(--ink-3)" stroke-dasharray="3 3"/><text x="${cx}" y="${y(0) - 24}" text-anchor="middle">待結算</text>`;
+    }
+    svg += `<text x="${cx}" y="${H - mb + 18}" text-anchor="middle">${d.slice(0, 7)}</text>`;
+  });
+  svg += `<text x="${ml}" y="${H - 6}">產業內 IC（回填期，不計入正式檢定）</text></svg>`;
+  const box = $('#icChart');
+  box.innerHTML = svg + '<div class="tip" hidden></div>';
+  const tip = box.querySelector('.tip');
+  box.querySelectorAll('.hit').forEach(el => {
+    el.addEventListener('mousemove', e => {
+      const f = F[+el.dataset.i];
+      tip.innerHTML = `<b>${f.d}</b><br>產業內 IC ${f.ic > 0 ? '+' : ''}${f.ic.toFixed(3)}<br>看多組合超額 ${pct(f.ex, 2)}（${f.nl}/${f.n} 檔看多）<br>股票池平均報酬 ${pct(f.um)}`;
+      tip.hidden = false;
+      const r = box.getBoundingClientRect();
+      let x = e.clientX - r.left + 12; if (x > r.width - 200) x -= 220;
+      tip.style.left = x + 'px'; tip.style.top = (e.clientY - r.top - 10) + 'px';
+    });
+    el.addEventListener('mouseleave', () => tip.hidden = true);
+  });
+  $('#fwdTable').innerHTML = `<table><thead><tr><th>預測日</th><th class="n">IC</th><th class="n">看多超額</th><th class="n">股票池平均</th></tr></thead><tbody>${F.map(f => `<tr style="cursor:default"><td class="mono">${f.d}</td><td class="n">${fmt(f.ic, 3, true)}</td><td class="n">${pct(f.ex, 2)}</td><td class="n">${pct(f.um)}</td></tr>`).join('')}${D.forward_pending.map(d => `<tr style="cursor:default"><td class="mono">${d}</td><td class="n na" colspan="3">待結算（約 10/29 後）</td></tr>`).join('')}</tbody></table>`;
+
+  // Timeline
+  const TL = [
+    ['Phase 1', '財報＋新聞 Agent，5 檔被動元件；精度加權在合成資料有效、真實資料無效'],
+    ['報酬評估', '改用含息總報酬與共同交易日曆；修正收盤價 0 造成的 −100% 報酬'],
+    ['Phase 2', '加入總經／籌碼 Agent；方向信心下限 0.5'],
+    ['LLM 實驗', '本機 qwen3:8b 判讀；總經 LLM 幾乎全判空，加入特徵中文定義'],
+    ['校準', 'Agent 層級校準 p\' = σ(a·logit p)；合併公式修正為 2p−1、門檻 0.55／0.45'],
+    ['新聞內文＋供應鏈', '抓取新聞內文（反而變差）；以年報大客戶建立供應鏈圖譜'],
+    ['擴大股票池', '41 檔（設備、功率、AI 供應鏈），2019–2026 回測'],
+    ['無偏誤股票池', '每年前 100 檔、含下市股，271 檔；財報 Agent 產業內 IC +0.029（t 2.16）'],
+    ['IC 加權', '只合併財報 Agent，依產業內 IC 加權'],
+    ['前瞻驗證', '凍結規格 fv1，回填 2026-06～10；Windows 工作排程器每月自動預測、結算、push'],
+  ];
+  $('#tl').innerHTML = TL.map(([w, t]) => `<div class="tl"><span class="when">${w}</span><span>${esc(t)}</span></div>`).join('');
+})();
+</script>
