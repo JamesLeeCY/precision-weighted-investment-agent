@@ -50,6 +50,7 @@
 - **技術面 / 動能 / 反轉 / 估值與進出場濾網（`docs/technical_timing_report.md`，2026-10-10）**：技術面 Agent（`agents/technical_agent.py`，指標 `data/fetch_technical.py`：相對 60 日線、20/60 日線排列、量價、突破前 60 日高低點、5 日 K 線實體；`--agents technical_agent`）。產業內 IC 2019–2022 樣本外 / 2023–2026：財報 +0.017 / +0.046；產業內相對估值（`analysis/valuation_signal.py`，改寫自 BRAIN industry-relative valuation，TaiwanStockPER + 自算市值）−0.001 / −0.021；技術面 −0.035 / +0.041；動能 12-1 −0.014 / +0.049；反轉 1 個月 +0.045 / −0.031 → 沒有新訊號兩段都有效（動能與反轉隨行情互換）。大盤濾網（0050 > 200 日線）把財報產業中性回撤 −40% → −24%，但樣本外 Sharpe 0.57 → 0.37；沒有組合的 Sharpe 贏過 0050（0.72 / 2.09）
 - **短期反轉 / 過度反應 / 產業領先落後（`docs/short_term_reversal_report.md`，5 日預測期，2026-10-10）**：同一收盤成交的 1 日反轉產業內 IC +0.034（t 3.4）/ +0.027（t 2.4），隔日成交只剩 +0.009 / +0.010；每 5 日換手 1.3（多空 2.7），扣成本後所有版本、兩段都為負。過度反應（低量 vs 高量）兩段方向相反；領先股過去 5 日報酬對追隨股無預測力（−0.009 / +0.011），「領先 − 自身」的效果來自反轉
 - **反轉輔助換倉（`docs/reversal_execution_report.md`，2026-10-10）**：財報產業中性組合換倉時，B 延後賣出近 5 日跌深的持股、C 選股分數加 0.1 × 反轉百分位。B 換手 0.58 → 0.52（緩衝下 0.42 → 0.37），樣本外超額 +0.13% → +0.16%（緩衝下不變），Sharpe 幾乎不變；C 無效。最佳仍是「產業中性 + 緩衝」：樣本外超額 +0.25%（t 1.1）、Sharpe 0.63 < 0050 0.72
+- **子產業分類（`docs/subindustry_report.md`，`config/subindustry_pit.csv`，2026-10-10）**：來源櫃買中心產業價值鏈資訊平台（`data/fetch_subindustry.py`；主要子產業 = 電子核心產業鏈中、與大產業對應、公司申報筆數最多者），265/271 檔、63 種。子產業 ≥ 5 檔才獨立成組（每日 11.8 組 vs 大產業 7 組）。財報 Agent 組內 IC 樣本外 +0.017 → +0.015（緩衝組合 +0.25% → +0.24%）；估值在子產業 × 市值五分位樣本外 IC +0.014（20/21）但 2023–2026 −0.014、組合仍虧損；領先落後仍無效。主要限制：股票池 100 檔太小
 - **產業中性組合（`docs/sector_neutral_report.md`，2026-10-10）**：財報 Agent 連續機率在每個產業內取前 1/3、產業權重等於股票池。未扣成本相對等權 +0.42%／期（t 2.01）、產業內多空 +0.93%／期（t 2.42），兩期與 21 起點全部為正；扣成本後做多 +0.26%（t 1.17）、多空 +0.55%。換手每期 0.60，成本吃掉約四成；加「仍在產業內前 50% 就續抱」的緩衝（事後調整）換手降到 0.44，做多扣成本 +0.35%（t 1.91）。不分產業的前 1/3 在 2024–2026 降到 +0.20%，產業中性兩期較一致。門檻模式機率明顯較差（+0.05%），前後 1/5 在 2019–2023 為負。放空成本未計，多空只作訊號強度指標
 - **data_cache 版控政策（2026-10-09 起）**：無偏誤股票池新增約 3,000 個 FinMind 快取檔（約 1.2 GB），不再納入版控（`.gitignore`：`data_cache/*`，但 `data_cache/llm/` 與既有已追蹤檔案仍版控）。重現 `finmind_pit` 需重新下載（約 4–5 小時 FinMind 額度，客戶端會自動等待額度）
 - **選股偏誤**：擴大股票池是 2026 年事後挑選的 AI 贏家（等權持有 +1,493% vs 0050 +566%），絕對報酬與跨產業 IC 都會被高估；以產業內 IC 與相對等權持有為主要指標
@@ -64,7 +65,7 @@
 1. **每月執行前瞻驗證**：已全自動（Windows 工作排程器每個平日 18:30 執行 `forward/run_forward.py auto --push`，含研究網站 `site/` 重建；線上網站由 Claude 桌面 App 排程工作 `republish-research-site` 每個平日 19:15 依雜湊變動重新發佈，需 App 開著，見 docs/forward_validation.md）。只需定期查看 `logs/forward_auto.log`。時程：2026-10-01 批約 10/29 結算；第一個 live 預測約 2026-11-02；2027 年 1 月自動建立當年股票池
 2. **降低產業中性組合的換手**（`docs/sector_neutral_report.md`）：換倉頻率改每 2 期、只在月營收公布後換倉、以分數變化決定進出；緩衝規則應在新資料上（例如前瞻紀錄）驗證，避免事後調整
 3. **優化供應鏈 Agent**（使用者 2026-10-10 提出）：目前只捕捉產業輪動、產業內 IC ≈ 0，圖譜多為產業預設邊；方向可考慮客戶集中度、上下游營收領先關係、只用年報確認的邊
-4. **更強的選股訊號**：目前所有測過的訊號與執行面改善都無法讓 Sharpe 贏過 0050（見 docs/reversal_execution_report.md 結論）；可能方向：子產業分類（目前只有 7 個大產業，限制了產業內比較與領先落後）、法說會／財報文字、分析師預估修正（需付費資料）
+4. **基本面選股 + 技術面進出場 + 權重混合**（使用者 2026-10-10 提出）：財報產業中性選股；持有期間每日以技術訊號決定出場 / 回補（上一批只在換倉日判斷，樣本外 Sharpe 下降）；權重 = 基本面與技術面分數混合。之後可試的更強訊號：法說會／財報文字、分析師預估修正（需付費資料）；子產業已試過（股票池太小，見 docs/subindustry_report.md）
 5. **提升其他 Agent 的資訊量**：新聞內文已試過（規則式與 LLM 都變差），若再試應先提升來源品質（主流媒體內文）；更強的 LLM（雲端 Claude）或 qwen3 思考模式
 6. 各 Agent 可個別指定模型（目前所有 Agent 共用同一份 llm 設定）
 7. 合併機率的中性稀釋（規格 5.2 修訂的代價）：讓中性 Agent 棄權，或改用對數意見池；產業內 IC 加權保留為監控工具，若要用於權重應加強先驗並拉長估計期間
@@ -73,14 +74,14 @@
 10. 報酬評估可延伸：機率加權部位、相對 0050 的 outcome 定義（超額報酬 > 0）
 11. 總經/籌碼 Agent 可延伸：半導體庫存週期（免費層無資料）、主力分點、借券等個股籌碼
 
-已完成（2026-10-10）：預設合併只放財報 Agent；以財報 Agent 為核心的產業中性組合評估；回測成績單；樣本外與過度擬合說明；技術面 Agent、動能、反轉、產業內相對估值、進出場濾網（皆未採用，見 docs/technical_timing_report.md）；5 日短期反轉、過度反應、產業領先落後（皆未採用，見 docs/short_term_reversal_report.md）；反轉輔助換倉（換手降約 10%、Sharpe 不變，見 docs/reversal_execution_report.md）
+已完成（2026-10-10）：預設合併只放財報 Agent；以財報 Agent 為核心的產業中性組合評估；回測成績單；樣本外與過度擬合說明；技術面 Agent、動能、反轉、產業內相對估值、進出場濾網（皆未採用，見 docs/technical_timing_report.md）；5 日短期反轉、過度反應、產業領先落後（皆未採用，見 docs/short_term_reversal_report.md）；反轉輔助換倉（換手降約 10%、Sharpe 不變，見 docs/reversal_execution_report.md）；子產業分類（已建立，不改變財報分組，見 docs/subindustry_report.md）
 
 ## 已知限制
 每檔僅 27 筆樣本；新聞僅標題；期間與族群單一；地端 LLM 僅測過 qwen3:8b（純 CPU；2 執行緒時長新聞 prompt 每次約 5–7 分鐘）；phi4 未跑完整實驗（3 核心估計完整 386 次呼叫約 61 小時，主要卡在冗長輸出）；總經分量同一時點各檔相同（對選股無幫助）；總經 Agent 的門檻為經驗值；組合報酬每期之間有 1 個交易日空檔（step 21 > horizon 20）未計入；p 值為常態近似。
 
 ## 操作
 ```bash
-.venv/Scripts/python -m pytest tests -q          # 163 tests（Windows；macOS/Linux 用 .venv/bin/python）
+.venv/Scripts/python -m pytest tests -q          # 166 tests（Windows；macOS/Linux 用 .venv/bin/python）
 # 3 Agent（config 預設）
 .venv/Scripts/python backtest/run_backtest.py --mode finmind --start-date 2024-01-01 --end-date 2026-05-31 --step-days 21 --agents fundamentals_agent,news_agent,macro_agent --output-dir reports/finmind_macro
 # LLM 判讀（需 Ollama + qwen3:8b；回應已快取，重跑秒完）
@@ -126,6 +127,9 @@
 .venv/Scripts/python analysis/technical_timing.py daily_pit_val.csv config/tickers_pit.yaml
 # 5 日短期反轉 / 過度反應 / 領先落後（輸入為上一步產生的 daily_pit_val_tech.csv；約 15 分鐘）
 .venv/Scripts/python analysis/short_term_reversal.py daily_pit_val_tech.csv config/tickers_pit.yaml
+# 子產業分類（約 280 次網頁請求）與評估
+.venv/Scripts/python analysis/build_subindustry.py config/tickers_pit.yaml
+.venv/Scripts/python analysis/subindustry_eval.py daily_pit_val_tech.csv config/tickers_pit.yaml
 # 反轉輔助換倉（約 10 分鐘）
 .venv/Scripts/python analysis/reversal_execution.py daily_pit_val_tech.csv config/tickers_pit.yaml
 # 樣本內 / 樣本外（docs/oos_report.md）

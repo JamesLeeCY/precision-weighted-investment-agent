@@ -78,6 +78,10 @@ EMA 的倒數，即「精度」）動態加權合成投資論點——可靠度�
 扣掉 0.3% 證交稅後所有版本都虧損。量能條件與領先股訊號都沒有一致的證據。改成只在財報組合換倉時用反轉
 延後賣出（[報告](docs/reversal_execution_report.md)），換手降低約 10%，但 Sharpe 不變（樣本外 0.57–0.64，0050 為 0.72）。
 
+**子產業分類**（[報告](docs/subindustry_report.md)）：從櫃買中心產業價值鏈平台建立 63 種子產業。財報 Agent 改用子產業分組沒有變好
+（組內 IC 略降）；估值訊號在「子產業 × 市值五分位」裡樣本外 IC 轉正（+0.014），但 2023 年後仍為負、組合扣成本後虧損。
+股票池每年只有 100 檔，只有 44% 的股票所在子產業有 5 檔以上，是主要限制。
+
 ### 評估指標速覽
 
 - **平均 Brier score**（越低越好）：每筆預測先轉成「看多機率」p（bullish
@@ -262,7 +266,7 @@ agents/                 Agent 基底 + 財報/新聞/總經籌碼/供應鏈/技�
 arbitrator/             精度追蹤（Brier EMA）+ 合併公式 + Agent 層級重新校準 + 產業內 IC 加權
 data/                   FinMind 抓取（快取/節流/額度等待）、含息還原價、總經/籌碼、供應鏈、新聞內文、RSS 新聞、向量庫
 backtest/               walk-forward 回測 + 評估指標 + 報酬層級評估（vs 0050）
-tests/                  163 個單元測試
+tests/                  166 個單元測試
 forward/                前瞻驗證：凍結規格、預測 / 結算紀錄、自動報告
 analysis/               訊號穩定性分析（分期 IC、產業內 IC、取樣起點穩健性）
 site/                   研究網站（股票池、Agent 架構、逐股分析、前瞻驗證）；build_site.py 重新產生
@@ -292,6 +296,7 @@ notebooks/              校準分析 notebook
   大盤／個股濾網對 Sharpe 與回撤的影響
 - [短期反轉、過度反應、產業領先落後](docs/short_term_reversal_report.md) — 5 日預測期、隔日 / 同一收盤成交、扣成本
 - [用短期反轉降低財報組合交易成本](docs/reversal_execution_report.md) — 延後賣出、選股邊際偏好跌深、與緩衝規則比較
+- [子產業分類](docs/subindustry_report.md) — 櫃買中心產業價值鏈平台、主要子產業選擇規則、財報 / 估值 / 領先落後的子產業版本
 - [產業中性組合報告](docs/sector_neutral_report.md) — 財報 Agent 的產業內排序轉成產業中性做多／多空組合、
   換手與成本、緩衝規則、敏感度
 - [前瞻驗證操作說明](docs/forward_validation.md) — 凍結規則、每月流程、完整性機制

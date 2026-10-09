@@ -96,18 +96,14 @@ def decay_linear(s: pd.Series, n: int = 10) -> pd.Series:
     return s.rolling(n, min_periods=1).apply(lambda x: np.dot(x, w[-len(x):]) / w[-len(x):].sum(), raw=True)
 
 
-def build(daily_csv, config, out_csv):
-    tickers, sectors = tickers_of(config)
-    daily = pd.read_csv(daily_csv, parse_dates=["date"])
-    panel = load_panel(tickers)
-    df = daily.merge(panel[["date", "ticker", "PER", "PBR", "dividend_yield", "cap"]], on=["date", "ticker"], how="left")
-    df["sector"] = df["ticker"].map(sectors)
+def compute_valuation(df: pd.DataFrame, group: str = "sector") -> pd.DataFrame:
+    """df 需有 date、ticker、PER、PBR、dividend_yield、cap 與分組欄位 group；回傳加上 val_rank、val_signal 的表。"""
+    df = df.copy()
     df["ey"] = np.where(df["PER"] > 0, 1.0 / df["PER"], np.nan)
     df["bp"] = np.where(df["PBR"] > 0, 1.0 / df["PBR"], np.nan)
     df["dy"] = df["dividend_yield"].where(df["dividend_yield"] >= 0)
-
     # 1. 產業內相對估值百分位（三項平均）
-    g = df.groupby(["date", "sector"])
+    g = df.groupby(["date", group])
     ranks = pd.concat([g[c].transform(pct_rank) for c in ("ey", "bp", "dy")], axis=1)
     df["val_rank"] = ranks.mean(axis=1, skipna=True)
     # 2. ts_backfill 60（每檔依日期向前補值）
@@ -119,10 +115,20 @@ def build(daily_csv, config, out_csv):
     df["val_z"] = (df["val_bf"] - gd.transform("mean")) / gd.transform("std")
     # 4. 產業 × 市值五分位中性化
     df["cap_q"] = df.groupby("date")["cap_bf"].transform(lambda s: np.minimum((pct_rank(s) * 5).apply(np.ceil), 5))
-    cell = df["sector"].astype(str) + "|" + df["cap_q"].fillna(-1).astype(int).astype(str)
+    cell = df[group].astype(str) + "|" + df["cap_q"].fillna(-1).astype(int).astype(str)
     df["val_neut"] = df["val_z"] - df.groupby([df["date"], cell])["val_z"].transform("mean")
     # 5. 10 日線性遞減加權
     df["val_signal"] = df.groupby("ticker")["val_neut"].transform(decay_linear)
+    return df
+
+
+def build(daily_csv, config, out_csv):
+    tickers, sectors = tickers_of(config)
+    daily = pd.read_csv(daily_csv, parse_dates=["date"])
+    panel = load_panel(tickers)
+    df = daily.merge(panel[["date", "ticker", "PER", "PBR", "dividend_yield", "cap"]], on=["date", "ticker"], how="left")
+    df["sector"] = df["ticker"].map(sectors)
+    df = compute_valuation(df, "sector")
     # 對照：只做產業內排名（未中性化市值、未平滑）
     df["val_rank_only"] = df["val_rank"]
     # 與財報 Agent 合成：產業內百分位平均
