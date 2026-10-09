@@ -1,0 +1,6418 @@
+{
+  "_說明": [
+    "無選股偏誤股票池的供應鏈圖譜：依 FinMind 產業分類自動產生，全部為產業預設，無公司層級證據。",
+    "同一產業內的股票供應鏈特徵相同，供應鏈 Agent 只影響跨產業配置，不影響產業內排序。"
+  ],
+  "edges": {
+    "2330.TW": [
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "2327.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：AI 伺服器"
+      }
+    ],
+    "2492.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：AI 伺服器"
+      }
+    ],
+    "6488.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "3008.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：AI 伺服器"
+      }
+    ],
+    "2317.TW": [
+      {
+        "to": "2395.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（其他電子業）：工業"
+      }
+    ],
+    "3406.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：AI 伺服器"
+      }
+    ],
+    "2474.TW": [
+      {
+        "to": "2395.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（其他電子業）：工業"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（其他電子業）：消費性電子 EMS"
+      }
+    ],
+    "3105.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "6182.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "3443.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "6462.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "5483.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "2454.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "2408.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "2308.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：AI 伺服器"
+      }
+    ],
+    "2337.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "2412.TW": [
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：消費性電子 EMS"
+      }
+    ],
+    "2439.TW": [
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：消費性電子 EMS"
+      }
+    ],
+    "3037.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：AI 伺服器"
+      }
+    ],
+    "6173.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：AI 伺服器"
+      }
+    ],
+    "2456.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：AI 伺服器"
+      }
+    ],
+    "3026.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：AI 伺服器"
+      }
+    ],
+    "2303.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "3665.TW": [
+      {
+        "to": "2395.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（其他電子業）：工業"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（其他電子業）：消費性電子 EMS"
+      }
+    ],
+    "6456.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：AI 伺服器"
+      }
+    ],
+    "6176.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：AI 伺服器"
+      }
+    ],
+    "2345.TW": [
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：消費性電子 EMS"
+      }
+    ],
+    "6153.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：AI 伺服器"
+      }
+    ],
+    "5269.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "2498.TW": [
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：消費性電子 EMS"
+      }
+    ],
+    "2377.TW": [
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（電腦及週邊設備業）：AI 伺服器 GPU 平台"
+      },
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      }
+    ],
+    "2448.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：AI 伺服器"
+      }
+    ],
+    "3034.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "3711.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "3016.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "4958.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：AI 伺服器"
+      }
+    ],
+    "3563.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：AI 伺服器"
+      }
+    ],
+    "3045.TW": [
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：消費性電子 EMS"
+      }
+    ],
+    "6147.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "3673.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：AI 伺服器"
+      }
+    ],
+    "3532.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "2360.TW": [
+      {
+        "to": "2395.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（其他電子業）：工業"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（其他電子業）：消費性電子 EMS"
+      }
+    ],
+    "6278.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：AI 伺服器"
+      }
+    ],
+    "4943.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：AI 伺服器"
+      }
+    ],
+    "2379.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "2344.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "8046.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：AI 伺服器"
+      }
+    ],
+    "2478.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：AI 伺服器"
+      }
+    ],
+    "2409.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：AI 伺服器"
+      }
+    ],
+    "2481.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "2357.TW": [
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（電腦及週邊設備業）：AI 伺服器 GPU 平台"
+      },
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      }
+    ],
+    "2455.TW": [
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：消費性電子 EMS"
+      }
+    ],
+    "8163.TW": [
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（電腦及週邊設備業）：AI 伺服器 GPU 平台"
+      },
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      }
+    ],
+    "3533.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：AI 伺服器"
+      }
+    ],
+    "2313.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：AI 伺服器"
+      }
+    ],
+    "3504.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：AI 伺服器"
+      }
+    ],
+    "2376.TW": [
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（電腦及週邊設備業）：AI 伺服器 GPU 平台"
+      },
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      }
+    ],
+    "3019.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：AI 伺服器"
+      }
+    ],
+    "4966.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "5347.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "4938.TW": [
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（電腦及週邊設備業）：AI 伺服器 GPU 平台"
+      },
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      }
+    ],
+    "2375.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：AI 伺服器"
+      }
+    ],
+    "3481.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：AI 伺服器"
+      }
+    ],
+    "3596.TW": [
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：消費性電子 EMS"
+      }
+    ],
+    "6274.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：AI 伺服器"
+      }
+    ],
+    "2382.TW": [
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（電腦及週邊設備業）：AI 伺服器 GPU 平台"
+      },
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      }
+    ],
+    "2458.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "3081.TW": [
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：消費性電子 EMS"
+      }
+    ],
+    "3324.TW": [
+      {
+        "to": "2395.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（其他電子類）：工業"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（其他電子類）：消費性電子 EMS"
+      }
+    ],
+    "3090.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：AI 伺服器"
+      }
+    ],
+    "2301.TW": [
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（電腦及週邊設備業）：AI 伺服器 GPU 平台"
+      },
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      }
+    ],
+    "2353.TW": [
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（電腦及週邊設備業）：AI 伺服器 GPU 平台"
+      },
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      }
+    ],
+    "6552.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "6271.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "6269.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：AI 伺服器"
+      }
+    ],
+    "5388.TW": [
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：消費性電子 EMS"
+      }
+    ],
+    "4904.TW": [
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：消費性電子 EMS"
+      }
+    ],
+    "6121.TW": [
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（電腦及週邊設備業）：AI 伺服器 GPU 平台"
+      },
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      }
+    ],
+    "6285.TW": [
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：消費性電子 EMS"
+      }
+    ],
+    "6435.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "3227.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "2383.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：AI 伺服器"
+      }
+    ],
+    "2356.TW": [
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（電腦及週邊設備業）：AI 伺服器 GPU 平台"
+      },
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      }
+    ],
+    "6415.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "6414.TW": [
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（電腦及週邊設備業）：AI 伺服器 GPU 平台"
+      },
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      }
+    ],
+    "6213.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：AI 伺服器"
+      }
+    ],
+    "5299.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "5425.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "8299.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "8016.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "6451.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "6239.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "8150.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "2368.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：AI 伺服器"
+      }
+    ],
+    "3661.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "2354.TW": [
+      {
+        "to": "2395.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（其他電子業）：工業"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（其他電子業）：消費性電子 EMS"
+      }
+    ],
+    "8086.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "3529.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "4927.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：AI 伺服器"
+      }
+    ],
+    "4968.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "3653.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：AI 伺服器"
+      }
+    ],
+    "6669.TW": [
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（電腦及週邊設備業）：AI 伺服器 GPU 平台"
+      },
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      }
+    ],
+    "6510.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "2367.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：AI 伺服器"
+      }
+    ],
+    "3338.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：AI 伺服器"
+      }
+    ],
+    "3374.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "6230.TW": [
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（電腦及週邊設備業）：AI 伺服器 GPU 平台"
+      },
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      }
+    ],
+    "3680.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "4935.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：AI 伺服器"
+      }
+    ],
+    "6538.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：AI 伺服器"
+      }
+    ],
+    "3413.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "6196.TW": [
+      {
+        "to": "2395.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（其他電子業）：工業"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（其他電子業）：消費性電子 EMS"
+      }
+    ],
+    "5457.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：AI 伺服器"
+      }
+    ],
+    "2392.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：AI 伺服器"
+      }
+    ],
+    "2404.TW": [
+      {
+        "to": "2395.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（其他電子業）：工業"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（其他電子業）：消費性電子 EMS"
+      }
+    ],
+    "2449.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "3231.TW": [
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（電腦及週邊設備業）：AI 伺服器 GPU 平台"
+      },
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      }
+    ],
+    "3189.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "4915.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：AI 伺服器"
+      }
+    ],
+    "8028.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "8358.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：AI 伺服器"
+      }
+    ],
+    "6238.TW": [
+      {
+        "to": "2395.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（其他電子類）：工業"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（其他電子類）：消費性電子 EMS"
+      }
+    ],
+    "5469.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：AI 伺服器"
+      }
+    ],
+    "3260.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "6679.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "3044.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：AI 伺服器"
+      }
+    ],
+    "3483.TW": [
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（電腦及週邊設備業）：AI 伺服器 GPU 平台"
+      },
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      }
+    ],
+    "3017.TW": [
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（電腦及週邊設備業）：AI 伺服器 GPU 平台"
+      },
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      }
+    ],
+    "2387.TW": [
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（電腦及週邊設備業）：AI 伺服器 GPU 平台"
+      },
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      }
+    ],
+    "3552.TW": [
+      {
+        "to": "2395.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（其他電子類）：工業"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（其他電子類）：消費性電子 EMS"
+      }
+    ],
+    "6477.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：AI 伺服器"
+      }
+    ],
+    "6531.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "3006.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "6116.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：AI 伺服器"
+      }
+    ],
+    "3545.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "6443.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：AI 伺服器"
+      }
+    ],
+    "6533.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "3576.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：AI 伺服器"
+      }
+    ],
+    "2417.TW": [
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（電腦及週邊設備業）：AI 伺服器 GPU 平台"
+      },
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      }
+    ],
+    "8261.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "6284.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：AI 伺服器"
+      }
+    ],
+    "5443.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "3042.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：AI 伺服器"
+      }
+    ],
+    "2338.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "4976.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：AI 伺服器"
+      }
+    ],
+    "6150.TW": [
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（電腦及週邊設備業）：AI 伺服器 GPU 平台"
+      },
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      }
+    ],
+    "3530.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "3704.TW": [
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：消費性電子 EMS"
+      }
+    ],
+    "2436.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "6237.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "6223.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "1785.TW": [
+      {
+        "to": "2395.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（其他電子類）：工業"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（其他電子類）：消費性電子 EMS"
+      }
+    ],
+    "2332.TW": [
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：消費性電子 EMS"
+      }
+    ],
+    "3707.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "2399.TW": [
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（電腦及週邊設備業）：AI 伺服器 GPU 平台"
+      },
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      }
+    ],
+    "5471.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "3035.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "6104.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "5351.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "3141.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "4919.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "6411.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "2388.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "2340.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "3169.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "4961.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "6756.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "6138.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "6770.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "3508.TW": [
+      {
+        "to": "2395.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（其他電子類）：工業"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（其他電子類）：消費性電子 EMS"
+      }
+    ],
+    "3491.TW": [
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：消費性電子 EMS"
+      }
+    ],
+    "3515.TW": [
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（電腦及週邊設備業）：AI 伺服器 GPU 平台"
+      },
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      }
+    ],
+    "2457.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：AI 伺服器"
+      }
+    ],
+    "3675.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "3062.TW": [
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：消費性電子 EMS"
+      }
+    ],
+    "6485.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "6282.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：AI 伺服器"
+      }
+    ],
+    "2486.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：AI 伺服器"
+      }
+    ],
+    "2351.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "6706.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：AI 伺服器"
+      }
+    ],
+    "6781.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：AI 伺服器"
+      }
+    ],
+    "3228.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "3305.TW": [
+      {
+        "to": "2395.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（其他電子業）：工業"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（其他電子業）：消費性電子 EMS"
+      }
+    ],
+    "2476.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：AI 伺服器"
+      }
+    ],
+    "3588.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "3059.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：AI 伺服器"
+      }
+    ],
+    "2406.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：AI 伺服器"
+      }
+    ],
+    "3701.TW": [
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（電腦及週邊設備業）：AI 伺服器 GPU 平台"
+      },
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      }
+    ],
+    "3454.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：AI 伺服器"
+      }
+    ],
+    "6643.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "3558.TW": [
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：消費性電子 EMS"
+      }
+    ],
+    "5274.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "4931.TW": [
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（電腦及週邊設備業）：AI 伺服器 GPU 平台"
+      },
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      }
+    ],
+    "3289.TW": [
+      {
+        "to": "2395.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（其他電子類）：工業"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（其他電子類）：消費性電子 EMS"
+      }
+    ],
+    "6719.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "3046.TW": [
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（電腦及週邊設備業）：AI 伺服器 GPU 平台"
+      },
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      }
+    ],
+    "8050.TW": [
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（電腦及週邊設備業）：AI 伺服器 GPU 平台"
+      },
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      }
+    ],
+    "5258.TW": [
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（電腦及週邊設備業）：AI 伺服器 GPU 平台"
+      },
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      }
+    ],
+    "6279.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：AI 伺服器"
+      }
+    ],
+    "6245.TW": [
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：消費性電子 EMS"
+      }
+    ],
+    "4977.TW": [
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：消費性電子 EMS"
+      }
+    ],
+    "6789.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "3356.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：AI 伺服器"
+      }
+    ],
+    "3592.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "4979.TW": [
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：消費性電子 EMS"
+      }
+    ],
+    "3715.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：AI 伺服器"
+      }
+    ],
+    "2363.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "2329.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "6139.TW": [
+      {
+        "to": "2395.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（其他電子業）：工業"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（其他電子業）：消費性電子 EMS"
+      }
+    ],
+    "3548.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：AI 伺服器"
+      }
+    ],
+    "3693.TW": [
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（電腦及週邊設備業）：AI 伺服器 GPU 平台"
+      },
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      }
+    ],
+    "8210.TW": [
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（電腦及週邊設備業）：AI 伺服器 GPU 平台"
+      },
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      }
+    ],
+    "2059.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：AI 伺服器"
+      }
+    ],
+    "2324.TW": [
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（電腦及週邊設備業）：AI 伺服器 GPU 平台"
+      },
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      }
+    ],
+    "3036.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：AI 伺服器"
+      }
+    ],
+    "8054.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "4908.TW": [
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：消費性電子 EMS"
+      }
+    ],
+    "6235.TW": [
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（電腦及週邊設備業）：AI 伺服器 GPU 平台"
+      },
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      }
+    ],
+    "4967.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "3005.TW": [
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（電腦及週邊設備業）：AI 伺服器 GPU 平台"
+      },
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      }
+    ],
+    "2421.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：AI 伺服器"
+      }
+    ],
+    "6117.TW": [
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（電腦及週邊設備業）：AI 伺服器 GPU 平台"
+      },
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      }
+    ],
+    "5439.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：AI 伺服器"
+      }
+    ],
+    "3078.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：AI 伺服器"
+      }
+    ],
+    "3013.TW": [
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（電腦及週邊設備業）：AI 伺服器 GPU 平台"
+      },
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      }
+    ],
+    "2355.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：AI 伺服器"
+      }
+    ],
+    "3363.TW": [
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：消費性電子 EMS"
+      }
+    ],
+    "6732.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "3706.TW": [
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（電腦及週邊設備業）：AI 伺服器 GPU 平台"
+      },
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      }
+    ],
+    "3702.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：AI 伺服器"
+      }
+    ],
+    "3376.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：AI 伺服器"
+      }
+    ],
+    "8112.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：AI 伺服器"
+      }
+    ],
+    "2385.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：AI 伺服器"
+      }
+    ],
+    "6187.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "3041.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "8227.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "3450.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "3211.TW": [
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（電腦及週邊設備業）：AI 伺服器 GPU 平台"
+      },
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      }
+    ],
+    "6442.TW": [
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：消費性電子 EMS"
+      }
+    ],
+    "2312.TW": [
+      {
+        "to": "2395.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（其他電子業）：工業"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（其他電子業）：消費性電子 EMS"
+      }
+    ],
+    "6805.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：AI 伺服器"
+      }
+    ],
+    "4991.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "3029.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：AI 伺服器"
+      }
+    ],
+    "2374.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子工業）：AI 伺服器"
+      }
+    ],
+    "3583.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "2359.TW": [
+      {
+        "to": "2395.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（其他電子業）：工業"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（其他電子業）：消費性電子 EMS"
+      }
+    ],
+    "3131.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "1815.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：AI 伺服器"
+      }
+    ],
+    "6438.TW": [
+      {
+        "to": "2395.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（其他電子業）：工業"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（其他電子業）：消費性電子 EMS"
+      }
+    ],
+    "8249.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：AI 伺服器"
+      }
+    ],
+    "7769.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "4909.TW": [
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：消費性電子 EMS"
+      }
+    ],
+    "6515.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "6937.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "3163.TW": [
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：消費性電子 EMS"
+      }
+    ],
+    "6530.TW": [
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：雲端 / 資料中心資本支出"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（通信網路業）：消費性電子 EMS"
+      }
+    ],
+    "2467.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：AI 伺服器"
+      }
+    ],
+    "2464.TW": [
+      {
+        "to": "2395.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（其他電子業）：工業"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（其他電子業）：消費性電子 EMS"
+      }
+    ],
+    "8021.TW": [
+      {
+        "to": "2395.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（其他電子業）：工業"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（其他電子業）：消費性電子 EMS"
+      }
+    ],
+    "5289.TW": [
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（電腦及週邊設備業）：AI 伺服器 GPU 平台"
+      },
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電腦及週邊設備業）：雲端資本支出"
+      }
+    ],
+    "8110.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "6191.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：AI 伺服器"
+      }
+    ],
+    "5536.TW": [
+      {
+        "to": "2395.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（其他電子類）：工業"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（其他電子類）：消費性電子 EMS"
+      }
+    ],
+    "6290.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：AI 伺服器"
+      }
+    ],
+    "8039.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：AI 伺服器"
+      }
+    ],
+    "5314.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "8271.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "4749.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設（半導體業）：晶圓代工 / 半導體景氣"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（半導體業）：AI 運算需求"
+      }
+    ],
+    "6409.TW": [
+      {
+        "to": "2395.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（其他電子業）：工業"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（其他電子業）：消費性電子 EMS"
+      }
+    ],
+    "5309.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：伺服器 ODM"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：消費性電子 EMS"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設（電子零組件業）：AI 伺服器"
+      }
+    ]
+  }
+}

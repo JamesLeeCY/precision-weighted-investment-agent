@@ -98,6 +98,12 @@ walk-forward 收縮校準修正各 Agent 的過度自信，LLM 合併 Brier 0.27
 （21 種取樣起點全為正，選股貢獻 +0.97%），但 2024–2026 完全消失。在選股偏誤與多重比較下，
 仍屬未經證實的弱訊號。
 
+**無選股偏誤股票池**（271 檔、每年依當時成交金額選前 100 檔、含下市公司，詳見
+[報告](docs/pit_universe_report.md)）：**財報 Agent 的產業內選股能力重現了**——產業內 IC
+2019–2026 為 +0.029（t 2.16），兩個期間、21 種取樣起點全部為正；單獨持有財報 Agent 看多的
+股票，扣成本後相對等權持有每期 +0.26%（t 1.90，約年化 3%）。合併策略在 41 檔上的優勢
+沒有重現（選股偏誤），總經與供應鏈 Agent 的加入反而稀釋了財報 Agent。
+
 **規格 5.2 修訂**（2026-10-07，詳見[校準報告第 8 節](docs/calibration_report.md#8-訊號公式修訂2026-10-07)）：
 投票權重改為確信度 |2p − 1|，合併分數 = 2 × 合併機率 − 1，門檻為合併機率
 0.55 / 0.45。毫無把握的 Agent 不再投票，訊號與機率一致。
@@ -183,13 +189,14 @@ python3.11 -m venv .venv
 
 ```
 config/tickers.yaml     股票池與全部參數（horizon、閾值、EMA α、冷啟動門檻）
-config/tickers_expanded.yaml  擴大股票池（41 檔，2019–2026）
+config/tickers_expanded.yaml  擴大股票池（41 檔，2019–2026，事後挑選）
+config/tickers_pit.yaml       無選股偏誤股票池（271 檔，逐年成員見 universe_pit_membership.csv）
 config/supply_chain_graph.json  供應鏈知識圖譜（依 2024 年報修訂，每條邊標註出處；v1 另存為 _v1）
 agents/                 Agent 基底 + 財報/新聞/總經籌碼/供應鏈 Agent（LLM 可插拔）
 arbitrator/             精度追蹤（Brier EMA）+ 合併公式 + Agent 層級重新校準
 data/                   FinMind 抓取（快取/節流/額度等待）、含息還原價、總經/籌碼、供應鏈、新聞內文、RSS 新聞、向量庫
 backtest/               walk-forward 回測 + 評估指標 + 報酬層級評估（vs 0050）
-tests/                  132 個單元測試
+tests/                  136 個單元測試
 analysis/               訊號穩定性分析（分期 IC、產業內 IC、取樣起點穩健性）
 reports/                synthetic / finmind_preliminary / finmind_scoped / finmind_full / finmind_macro / finmind_llm_qwen3 / finmind_news_content / finmind_llm_qwen3_content / finmind_supply_chain(_v2 / _long_v1 / _long_v2) 結果
 docs/                   規格、技術筆記、回測報告
@@ -205,6 +212,8 @@ notebooks/              校準分析 notebook
   135 事件的完整版結果與逐項解讀
 - [Phase 2 回測報告](docs/phase2_macro_report.md) — 加入總經/籌碼 Agent 的
   3 Agent 結果、消融與報酬拆解
+- [無選股偏誤股票池報告](docs/pit_universe_report.md) — 逐年依當時資訊選股、含下市公司；
+  財報 Agent 產業內選股能力的獨立驗證
 - [連續輸出模式報告](docs/continuous_output_report.md) — 分數直接映射機率、
   排序資訊回收、合併組合的產業配置 / 選股拆解
 - [擴大股票池報告](docs/expanded_universe_report.md) — 41 檔 × 2019–2026、產業內 IC、

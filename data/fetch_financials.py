@@ -74,13 +74,30 @@ class FinMindClient:
     # 讓長時間回測可以無人值守跑完。
     QUOTA_WAIT_SEC = 300
     QUOTA_MAX_RETRIES = 20
+    # 連線逾時等暫時性網路錯誤：退避重試，避免數小時的批次因一次斷線中止
+    NETWORK_RETRY_WAITS_SEC = (30, 60, 120, 300, 600)
+
+    def _get(self, params: dict) -> requests.Response:
+        """送出請求；網路錯誤時退避重試。最終失敗的錯誤訊息不含網址（網址帶有 API token）。"""
+        for wait in (*self.NETWORK_RETRY_WAITS_SEC, None):
+            try:
+                return requests.get(FINMIND_API_URL, params={**params, "token": self.token}, timeout=60)
+            except requests.RequestException as exc:
+                if wait is None:
+                    raise RuntimeError(
+                        f"FinMind 連線失敗（{type(exc).__name__}，dataset={params.get('dataset')}，"
+                        f"data_id={params.get('data_id')}），已重試 {len(self.NETWORK_RETRY_WAITS_SEC)} 次"
+                    ) from None
+                print(f"[network] FinMind 連線失敗（{type(exc).__name__}），{wait}s 後重試", flush=True)
+                time.sleep(wait)
+        raise AssertionError("unreachable")
 
     def _request_with_quota_retry(self, params: dict) -> list:
         for attempt in range(self.QUOTA_MAX_RETRIES + 1):
             elapsed = time.monotonic() - self._last_request_ts
             if elapsed < MIN_REQUEST_INTERVAL_SEC:
                 time.sleep(MIN_REQUEST_INTERVAL_SEC - elapsed)
-            resp = requests.get(FINMIND_API_URL, params={**params, "token": self.token}, timeout=60)
+            resp = self._get(params)
             self._last_request_ts = time.monotonic()
             try:
                 payload = resp.json()

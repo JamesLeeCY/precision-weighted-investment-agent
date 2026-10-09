@@ -5,8 +5,11 @@ __pycache__/
 .pytest_cache/
 .ipynb_checkpoints/
 .DS_Store
-# 注意：data_cache/ 刻意納入版控——FinMind 逐日快取是 API 額度的成果，
-# 換機器續跑不需重抓
+# 注意：data_cache/ 原本刻意納入版控（FinMind 快取是 API 額度的成果，換機器續跑不需重抓）。
+# 2026-10-09 起新增的原始快取不再版控（無偏誤股票池約 3,000 檔、1.2 GB）；
+# 已追蹤的檔案與 LLM 回應快取（data_cache/llm/，體積小）照舊版控。
+data_cache/*
+!data_cache/llm/
 
 # 回測終端輸出（Windows 編碼亂碼，非成果）
 reports/**/run.log

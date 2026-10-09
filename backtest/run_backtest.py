@@ -559,6 +559,13 @@ def generate_finmind_events(config: dict, llm=None) -> list[PredictionEvent]:
         # 期末停牌時以停牌前最後收盤價計值
         return float(s.asof(end) / s.asof(start) - 1.0)
 
+    # 隨時間變動的股票池（point-in-time）：每年只為當年成員產生事件
+    membership = None
+    if config.get("universe_membership"):
+        from data.universe import load_membership
+
+        membership = load_membership(PROJECT_ROOT / config["universe_membership"])
+
     events = []
     for ticker in tickers:
         if ticker not in series:
@@ -568,6 +575,8 @@ def generate_finmind_events(config: dict, llm=None) -> list[PredictionEvent]:
         for i in range(0, len(calendar) - horizon, step):
             start_ts, end_ts = calendar[i], calendar[i + horizon]
             if start_ts not in close.index:  # 當日停牌，無法進場
+                continue
+            if membership is not None and ticker not in membership.get(start_ts.year, set()):
                 continue
             as_of = start_ts.strftime("%Y-%m-%d")
             end = end_ts.strftime("%Y-%m-%d")

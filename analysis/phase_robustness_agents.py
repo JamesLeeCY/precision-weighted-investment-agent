@@ -79,6 +79,11 @@ def main(config_path, out_path):
             graph=load_graph(Path(config_path).resolve().parent.parent / cfg["supply_chain"]["graph"]),
         ),
     }
+    membership = None
+    if cfg.get("universe_membership"):
+        from data.universe import load_membership
+
+        membership = load_membership(Path(config_path).resolve().parent.parent / cfg["universe_membership"])
     prices = {t: get_total_return_prices(client, t, start, end).set_index("date")["adj_close"] for t in tickers}
     calendar = sorted(set().union(*(p.index for p in prices.values())))
     rows = []
@@ -88,6 +93,8 @@ def main(config_path, out_path):
             s = prices[t]
             if d0 not in s.index:
                 continue
+            if membership is not None and t not in membership.get(d0.year, set()):
+                continue  # 無選股偏誤股票池：只用當年成員
             row = {"i": i, "date": d0, "ticker": t, "ret": float(s.asof(d1) / s.asof(d0) - 1.0)}
             for name, agent in agents.items():
                 o = agent.analyze(t, d0.strftime("%Y-%m-%d"))
