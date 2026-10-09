@@ -68,6 +68,11 @@ EMA 的倒數，即「精度」）動態加權合成投資論點——可靠度�
 樣本外 IR 只剩樣本內的約 1/6 ~ 1/3，Sharpe 兩段都不如 0050；扣掉嘗試次數的 Deflated Sharpe 不顯著（≤ 0.25）。
 乾淨的答案只能靠已凍結規則的前瞻驗證累積。
 
+**其他訊號與進出場濾網**（詳見[報告](docs/technical_timing_report.md)）：產業內相對估值、技術面 Agent（K 線、均線、量價、
+支撐壓力）、動能、短期反轉，沒有一個在 2019–2022 樣本外與 2023–2026 兩段都有效——技術面與動能只在 2023 年後的多頭有效、
+樣本外轉負；反轉剛好相反；估值兩段都為負。0050 跌破 200 日線轉現金的大盤濾網能把最大回撤降低約 40%，
+但樣本外 Sharpe 反而下降（0.57 → 0.37）；沒有任何組合的 Sharpe 贏過 0050 買進持有。
+
 ### 評估指標速覽
 
 - **平均 Brier score**（越低越好）：每筆預測先轉成「看多機率」p（bullish
@@ -248,11 +253,11 @@ config/tickers.yaml     股票池與全部參數（horizon、閾值、EMA α、�
 config/tickers_expanded.yaml  擴大股票池（41 檔，2019–2026，事後挑選）
 config/tickers_pit.yaml       無選股偏誤股票池（271 檔，逐年成員見 universe_pit_membership.csv）
 config/supply_chain_graph.json  供應鏈知識圖譜（依 2024 年報修訂，每條邊標註出處；v1 另存為 _v1）
-agents/                 Agent 基底 + 財報/新聞/總經籌碼/供應鏈 Agent（LLM 可插拔）
+agents/                 Agent 基底 + 財報/新聞/總經籌碼/供應鏈/技術面 Agent（LLM 可插拔）
 arbitrator/             精度追蹤（Brier EMA）+ 合併公式 + Agent 層級重新校準 + 產業內 IC 加權
 data/                   FinMind 抓取（快取/節流/額度等待）、含息還原價、總經/籌碼、供應鏈、新聞內文、RSS 新聞、向量庫
 backtest/               walk-forward 回測 + 評估指標 + 報酬層級評估（vs 0050）
-tests/                  151 個單元測試
+tests/                  157 個單元測試
 forward/                前瞻驗證：凍結規格、預測 / 結算紀錄、自動報告
 analysis/               訊號穩定性分析（分期 IC、產業內 IC、取樣起點穩健性）
 site/                   研究網站（股票池、Agent 架構、逐股分析、前瞻驗證）；build_site.py 重新產生
@@ -278,6 +283,8 @@ notebooks/              校準分析 notebook
   3 Agent 結果、消融與報酬拆解
 - [樣本外與過度擬合控制](docs/overfitting_controls.md) — 樣本切分依據、樣本外 Sharpe / IR、Deflated Sharpe、控制做法與面試回答
 - [回測成績單](docs/scorecard.md) — 方向準確率、Brier、Sharpe、最大回撤，兩個股票池對 0050 與等權持有
+- [技術面、動能、反轉、估值與進出場濾網](docs/technical_timing_report.md) — 技術面 Agent、8 個訊號的產業內選股能力、
+  大盤／個股濾網對 Sharpe 與回撤的影響
 - [產業中性組合報告](docs/sector_neutral_report.md) — 財報 Agent 的產業內排序轉成產業中性做多／多空組合、
   換手與成本、緩衝規則、敏感度
 - [前瞻驗證操作說明](docs/forward_validation.md) — 凍結規則、每月流程、完整性機制

@@ -489,8 +489,10 @@ def generate_finmind_events(config: dict, llm=None) -> list[PredictionEvent]:
     from agents.macro_agent import MacroAgent
     from agents.news_agent import NewsAgent
     from agents.supply_chain_agent import SupplyChainAgent
+    from agents.technical_agent import TechnicalAgent
     from data.fetch_macro import FinMindMacroProvider
     from data.fetch_supply_chain import FinMindSupplyChainProvider, load_graph
+    from data.fetch_technical import FinMindTechnicalProvider
     from data.fetch_financials import FinMindClient, FinMindFundamentalsProvider, get_total_return_prices
     from data.fetch_news import FinMindNewsProvider
 
@@ -546,6 +548,10 @@ def generate_finmind_events(config: dict, llm=None) -> list[PredictionEvent]:
             horizon_days=horizon,
             window_days=int(config.get("supply_chain", {}).get("window_days", 20)),
             output_mode=mode,
+        ),
+        # 技術面：價量查詢用回測期間（與含息還原價相同的快取鍵）；開頭 60 個交易日指標不足，覆蓋率較低
+        "technical_agent": lambda: TechnicalAgent(
+            FinMindTechnicalProvider(client, bt["start_date"], bt["end_date"]), horizon_days=horizon, output_mode=mode,
         ),
     }
     agent_ids = config.get("agents", ["fundamentals_agent", "news_agent"])
