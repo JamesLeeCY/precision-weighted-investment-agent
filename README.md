@@ -73,6 +73,10 @@ EMA 的倒數，即「精度」）動態加權合成投資論點——可靠度�
 樣本外轉負；反轉剛好相反；估值兩段都為負。0050 跌破 200 日線轉現金的大盤濾網能把最大回撤降低約 40%，
 但樣本外 Sharpe 反而下降（0.57 → 0.37）；沒有任何組合的 Sharpe 贏過 0050 買進持有。
 
+**短期反轉、過度反應、產業領先落後**（5 日預測期，詳見[報告](docs/short_term_reversal_report.md)）：1 日反轉在
+同一收盤成交時兩段都顯著（產業內 IC +0.03，t 2.4–3.4），但晚一天成交只剩約 30%；每 5 日換手 1.3 以上，
+扣掉 0.3% 證交稅後所有版本都虧損。量能條件與領先股訊號都沒有一致的證據。
+
 ### 評估指標速覽
 
 - **平均 Brier score**（越低越好）：每筆預測先轉成「看多機率」p（bullish
@@ -257,7 +261,7 @@ agents/                 Agent 基底 + 財報/新聞/總經籌碼/供應鏈/技�
 arbitrator/             精度追蹤（Brier EMA）+ 合併公式 + Agent 層級重新校準 + 產業內 IC 加權
 data/                   FinMind 抓取（快取/節流/額度等待）、含息還原價、總經/籌碼、供應鏈、新聞內文、RSS 新聞、向量庫
 backtest/               walk-forward 回測 + 評估指標 + 報酬層級評估（vs 0050）
-tests/                  157 個單元測試
+tests/                  160 個單元測試
 forward/                前瞻驗證：凍結規格、預測 / 結算紀錄、自動報告
 analysis/               訊號穩定性分析（分期 IC、產業內 IC、取樣起點穩健性）
 site/                   研究網站（股票池、Agent 架構、逐股分析、前瞻驗證）；build_site.py 重新產生
@@ -285,6 +289,7 @@ notebooks/              校準分析 notebook
 - [回測成績單](docs/scorecard.md) — 方向準確率、Brier、Sharpe、最大回撤，兩個股票池對 0050 與等權持有
 - [技術面、動能、反轉、估值與進出場濾網](docs/technical_timing_report.md) — 技術面 Agent、8 個訊號的產業內選股能力、
   大盤／個股濾網對 Sharpe 與回撤的影響
+- [短期反轉、過度反應、產業領先落後](docs/short_term_reversal_report.md) — 5 日預測期、隔日 / 同一收盤成交、扣成本
 - [產業中性組合報告](docs/sector_neutral_report.md) — 財報 Agent 的產業內排序轉成產業中性做多／多空組合、
   換手與成本、緩衝規則、敏感度
 - [前瞻驗證操作說明](docs/forward_validation.md) — 凍結規則、每月流程、完整性機制
