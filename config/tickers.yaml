@@ -72,6 +72,9 @@ arbitrator:
   # 事先固定、不依回測結果調整
   calibration_min_n: 10              # 每個 Agent 累積滿 10 筆已到期預測才開始校準
   calibration_prior_strength: 2.0    # 往 a=1（不修正）的先驗強度
+  # 產業內 IC 加權（arbitrator/ic_weighting.py）：最近 24 個已到期時點、滿 6 個才啟用（事先固定）
+  ic_window_dates: 24
+  ic_min_dates: 6
 
 news:
   window_days: 14            # 規格 3.3：新聞 Agent 預設時間窗

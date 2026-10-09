@@ -40,6 +40,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from agents.base import AgentOutput
 from arbitrator.calibration import AgentCalibrator
+from arbitrator.ic_weighting import ICWeighter
 from arbitrator.merge import merge
 from arbitrator.precision_tracker import PrecisionTracker
 from backtest.metrics import (
@@ -60,6 +61,7 @@ STRATEGY_LABELS = {
     "precision_weighted": "本系統：精度加權合併",
     "calibrated_average": "校準後簡單平均",
     "calibrated_precision_weighted": "校準後精度加權",
+    "ic_weighted": "產業內 IC 加權",
 }
 
 # 校準曲線圖的標題（matplotlib 預設字型無 CJK，圖內用英文）
@@ -69,6 +71,7 @@ STRATEGY_LABELS_EN = {
     "precision_weighted": "Precision-weighted (this system)",
     "calibrated_average": "Calibrated simple average",
     "calibrated_precision_weighted": "Calibrated precision-weighted",
+    "ic_weighted": "Within-sector IC-weighted",
 }
 
 
@@ -107,6 +110,7 @@ def run_walk_forward(
     bearish_threshold: float = -0.1,
     calibrator: AgentCalibrator | None = None,
     cal_tracker: PrecisionTracker | None = None,
+    ic_weighter: ICWeighter | None = None,
 ) -> pd.DataFrame:
     """走時序回測。除了原本三個策略，另做 Agent 層級重新校準的兩個策略：
     合併前以 calibrator 修正各 Agent 機率；校準後精度加權使用 cal_tracker，
@@ -119,6 +123,9 @@ def run_walk_forward(
             epsilon=tracker.epsilon, ema_alpha=tracker.ema_alpha, cold_start_min_n=tracker.cold_start_min_n,
         )
         cal_tracker.records = {}
+    # 產業內 IC 加權：以已到期預測的產業內排序能力為權重（arbitrator/ic_weighting.py）
+    ic_weighter = ic_weighter or ICWeighter()
+    ic_weights_by_date: dict[str, dict[str, float]] = {}
     events = sorted(events, key=lambda e: (e.as_of_date, e.ticker))
     pending: list[PredictionEvent] = []
     rows = []
@@ -135,6 +142,11 @@ def run_walk_forward(
                     calibrator.record(out.agent_id, p, old.outcome)
                     p_cal = old.calibrated_p[out.agent_id]
                     cal_tracker.record_outcome(out.agent_id, old.ticker, (p_cal - old.outcome) ** 2, autosave=False)
+                ic_weighter.record(
+                    old.as_of_date, old.ticker,
+                    {o.agent_id: signal_to_probability(o.signal, o.confidence) for o in old.outputs.values()},
+                    old.forward_return,
+                )
             else:
                 still_pending.append(old)
         pending = still_pending
@@ -161,6 +173,12 @@ def run_walk_forward(
         merged_cal_avg = merge(cal_outputs, equal, bullish_threshold, bearish_threshold)
         merged_cal_pw = merge(cal_outputs, cal_precisions, bullish_threshold, bearish_threshold)
 
+        # 產業內 IC 加權（同一時點所有股票共用一組權重）
+        if ev.as_of_date not in ic_weights_by_date:
+            ic_weights_by_date[ev.as_of_date] = ic_weighter.weights(agent_ids)
+        ic_weights = {a: ic_weights_by_date[ev.as_of_date].get(a, 0.0) for a in agent_ids}
+        merged_ic = merge(outputs, ic_weights, bullish_threshold, bearish_threshold)
+
         # Baseline A：單一 Agent
         base = ev.outputs.get(BASELINE_A_AGENT, outputs[0])
 
@@ -179,6 +197,8 @@ def run_walk_forward(
             "calibrated_average_p": merged_cal_avg.probability_bullish,
             "calibrated_precision_weighted_signal": merged_cal_pw.signal,
             "calibrated_precision_weighted_p": merged_cal_pw.probability_bullish,
+            "ic_weighted_signal": merged_ic.signal,
+            "ic_weighted_p": merged_ic.probability_bullish,
             "price_return": ev.price_return,
             "forward_return": ev.forward_return,
             "benchmark_return": ev.benchmark_return,
@@ -193,6 +213,7 @@ def run_walk_forward(
             row[f"pcal_{o.agent_id}"] = ev.calibrated_p[o.agent_id]
             row[f"slope_{o.agent_id}"] = calibrator.slope(o.agent_id)
             row[f"calprecision_{o.agent_id}"] = cal_precisions[o.agent_id]
+            row[f"icw_{o.agent_id}"] = ic_weights[o.agent_id]
         rows.append(row)
         pending.append(ev)
 
@@ -730,9 +751,15 @@ def main(argv: list[str] | None = None) -> Path:
     )
     cal_tracker.records = {}
 
+    ic_weighter = ICWeighter(
+        sectors={u["ticker"]: u.get("segment", "?") for u in config["universe"]},
+        window=int(arb.get("ic_window_dates", 24)),
+        min_dates=int(arb.get("ic_min_dates", 6)),
+    )
+
     df = run_walk_forward(
         events, tracker, float(arb["bullish_threshold"]), float(arb["bearish_threshold"]),
-        calibrator=calibrator, cal_tracker=cal_tracker,
+        calibrator=calibrator, cal_tracker=cal_tracker, ic_weighter=ic_weighter,
     )
     summary = evaluate(df, output_dir)
 
