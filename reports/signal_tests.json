@@ -1,39 +1,300 @@
 {
- "source": "docs/technical_timing_report.md、docs/short_term_reversal_report.md（2026-10-10）；數字為取樣起點中位數",
+ "source": "docs/technical_timing_report.md、docs/short_term_reversal_report.md、docs/reversal_execution_report.md（2026-10-10）；數字為取樣起點中位數",
  "signals_20d": {
   "note": "20 日預測期、每 21 個交易日換倉、21 種取樣起點；產業中性做多相對等權，扣成本",
   "rows": [
-   {"label": "財報 Agent（基準）", "ic_oos": 0.017, "ic_oos_pos": 16, "ic_is": 0.046, "ic_is_pos": 21, "ex_oos": 0.0013, "ex_is": 0.0047, "to": 0.60},
-   {"label": "產業內相對估值", "ic_oos": -0.001, "ic_oos_pos": 8, "ic_is": -0.021, "ic_is_pos": 1, "ex_oos": -0.0043, "ex_is": -0.0074, "to": 0.35},
-   {"label": "財報 + 估值", "ic_oos": 0.004, "ic_oos_pos": 13, "ic_is": 0.018, "ic_is_pos": 20, "ex_oos": -0.0033, "ex_is": -0.0026, "to": 0.63},
-   {"label": "技術面 Agent", "ic_oos": -0.035, "ic_oos_pos": 1, "ic_is": 0.041, "ic_is_pos": 21, "ex_oos": -0.0040, "ex_is": 0.0069, "to": 0.98},
-   {"label": "動能 12-1 月", "ic_oos": -0.014, "ic_oos_pos": 0, "ic_is": 0.049, "ic_is_pos": 21, "ex_oos": -0.0018, "ex_is": 0.0070, "to": 0.45},
-   {"label": "動能 6-1 月", "ic_oos": -0.005, "ic_oos_pos": 8, "ic_is": 0.032, "ic_is_pos": 21, "ex_oos": 0.0000, "ex_is": 0.0035, "to": 0.61},
-   {"label": "反轉 1 個月", "ic_oos": 0.045, "ic_oos_pos": 21, "ic_is": -0.031, "ic_is_pos": 0, "ex_oos": 0.0003, "ex_is": -0.0098, "to": 1.33},
-   {"label": "反轉 1 週", "ic_oos": 0.028, "ic_oos_pos": 20, "ic_is": -0.020, "ic_is_pos": 6, "ex_oos": -0.0008, "ex_is": -0.0036, "to": 1.31}
+   {
+    "label": "財報 Agent（基準）",
+    "ic_oos": 0.017,
+    "ic_oos_pos": 16,
+    "ic_is": 0.046,
+    "ic_is_pos": 21,
+    "ex_oos": 0.0013,
+    "ex_is": 0.0047,
+    "to": 0.6
+   },
+   {
+    "label": "產業內相對估值",
+    "ic_oos": -0.001,
+    "ic_oos_pos": 8,
+    "ic_is": -0.021,
+    "ic_is_pos": 1,
+    "ex_oos": -0.0043,
+    "ex_is": -0.0074,
+    "to": 0.35
+   },
+   {
+    "label": "財報 + 估值",
+    "ic_oos": 0.004,
+    "ic_oos_pos": 13,
+    "ic_is": 0.018,
+    "ic_is_pos": 20,
+    "ex_oos": -0.0033,
+    "ex_is": -0.0026,
+    "to": 0.63
+   },
+   {
+    "label": "技術面 Agent",
+    "ic_oos": -0.035,
+    "ic_oos_pos": 1,
+    "ic_is": 0.041,
+    "ic_is_pos": 21,
+    "ex_oos": -0.004,
+    "ex_is": 0.0069,
+    "to": 0.98
+   },
+   {
+    "label": "動能 12-1 月",
+    "ic_oos": -0.014,
+    "ic_oos_pos": 0,
+    "ic_is": 0.049,
+    "ic_is_pos": 21,
+    "ex_oos": -0.0018,
+    "ex_is": 0.007,
+    "to": 0.45
+   },
+   {
+    "label": "動能 6-1 月",
+    "ic_oos": -0.005,
+    "ic_oos_pos": 8,
+    "ic_is": 0.032,
+    "ic_is_pos": 21,
+    "ex_oos": 0.0,
+    "ex_is": 0.0035,
+    "to": 0.61
+   },
+   {
+    "label": "反轉 1 個月",
+    "ic_oos": 0.045,
+    "ic_oos_pos": 21,
+    "ic_is": -0.031,
+    "ic_is_pos": 0,
+    "ex_oos": 0.0003,
+    "ex_is": -0.0098,
+    "to": 1.33
+   },
+   {
+    "label": "反轉 1 週",
+    "ic_oos": 0.028,
+    "ic_oos_pos": 20,
+    "ic_is": -0.02,
+    "ic_is_pos": 6,
+    "ex_oos": -0.0008,
+    "ex_is": -0.0036,
+    "to": 1.31
+   }
   ]
  },
  "timing": {
   "note": "大盤濾網：0050 前一日 > 200 日均線才持股；個股濾網：股價 > 60 日均線才持有；只在換倉日判斷",
   "rows": [
-   {"label": "0050 買進持有", "sh_oos": 0.72, "mdd_oos": -0.29, "sh_is": 2.09, "mdd_is": -0.17, "expo_oos": 1.00},
-   {"label": "0050 + 大盤濾網", "sh_oos": 0.64, "mdd_oos": -0.19, "sh_is": 1.95, "mdd_is": -0.13, "expo_oos": 0.67},
-   {"label": "等權持有全部", "sh_oos": 0.59, "mdd_oos": -0.39, "sh_is": 1.61, "mdd_is": -0.28, "expo_oos": 1.00},
-   {"label": "財報產業中性做多", "sh_oos": 0.57, "mdd_oos": -0.40, "sh_is": 1.80, "mdd_is": -0.27, "expo_oos": 1.00},
-   {"label": "財報產業中性 + 大盤濾網", "sh_oos": 0.37, "mdd_oos": -0.24, "sh_is": 1.91, "mdd_is": -0.16, "expo_oos": 0.67},
-   {"label": "財報產業中性 + 個股濾網", "sh_oos": 0.14, "mdd_oos": -0.26, "sh_is": 1.90, "mdd_is": -0.16, "expo_oos": 0.52},
-   {"label": "財報產業中性 + 大盤與個股濾網", "sh_oos": 0.33, "mdd_oos": -0.17, "sh_is": 1.81, "mdd_is": -0.14, "expo_oos": 0.43}
+   {
+    "label": "0050 買進持有",
+    "sh_oos": 0.72,
+    "mdd_oos": -0.29,
+    "sh_is": 2.09,
+    "mdd_is": -0.17,
+    "expo_oos": 1.0
+   },
+   {
+    "label": "0050 + 大盤濾網",
+    "sh_oos": 0.64,
+    "mdd_oos": -0.19,
+    "sh_is": 1.95,
+    "mdd_is": -0.13,
+    "expo_oos": 0.67
+   },
+   {
+    "label": "等權持有全部",
+    "sh_oos": 0.59,
+    "mdd_oos": -0.39,
+    "sh_is": 1.61,
+    "mdd_is": -0.28,
+    "expo_oos": 1.0
+   },
+   {
+    "label": "財報產業中性做多",
+    "sh_oos": 0.57,
+    "mdd_oos": -0.4,
+    "sh_is": 1.8,
+    "mdd_is": -0.27,
+    "expo_oos": 1.0
+   },
+   {
+    "label": "財報產業中性 + 大盤濾網",
+    "sh_oos": 0.37,
+    "mdd_oos": -0.24,
+    "sh_is": 1.91,
+    "mdd_is": -0.16,
+    "expo_oos": 0.67
+   },
+   {
+    "label": "財報產業中性 + 個股濾網",
+    "sh_oos": 0.14,
+    "mdd_oos": -0.26,
+    "sh_is": 1.9,
+    "mdd_is": -0.16,
+    "expo_oos": 0.52
+   },
+   {
+    "label": "財報產業中性 + 大盤與個股濾網",
+    "sh_oos": 0.33,
+    "mdd_oos": -0.17,
+    "sh_is": 1.81,
+    "mdd_is": -0.14,
+    "expo_oos": 0.43
+   }
   ]
  },
  "reversal_5d": {
   "note": "5 日預測期、每 5 個交易日換倉、5 種取樣起點；產業中性做多相對等權（每期 5 日）",
   "rows": [
-   {"label": "反轉 1 日（同一收盤成交，上限）", "ic_oos": 0.034, "t_oos": 3.4, "ic_is": 0.027, "t_is": 2.4, "gross_oos": 0.0012, "net_oos": -0.0026, "to": 1.29},
-   {"label": "反轉 1 日（隔日成交）", "ic_oos": 0.009, "t_oos": 1.2, "ic_is": 0.010, "t_is": 0.5, "gross_oos": 0.0002, "net_oos": -0.0036, "to": 1.29},
-   {"label": "反轉 5 日（隔日成交）", "ic_oos": 0.017, "t_oos": 1.5, "ic_is": 0.007, "t_is": 0.7, "gross_oos": 0.0007, "net_oos": -0.0033, "to": 1.33},
-   {"label": "反轉 10 日（隔日成交）", "ic_oos": 0.026, "t_oos": 2.3, "ic_is": -0.004, "t_is": -0.3, "gross_oos": 0.0008, "net_oos": -0.0019, "to": 0.92},
-   {"label": "反轉 5 日，只在低量股（過度反應）", "ic_oos": 0.004, "t_oos": 0.4, "ic_is": 0.016, "t_is": 1.3, "gross_oos": 0.0006, "net_oos": -0.0020, "to": 1.52},
-   {"label": "領先股過去 5 日報酬（領先落後）", "ic_oos": -0.009, "t_oos": -0.7, "ic_is": 0.011, "t_is": 1.1, "gross_oos": null, "net_oos": null, "to": null}
+   {
+    "label": "反轉 1 日（同一收盤成交，上限）",
+    "ic_oos": 0.034,
+    "t_oos": 3.4,
+    "ic_is": 0.027,
+    "t_is": 2.4,
+    "gross_oos": 0.0012,
+    "net_oos": -0.0026,
+    "to": 1.29
+   },
+   {
+    "label": "反轉 1 日（隔日成交）",
+    "ic_oos": 0.009,
+    "t_oos": 1.2,
+    "ic_is": 0.01,
+    "t_is": 0.5,
+    "gross_oos": 0.0002,
+    "net_oos": -0.0036,
+    "to": 1.29
+   },
+   {
+    "label": "反轉 5 日（隔日成交）",
+    "ic_oos": 0.017,
+    "t_oos": 1.5,
+    "ic_is": 0.007,
+    "t_is": 0.7,
+    "gross_oos": 0.0007,
+    "net_oos": -0.0033,
+    "to": 1.33
+   },
+   {
+    "label": "反轉 10 日（隔日成交）",
+    "ic_oos": 0.026,
+    "t_oos": 2.3,
+    "ic_is": -0.004,
+    "t_is": -0.3,
+    "gross_oos": 0.0008,
+    "net_oos": -0.0019,
+    "to": 0.92
+   },
+   {
+    "label": "反轉 5 日，只在低量股（過度反應）",
+    "ic_oos": 0.004,
+    "t_oos": 0.4,
+    "ic_is": 0.016,
+    "t_is": 1.3,
+    "gross_oos": 0.0006,
+    "net_oos": -0.002,
+    "to": 1.52
+   },
+   {
+    "label": "領先股過去 5 日報酬（領先落後）",
+    "ic_oos": -0.009,
+    "t_oos": -0.7,
+    "ic_is": 0.011,
+    "t_is": 1.1,
+    "gross_oos": null,
+    "net_oos": null,
+    "to": null
+   }
+  ]
+ },
+ "execution": {
+  "note": "財報產業中性做多每 21 日換倉；反轉只用來改變原本換倉的取捨（B 延後賣出近 5 日跌深的持股、C 選股邊際偏好跌深股），不另外交易；超額為相對等權、扣成本、每期 20 日",
+  "rows": [
+   {
+    "label": "基準：產業中性做多",
+    "ex_oos": 0.0013,
+    "pos_oos": 19,
+    "ex_is": 0.0047,
+    "to": 0.58,
+    "sh_oos": 0.57,
+    "sh_is": 1.8
+   },
+   {
+    "label": "+ B 延後賣出",
+    "ex_oos": 0.0016,
+    "pos_oos": 21,
+    "ex_is": 0.0047,
+    "to": 0.52,
+    "sh_oos": 0.58,
+    "sh_is": 1.83
+   },
+   {
+    "label": "+ C 邊際偏好跌深",
+    "ex_oos": 0.0013,
+    "pos_oos": 16,
+    "ex_is": 0.0044,
+    "to": 0.59,
+    "sh_oos": 0.56,
+    "sh_is": 1.76
+   },
+   {
+    "label": "+ B + C",
+    "ex_oos": 0.0016,
+    "pos_oos": 20,
+    "ex_is": 0.0047,
+    "to": 0.54,
+    "sh_oos": 0.58,
+    "sh_is": 1.8
+   },
+   {
+    "label": "基準：產業中性 + 緩衝",
+    "ex_oos": 0.0025,
+    "pos_oos": 21,
+    "ex_is": 0.0049,
+    "to": 0.42,
+    "sh_oos": 0.63,
+    "sh_is": 1.81
+   },
+   {
+    "label": "緩衝 + B",
+    "ex_oos": 0.0025,
+    "pos_oos": 21,
+    "ex_is": 0.0048,
+    "to": 0.37,
+    "sh_oos": 0.64,
+    "sh_is": 1.83
+   },
+   {
+    "label": "緩衝 + C",
+    "ex_oos": 0.0026,
+    "pos_oos": 21,
+    "ex_is": 0.0049,
+    "to": 0.42,
+    "sh_oos": 0.62,
+    "sh_is": 1.82
+   },
+   {
+    "label": "緩衝 + B + C",
+    "ex_oos": 0.0024,
+    "pos_oos": 21,
+    "ex_is": 0.0053,
+    "to": 0.38,
+    "sh_oos": 0.63,
+    "sh_is": 1.86
+   },
+   {
+    "label": "對照：0050 買進持有",
+    "ex_oos": null,
+    "pos_oos": null,
+    "ex_is": null,
+    "to": null,
+    "sh_oos": 0.72,
+    "sh_is": 2.09
+   }
   ]
  }
 }

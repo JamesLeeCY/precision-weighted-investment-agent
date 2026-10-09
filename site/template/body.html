@@ -68,7 +68,7 @@
   <h2>其他訊號與進出場濾網</h2>
   <p class="muted">為了找到能贏過大盤的訊號，另外測了估值、技術面、動能、反轉，以及技術面進出場濾網和 5 日短期反轉。2019–2022 對財報規則是樣本外；新訊號在兩段都必須有效才算數。<span class="small">（共測 8 個 20 日訊號、7 種濾網組合、6 個 5 日訊號，多重比較下單一好結果應打折看待）</span></p>
   <div id="signalPanels" style="display:grid;gap:22px"></div>
-  <p class="small">結論：沒有新訊號在兩段都有效——技術面與動能只在 2023 年後的多頭有效、樣本外轉負；反轉剛好相反；產業內相對估值兩段都為負。大盤濾網把回撤降低約 40%，但樣本外 Sharpe 下降。5 日短期反轉在同一收盤成交時顯著（t 3.4），但扣掉 0.3% 證交稅後全部虧損。詳見 docs/technical_timing_report.md、docs/short_term_reversal_report.md。</p>
+  <p class="small">結論：沒有新訊號在兩段都有效——技術面與動能只在 2023 年後的多頭有效、樣本外轉負；反轉剛好相反；產業內相對估值兩段都為負。大盤濾網把回撤降低約 40%，但樣本外 Sharpe 下降。5 日短期反轉在同一收盤成交時顯著（t 3.4），但扣掉 0.3% 證交稅後全部虧損；改用反轉延後賣出只讓換手降低約 10%，Sharpe 不變。詳見 docs/technical_timing_report.md、docs/short_term_reversal_report.md、docs/reversal_execution_report.md。</p>
 </section>
 
 <section id="architecture">
@@ -400,7 +400,10 @@ flowchart TD
         ST.timing.rows.map(r => tr([esc(r.label), r.sh_oos.toFixed(2), pp(r.mdd_oos, 0), r.sh_is.toFixed(2), pp(r.mdd_is, 0), (r.expo_oos * 100).toFixed(0) + '%'])))}</div>
       <div style="display:grid;gap:8px"><h3>短期反轉、過度反應、領先落後（5 日預測期）</h3><p class="small">${esc(ST.reversal_5d.note)}</p>
       ${tbl(['訊號', '產業內 IC 2019–2022', '2023–2026', '做多 − 等權（未扣成本）2019–2022', '扣成本', '每期換手'],
-        ST.reversal_5d.rows.map(r => tr([esc(r.label), `${icCell(r.ic_oos)} <span class="small">t ${r.t_oos.toFixed(1)}</span>`, `${icCell(r.ic_is)} <span class="small">t ${r.t_is.toFixed(1)}</span>`, pp(r.gross_oos), pp(r.net_oos), r.to == null ? '<span class="na">—</span>' : r.to.toFixed(2)])))}</div>`;
+        ST.reversal_5d.rows.map(r => tr([esc(r.label), `${icCell(r.ic_oos)} <span class="small">t ${r.t_oos.toFixed(1)}</span>`, `${icCell(r.ic_is)} <span class="small">t ${r.t_is.toFixed(1)}</span>`, pp(r.gross_oos), pp(r.net_oos), r.to == null ? '<span class="na">—</span>' : r.to.toFixed(2)])))}</div>
+      ${ST.execution ? `<div style="display:grid;gap:8px"><h3>用短期反轉降低財報組合交易成本</h3><p class="small">${esc(ST.execution.note)}</p>
+      ${tbl(['組合', '超額 2019–2022（為正起點）', '超額 2023–2026', '每期換手', 'Sharpe 2019–2022', 'Sharpe 2023–2026'],
+        ST.execution.rows.map(r => tr([esc(r.label), r.ex_oos == null ? '<span class="na">—</span>' : `${pp(r.ex_oos)} <span class="small">(${r.pos_oos}/21)</span>`, pp(r.ex_is), r.to == null ? '<span class="na">—</span>' : r.to.toFixed(2), r.sh_oos.toFixed(2), r.sh_is.toFixed(2)])))}</div>` : ''}`;
   }
 
   // Timeline
@@ -417,6 +420,7 @@ flowchart TD
     ['前瞻驗證', '凍結規格 fv1，回填 2026-06～10；Windows 工作排程器每月自動預測、結算、push'],
     ['產業中性與樣本外', '產業中性組合、回測成績單、2019–2022 樣本外 Sharpe 與 Deflated Sharpe'],
     ['其他訊號', '估值、技術面 Agent、動能、反轉、進出場濾網、5 日短期反轉：皆未通過兩段一致性'],
+    ['反轉輔助換倉', '用短期反轉延後賣出、調整選股邊際：換手降約 10%，Sharpe 不變，仍低於 0050'],
   ];
   $('#tl').innerHTML = TL.map(([w, t]) => `<div class="tl"><span class="when">${w}</span><span>${esc(t)}</span></div>`).join('');
 })();
