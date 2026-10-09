@@ -1,0 +1,37 @@
+spec_version: fv1
+frozen_utc: '2026-10-09T14:56:20Z'
+frozen_git_commit: 57c364d3154513068449e5508da061ba955fd54e
+frozen_git_dirty: false
+rules:
+  agent: fundamentals_agent
+  output_mode: continuous
+  fundamentals_history_start: '2017-01-01'
+  universe: config/universe_pit_membership.csv 當年成員（每年 1 月 build-universe：前 60 個交易日平均成交金額前
+    100 檔）
+  schedule: 每月第一個交易日（加權指數交易日）
+  horizon_trading_days: 20
+  return: as_of 收盤到第 20 個交易日收盤的含息總報酬；期間下市以最後收盤價計
+  data_cutoff: 財報 Agent 只用公告遞延後的資料（月營收 40 天、季報 75 天）
+preregistration:
+  primary_metric: 每個預測日的產業內 IC（各產業內 Spearman(p, 20 日含息報酬)，以股票數加權平均；產業內 >= 3 檔才計入）
+  hypothesis: 產業內 IC 的長期平均 > 0
+  backtest_expectation:
+    mean_ic: 0.029
+    sd_ic: 0.122
+    source: reports/finmind_pit（2019–2026，85 期）
+  evaluation:
+  - 每月更新累積平均、標準誤、t 值；只把 mode = live 的期數算入正式檢定，backfill 另列
+  - 24 個 live 期數（約 2 年）時檢查：平均 IC < 0 視為訊號失效的警訊（在回測預期下發生機率約 12%）
+  - 73 個 live 期數（約 6 年）時正式檢定：t > 2 才算確認
+  secondary_metrics:
+  - 持有 p > 0.5 股票（等權）相對等權持有全部成員的每期超額報酬（未扣成本）
+  notes: 訊號弱（平均 IC 約為標準差的 1/4），前兩年的結果在統計上都不具決定性；不得依前瞻結果回頭調整規則，修改規則須建立新規格版本。
+frozen_source_sha256:
+  FundamentalsAgent: f6a7ddb905a5aa7c959a6308757210c97b98958671508ac2b6b169b06b3293b0
+  fundamentals_agent.COMPONENT_KEYS: fa148447ca84d9bb1cafde895289d3e0884206ced8b10312d0f65cc9ad1a3a3e
+  fundamentals_agent._slope: 97548356fb1198ef2a8c12e3813f371de1dd1f6e608d717e09caba2d226b61d0
+  base.score_components: fc7dd74b77303cfad5378ce320f172e3304583281e6003b31c3cc1cdf3d12c24
+  base.continuous_judgement: 15f9e70838c42f4254a4bd0947048c55d9be45ee43798f31a8259aaa15e530bd
+  base.CONTINUOUS_SCALE: 2d0079dcde5ee2aa280624183a979c2f4bd19e1f1414ac4b10ae42ae0dbc6a2a
+  FinMindFundamentalsProvider: 4bbfd4b60e871c41e9709431d5f37e31382041faf37b4227d1a84495fd8cf369
+  fetch_financials.total_return_index: c956a972279bc2327e877fe1463368540ad6323b371f664d26ae102092591265
