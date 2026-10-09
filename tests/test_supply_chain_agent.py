@@ -113,3 +113,17 @@ def test_zero_close_rows_are_dropped():
     from data.fetch_financials import get_daily_prices
     daily = get_daily_prices(client, "2317.TW", "2025-07-01", "2025-08-01")
     assert (daily["close"] > 0).all() and len(daily) == 2
+
+
+def test_us_proxy_uses_adj_close_and_spy_as_market():
+    dates = pd.bdate_range(end="2025-06-27", periods=21).strftime("%Y-%m-%d")
+    nvda = pd.DataFrame({"date": dates, "Adj_Close": np.linspace(100, 120, 21), "Close": np.linspace(100, 120, 21)})
+    spy = pd.DataFrame({"date": dates, "Adj_Close": np.linspace(100, 105, 21), "Close": np.linspace(100, 105, 21)})
+    taiex = pd.DataFrame({"date": dates, "close": np.linspace(100, 150, 21)})
+    client = FakeClient({("USStockPrice", "NVDA"): nvda, ("USStockPrice", "SPY"): spy, ("TaiwanStockPrice", "TAIEX"): taiex})
+    graph = {"edges": {"2382.TW": [{"to": "NVDA.US", "relation": "downstream", "weight": 1.0}]}}
+    agent = SupplyChainAgent(FinMindSupplyChainProvider(client), graph=graph)
+    feats = agent.compute_features("2382.TW", "2025-06-30")
+    # NVDA +20% 對 SPY +5% → 超額 15%（不是對加權指數的 +50%）
+    assert feats["downstream_excess_ret_pct"] == pytest.approx(15.0)
+    assert "downstream_revenue_yoy_pct" not in feats  # 美股沒有月營收

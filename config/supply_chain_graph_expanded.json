@@ -1,0 +1,1079 @@
+{
+  "_說明": [
+    "擴大股票池（41 檔）的供應鏈知識圖譜，2026-10-08 建立。被動元件 5 檔沿用 v2（依 2024 年報修訂）。",
+    "其餘 36 檔：以產業層級預設為主，僅在 2024 年度年報提供證據時調整。每條邊的 source 標示證據等級：『年報確認』（年報點名的客戶）、『年報文字』（年報描述的客戶產業 / 市場）、『產業預設』（無公司層級證據）、『推論』（年報以代號揭露、依業界公開資訊推論，非年報確認）。",
+    "多數公司年報以代號（甲公司、A 客戶）揭露大客戶；只有辛耘點名台積電（21.02%）。9 份年報因字型編碼無法擷取文字，奇鋐、雙鴻、健策未取得該年度年報，皆使用產業預設。",
+    "美股代理（.US）以 S&P 500（SPY）計算超額報酬，沒有月營收資料。",
+    "權重規則事先設定（主要 1.0、次要 0.5），未參考任何報酬資料。以 2024 年度結構套用於 2019–2026，早期年份可能不同。"
+  ],
+  "proxies": {
+    "2382.TW": {
+      "name": "廣達",
+      "market": "運算（筆電 / 伺服器 ODM）"
+    },
+    "3231.TW": {
+      "name": "緯創",
+      "market": "運算（筆電 / 伺服器 ODM）"
+    },
+    "6669.TW": {
+      "name": "緯穎",
+      "market": "運算（雲端伺服器）"
+    },
+    "2317.TW": {
+      "name": "鴻海",
+      "market": "消費 / 通訊 / 手機（EMS）"
+    },
+    "2395.TW": {
+      "name": "研華",
+      "market": "工業（工業電腦）"
+    },
+    "2308.TW": {
+      "name": "台達電",
+      "market": "電源"
+    },
+    "2330.TW": {
+      "name": "台積電",
+      "market": "晶圓代工 / 先進封裝資本支出"
+    },
+    "3711.TW": {
+      "name": "日月光投控",
+      "market": "封測資本支出"
+    },
+    "2376.TW": {
+      "name": "技嘉",
+      "market": "主機板 / PC"
+    },
+    "NVDA.US": {
+      "name": "NVIDIA",
+      "market": "AI 伺服器 GPU 平台"
+    },
+    "MSFT.US": {
+      "name": "Microsoft",
+      "market": "雲端資本支出"
+    },
+    "AMZN.US": {
+      "name": "Amazon",
+      "market": "雲端資本支出"
+    },
+    "GOOGL.US": {
+      "name": "Alphabet",
+      "market": "雲端資本支出"
+    },
+    "META.US": {
+      "name": "Meta",
+      "market": "雲端資本支出"
+    },
+    "AMAT.US": {
+      "name": "Applied Materials",
+      "market": "半導體設備"
+    }
+  },
+  "edges": {
+    "2327.TW": [
+      {
+        "to": "2395.TW",
+        "relation": "downstream",
+        "weight": 0.36,
+        "source": "法說會應用別：工控 36%"
+      },
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.07,
+        "source": "法說會應用別：運算 21%（三家 ODM 平分）"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.07,
+        "source": "法說會應用別：運算 21%（三家 ODM 平分）"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.07,
+        "source": "法說會應用別：運算 21%（三家 ODM 平分）"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.2,
+        "source": "法說會應用別：消費 11% + 電信 9%"
+      }
+    ],
+    "2492.TW": [
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "2024 年報：MLCC 主要用於通訊、電腦週邊、消費性電子；下游首列手機"
+      },
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "2024 年報：筆電、平板、主機板（運算為主要市場，兩家 ODM 平分）"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "2024 年報：筆電、平板、主機板（運算為主要市場，兩家 ODM 平分）"
+      },
+      {
+        "to": "2308.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "2024 年報：下游含電源供應器（次要）"
+      },
+      {
+        "to": "2395.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "2024 年報：下游含工業與醫療設備（次要）"
+      },
+      {
+        "to": "2327.TW",
+        "relation": "leader",
+        "weight": 1.0,
+        "source": "產品重疊（MLCC、晶片電阻）；國巨年報：晶片電阻產能全球第一"
+      }
+    ],
+    "3026.TW": [
+      {
+        "to": "2308.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "2024 年報：AI 伺服器電源用 MLCC 獲國內外電源大廠認證採用"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "2024 年報：代理之主動元件以手機、網通、智慧家庭為主；MLCC 下游含資通訊、消費"
+      },
+      {
+        "to": "2395.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "2024 年報：MLCC 擴大工控等高階應用（次要）"
+      },
+      {
+        "to": "2327.TW",
+        "relation": "leader",
+        "weight": 0.5,
+        "source": "MLCC 產品重疊；禾伸堂約 6 成營收為代理，自製被動元件 39%"
+      }
+    ],
+    "2375.TW": [
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "2024 年報：市場以影音家電、手機為主"
+      },
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "2024 年報：市場以電腦資訊為主（兩家 ODM 平分）"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "2024 年報：市場以電腦資訊為主（兩家 ODM 平分）"
+      },
+      {
+        "to": "2327.TW",
+        "relation": "group",
+        "weight": 1.0,
+        "source": "2024 年報：對國益興業科技（深圳）銷貨 10.39%，為對合併公司具重大影響力者之子公司（國巨集團）"
+      }
+    ],
+    "2478.TW": [
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "2024 年報：被動元件應用以消費性電子、通訊為主"
+      },
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "2024 年報：應用以電腦為主（兩家 ODM 平分）"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "2024 年報：應用以電腦為主（兩家 ODM 平分）"
+      },
+      {
+        "to": "2395.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "2024 年報：車用加工業約 30%（工業部分，次要）"
+      },
+      {
+        "to": "2327.TW",
+        "relation": "leader",
+        "weight": 1.0,
+        "source": "晶片電阻占大毅營收 90.8%；國巨年報：晶片電阻產能全球第一"
+      }
+    ],
+    "3131.TW": [
+      {
+        "to": "3711.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "年報文字：客戶為『全世界前五大半導體封裝廠』"
+      },
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：先進封裝（次要）"
+      }
+    ],
+    "3583.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "年報確認：台積電占 2024 年銷貨 21.02%"
+      }
+    ],
+    "6187.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設：半導體設備 → 晶圓代工 / 先進封裝資本支出"
+      },
+      {
+        "to": "3711.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：封測廠資本支出（次要）"
+      }
+    ],
+    "6640.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設：半導體設備 → 晶圓代工 / 先進封裝資本支出"
+      },
+      {
+        "to": "3711.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：封測廠資本支出（次要）"
+      }
+    ],
+    "3680.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設：半導體設備 → 晶圓代工 / 先進封裝資本支出"
+      },
+      {
+        "to": "3711.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：封測廠資本支出（次要）"
+      }
+    ],
+    "6196.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設：半導體設備 → 晶圓代工 / 先進封裝資本支出"
+      },
+      {
+        "to": "3711.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：封測廠資本支出（次要）"
+      }
+    ],
+    "5443.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設：半導體設備 → 晶圓代工 / 先進封裝資本支出"
+      },
+      {
+        "to": "3711.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：封測廠資本支出（次要）"
+      }
+    ],
+    "3413.TW": [
+      {
+        "to": "AMAT.US",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "推論：年報以代號揭露單一客戶占 84.82%（甲公司）；京鼎為 Applied Materials 製造夥伴屬業界公開資訊，非年報確認"
+      },
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：晶圓廠資本支出（次要）"
+      }
+    ],
+    "2404.TW": [
+      {
+        "to": "2330.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "年報文字：主要客戶資本支出增加，帶動先進製程、先進封裝產能建置"
+      }
+    ],
+    "3317.TW": [
+      {
+        "to": "2376.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "年報文字：主要銷售對象為主機板產業客戶"
+      },
+      {
+        "to": "2308.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：電源（次要）"
+      }
+    ],
+    "2342.TW": [
+      {
+        "to": "2308.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設：功率元件 → 電源"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：消費性電子（次要）"
+      },
+      {
+        "to": "2376.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：PC / 主機板（次要）"
+      },
+      {
+        "to": "2395.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：工業（次要；車用無代理）"
+      }
+    ],
+    "2481.TW": [
+      {
+        "to": "2308.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設：功率元件 → 電源"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：消費性電子（次要）"
+      },
+      {
+        "to": "2376.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：PC / 主機板（次要）"
+      },
+      {
+        "to": "2395.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：工業（次要；車用無代理）"
+      }
+    ],
+    "8261.TW": [
+      {
+        "to": "2308.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設：功率元件 → 電源"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：消費性電子（次要）"
+      },
+      {
+        "to": "2376.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：PC / 主機板（次要）"
+      },
+      {
+        "to": "2395.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：工業（次要；車用無代理）"
+      }
+    ],
+    "6435.TW": [
+      {
+        "to": "2308.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設：功率元件 → 電源"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：消費性電子（次要）"
+      },
+      {
+        "to": "2376.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：PC / 主機板（次要）"
+      },
+      {
+        "to": "2395.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：工業（次要；車用無代理）"
+      }
+    ],
+    "5299.TW": [
+      {
+        "to": "2308.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設：功率元件 → 電源"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：消費性電子（次要）"
+      },
+      {
+        "to": "2376.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：PC / 主機板（次要）"
+      },
+      {
+        "to": "2395.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：工業（次要；車用無代理）"
+      }
+    ],
+    "8255.TW": [
+      {
+        "to": "2308.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設：功率元件 → 電源"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：消費性電子（次要）"
+      },
+      {
+        "to": "2376.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：PC / 主機板（次要）"
+      },
+      {
+        "to": "2395.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：工業（次要；車用無代理）"
+      }
+    ],
+    "5425.TW": [
+      {
+        "to": "2308.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設：功率元件 → 電源"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：消費性電子（次要）"
+      },
+      {
+        "to": "2376.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：PC / 主機板（次要）"
+      },
+      {
+        "to": "2395.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：工業（次要；車用無代理）"
+      }
+    ],
+    "3675.TW": [
+      {
+        "to": "2308.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設：功率元件 → 電源"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：消費性電子（次要）"
+      },
+      {
+        "to": "2376.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：PC / 主機板（次要）"
+      },
+      {
+        "to": "2395.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：工業（次要；車用無代理）"
+      }
+    ],
+    "2382.TW": [
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設：AI 伺服器 ODM → GPU 平台需求"
+      },
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：雲端業者資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：雲端業者資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：雲端業者資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：雲端業者資本支出"
+      }
+    ],
+    "3231.TW": [
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設：AI 伺服器 ODM → GPU 平台需求"
+      },
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：雲端業者資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：雲端業者資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：雲端業者資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：雲端業者資本支出"
+      }
+    ],
+    "6669.TW": [
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設：AI 伺服器 ODM → GPU 平台需求"
+      },
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：雲端業者資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：雲端業者資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：雲端業者資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：雲端業者資本支出"
+      }
+    ],
+    "2356.TW": [
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設：AI 伺服器 ODM → GPU 平台需求"
+      },
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：雲端業者資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：雲端業者資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：雲端業者資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：雲端業者資本支出"
+      }
+    ],
+    "2376.TW": [
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設：AI 伺服器 ODM → GPU 平台需求"
+      },
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：雲端業者資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：雲端業者資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：雲端業者資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：雲端業者資本支出"
+      }
+    ],
+    "3706.TW": [
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設：AI 伺服器 ODM → GPU 平台需求"
+      },
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：雲端業者資本支出"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：雲端業者資本支出"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：雲端業者資本支出"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：雲端業者資本支出"
+      }
+    ],
+    "3017.TW": [
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設：散熱 → AI 伺服器（GPU 平台）"
+      },
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：散熱 → 伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：散熱 → 伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：散熱 → 伺服器 ODM"
+      }
+    ],
+    "3324.TW": [
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設：散熱 → AI 伺服器（GPU 平台）"
+      },
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：散熱 → 伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：散熱 → 伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：散熱 → 伺服器 ODM"
+      }
+    ],
+    "3653.TW": [
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設：散熱 → AI 伺服器（GPU 平台）"
+      },
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：散熱 → 伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：散熱 → 伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：散熱 → 伺服器 ODM"
+      }
+    ],
+    "2383.TW": [
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設：CCL → AI 伺服器（GPU 平台）"
+      },
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：CCL → 伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：CCL → 伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：CCL → 伺服器 ODM"
+      }
+    ],
+    "3037.TW": [
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "產業預設：載板 / PCB → AI 伺服器（GPU 平台）"
+      },
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：載板 / PCB → 伺服器 ODM"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：載板 / PCB → 伺服器 ODM"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：載板 / PCB → 伺服器 ODM"
+      }
+    ],
+    "2368.TW": [
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：AI 伺服器（次要）"
+      },
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "年報文字：新產品應用鎖定伺服器及網路通訊，客戶為資訊通訊大廠及組裝廠"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "年報文字：新產品應用鎖定伺服器及網路通訊，客戶為資訊通訊大廠及組裝廠"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "年報文字：新產品應用鎖定伺服器及網路通訊，客戶為資訊通訊大廠及組裝廠"
+      }
+    ],
+    "2308.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：伺服器電源"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：伺服器電源"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：伺服器電源"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：AI 伺服器電源"
+      },
+      {
+        "to": "2395.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "年報文字：業務涵蓋自動化與基礎設施；無占營收 10% 以上客戶"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：消費性電子電源"
+      }
+    ],
+    "2301.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：伺服器電源"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：伺服器電源"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：伺服器電源"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：消費性電子"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：AI 伺服器電源"
+      }
+    ],
+    "3665.TW": [
+      {
+        "to": "2395.TW",
+        "relation": "downstream",
+        "weight": 1.0,
+        "source": "年報文字：產品分工業、電器、車用、資訊科技與數據傳播；無占營收 10% 以上客戶"
+      },
+      {
+        "to": "2317.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "年報文字：電器 / 資訊科技（次要）"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：數據傳輸線材（次要）"
+      }
+    ],
+    "3533.TW": [
+      {
+        "to": "2382.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：伺服器 CPU 插槽 / 連接器"
+      },
+      {
+        "to": "3231.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：伺服器 CPU 插槽 / 連接器"
+      },
+      {
+        "to": "6669.TW",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：伺服器 CPU 插槽 / 連接器"
+      },
+      {
+        "to": "NVDA.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "產業預設：AI 伺服器"
+      }
+    ],
+    "3661.TW": [
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "推論：年報以代號揭露客戶 A 60.16%、B 21.18%；ASIC 客戶為雲端業者，非年報確認"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "推論：年報以代號揭露客戶 A 60.16%、B 21.18%；ASIC 客戶為雲端業者，非年報確認"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "推論：年報以代號揭露客戶 A 60.16%、B 21.18%；ASIC 客戶為雲端業者，非年報確認"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "推論：年報以代號揭露客戶 A 60.16%、B 21.18%；ASIC 客戶為雲端業者，非年報確認"
+      }
+    ],
+    "3443.TW": [
+      {
+        "to": "MSFT.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "推論：年報以代號揭露客戶 A 22%、B 14%（2023）；ASIC 客戶為雲端業者，非年報確認"
+      },
+      {
+        "to": "AMZN.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "推論：年報以代號揭露客戶 A 22%、B 14%（2023）；ASIC 客戶為雲端業者，非年報確認"
+      },
+      {
+        "to": "GOOGL.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "推論：年報以代號揭露客戶 A 22%、B 14%（2023）；ASIC 客戶為雲端業者，非年報確認"
+      },
+      {
+        "to": "META.US",
+        "relation": "downstream",
+        "weight": 0.5,
+        "source": "推論：年報以代號揭露客戶 A 22%、B 14%（2023）；ASIC 客戶為雲端業者，非年報確認"
+      }
+    ]
+  }
+}

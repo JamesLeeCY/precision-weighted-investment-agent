@@ -1,0 +1,172 @@
+# 擴大股票池設定（2026-10-08）：被動元件 5 檔 + 半導體設備、功率元件、AI 伺服器與 AI 供應鏈，共 41 檔。
+# 用法：backtest/run_backtest.py --config config/tickers_expanded.yaml ...
+# 不含新聞 Agent（FinMind 新聞須逐日查詢，41 檔 × 2019–2026 約需 80 小時 API）。
+# 原始 5 檔設定見 config/tickers.yaml，既有報告不受影響。
+universe:
+- ticker: 2327.TW
+  name: 國巨
+  segment: 被動元件
+- ticker: 2492.TW
+  name: 華新科
+  segment: 被動元件
+- ticker: 3026.TW
+  name: 禾伸堂
+  segment: 被動元件
+- ticker: 2375.TW
+  name: 凱美
+  segment: 被動元件
+- ticker: 2478.TW
+  name: 大毅
+  segment: 被動元件
+- ticker: 3131.TW
+  name: 弘塑
+  segment: 半導體設備
+- ticker: 3583.TW
+  name: 辛耘
+  segment: 半導體設備
+- ticker: 6187.TW
+  name: 萬潤
+  segment: 半導體設備
+- ticker: 6640.TW
+  name: 均華
+  segment: 半導體設備
+- ticker: 3413.TW
+  name: 京鼎
+  segment: 半導體設備
+- ticker: 6196.TW
+  name: 帆宣
+  segment: 半導體設備
+- ticker: 2404.TW
+  name: 漢唐
+  segment: 半導體設備
+- ticker: 3680.TW
+  name: 家登
+  segment: 半導體設備
+- ticker: 5443.TW
+  name: 均豪
+  segment: 半導體設備
+- ticker: 2342.TW
+  name: 茂矽
+  segment: 功率元件
+- ticker: 2481.TW
+  name: 強茂
+  segment: 功率元件
+- ticker: 8261.TW
+  name: 富鼎
+  segment: 功率元件
+- ticker: 6435.TW
+  name: 大中
+  segment: 功率元件
+- ticker: 5299.TW
+  name: 杰力
+  segment: 功率元件
+- ticker: 3317.TW
+  name: 尼克森
+  segment: 功率元件
+- ticker: 8255.TW
+  name: 朋程
+  segment: 功率元件
+- ticker: 5425.TW
+  name: 台半
+  segment: 功率元件
+- ticker: 3675.TW
+  name: 德微
+  segment: 功率元件
+- ticker: 2382.TW
+  name: 廣達
+  segment: AI伺服器
+- ticker: 3231.TW
+  name: 緯創
+  segment: AI伺服器
+- ticker: 6669.TW
+  name: 緯穎
+  segment: AI伺服器
+- ticker: 2356.TW
+  name: 英業達
+  segment: AI伺服器
+- ticker: 2376.TW
+  name: 技嘉
+  segment: AI伺服器
+- ticker: 3706.TW
+  name: 神達
+  segment: AI伺服器
+- ticker: 3017.TW
+  name: 奇鋐
+  segment: 散熱
+- ticker: 3324.TW
+  name: 雙鴻
+  segment: 散熱
+- ticker: 3653.TW
+  name: 健策
+  segment: 散熱
+- ticker: 2383.TW
+  name: 台光電
+  segment: PCB/CCL
+- ticker: 2368.TW
+  name: 金像電
+  segment: PCB/CCL
+- ticker: 3037.TW
+  name: 欣興
+  segment: PCB/CCL
+- ticker: 2308.TW
+  name: 台達電
+  segment: 電源
+- ticker: 2301.TW
+  name: 光寶科
+  segment: 電源
+- ticker: 3665.TW
+  name: 貿聯-KY
+  segment: 連接器
+- ticker: 3533.TW
+  name: 嘉澤
+  segment: 連接器
+- ticker: 3661.TW
+  name: 世芯-KY
+  segment: ASIC
+- ticker: 3443.TW
+  name: 創意
+  segment: ASIC
+benchmark:
+  ticker: 0050.TW
+backtest:
+  start_date: '2019-01-01'
+  end_date: '2026-05-31'
+  horizon_days: 20
+  outcome_rule: absolute_return_positive
+  outcome_basis: total_return
+  cost_per_side: 0.0029625
+  prediction_step_days: 21
+agents:
+- fundamentals_agent
+- macro_agent
+- supply_chain_agent
+supply_chain:
+  graph: config/supply_chain_graph_expanded.json
+  window_days: 20
+  history_start: '2017-01-01'
+macro:
+  window_days: 20
+  rate_window_days: 60
+  history_start: '2017-01-01'
+arbitrator:
+  bullish_threshold: 0.1
+  bearish_threshold: -0.1
+  ema_alpha: 0.2
+  epsilon: 0.01
+  cold_start_min_n: 5
+  calibration_min_n: 10
+  calibration_prior_strength: 2.0
+news:
+  window_days: 14
+  fetch_content: false
+llm:
+  provider: anthropic
+  model: claude-sonnet-4-6
+  enabled: auto
+  base_url: http://localhost:11434
+  think: null
+  options:
+    num_ctx: 4096
+  cache_dir: data_cache/llm
+fundamentals:
+  history_start: '2017-01-01'

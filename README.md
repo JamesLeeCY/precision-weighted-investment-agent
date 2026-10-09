@@ -86,6 +86,12 @@ walk-forward 收縮校準修正各 Agent 的過度自信，LLM 合併 Brier 0.27
 圖譜，並回測 2019–2026。供應鏈訊號**不穩定**：樣本內的 +0.160 是 21 種取樣起點中的最大值，
 2019–2023 樣本外 IC 為負（v1 −0.070、v2 −0.128）。
 
+**擴大股票池**（41 檔：被動元件、半導體設備、功率元件、AI 伺服器與供應鏈，2019–2026，
+詳見[報告](docs/expanded_universe_report.md)）：三個 Agent 都沒有可靠的同產業選股能力。
+唯一兩期一致的訊號是財報 Agent 連續分數的產業內 IC（約 +0.02 ~ +0.03，不顯著）；
+供應鏈 Agent 只在跨產業排序上為正（族群輪動），產業內為負。股票池為事後挑選的 AI
+贏家，絕對報酬有選股偏誤，比較基準改用等權持有同一股票池。
+
 **規格 5.2 修訂**（2026-10-07，詳見[校準報告第 8 節](docs/calibration_report.md#8-訊號公式修訂2026-10-07)）：
 投票權重改為確信度 |2p − 1|，合併分數 = 2 × 合併機率 − 1，門檻為合併機率
 0.55 / 0.45。毫無把握的 Agent 不再投票，訊號與機率一致。
@@ -171,13 +177,14 @@ python3.11 -m venv .venv
 
 ```
 config/tickers.yaml     股票池與全部參數（horizon、閾值、EMA α、冷啟動門檻）
+config/tickers_expanded.yaml  擴大股票池（41 檔，2019–2026）
 config/supply_chain_graph.json  供應鏈知識圖譜（依 2024 年報修訂，每條邊標註出處；v1 另存為 _v1）
 agents/                 Agent 基底 + 財報/新聞/總經籌碼/供應鏈 Agent（LLM 可插拔）
 arbitrator/             精度追蹤（Brier EMA）+ 合併公式 + Agent 層級重新校準
 data/                   FinMind 抓取（快取/節流/額度等待）、含息還原價、總經/籌碼、供應鏈、新聞內文、RSS 新聞、向量庫
 backtest/               walk-forward 回測 + 評估指標 + 報酬層級評估（vs 0050）
-tests/                  126 個單元測試
-analysis/               訊號穩定性分析（分期 IC、取樣起點穩健性）
+tests/                  127 個單元測試
+analysis/               訊號穩定性分析（分期 IC、產業內 IC、取樣起點穩健性）
 reports/                synthetic / finmind_preliminary / finmind_scoped / finmind_full / finmind_macro / finmind_llm_qwen3 / finmind_news_content / finmind_llm_qwen3_content / finmind_supply_chain(_v2 / _long_v1 / _long_v2) 結果
 docs/                   規格、技術筆記、回測報告
 notebooks/              校準分析 notebook
@@ -192,6 +199,8 @@ notebooks/              校準分析 notebook
   135 事件的完整版結果與逐項解讀
 - [Phase 2 回測報告](docs/phase2_macro_report.md) — 加入總經/籌碼 Agent 的
   3 Agent 結果、消融與報酬拆解
+- [擴大股票池報告](docs/expanded_universe_report.md) — 41 檔 × 2019–2026、產業內 IC、
+  選股偏誤
 - [供應鏈驗證報告](docs/supply_chain_validation_report.md) — 年報修訂圖譜、2019–2026
   長期回測、取樣起點穩健性
 - [新聞內文與供應鏈 Agent 報告](docs/news_content_and_supply_chain_report.md) — 新聞內文

@@ -26,7 +26,7 @@ import pandas as pd
 
 from agents.base import AgentOutput, BaseAgent, describe_features, score_components
 from agents.llm_client import LLMClient
-from data.fetch_supply_chain import MARKET_INDEX, SupplyChainDataProvider, load_graph
+from data.fetch_supply_chain import MARKET_INDEX, SupplyChainDataProvider, load_graph, market_index_for
 
 SYSTEM_PROMPT = """你是台股產業鏈分析師，專長是上下游傳導。根據提供的供應鏈特徵（下游需求代理公司的股價動能與營收成長、產業龍頭的股價動能），判斷這家被動元件公司未來 {horizon} 個交易日的方向。
 
@@ -43,7 +43,7 @@ SCALES = [
 ]
 
 FEATURE_LABELS = {
-    "downstream_excess_ret_pct": "下游需求代理公司的加權超額報酬（%，相對大盤，正值 = 跑贏大盤）",
+    "downstream_excess_ret_pct": "下游需求代理公司的加權超額報酬（%，台股相對加權指數、美股相對 S&P 500，正值 = 跑贏大盤）",
     "downstream_revenue_yoy_pct": "下游需求代理公司的加權最新月營收年增率（%）",
     "leader_excess_ret_pct": "產業龍頭／同集團公司的超額報酬（%，相對大盤）",
 }
@@ -81,8 +81,10 @@ class SupplyChainAgent(BaseAgent):
         self.default_horizon_days = horizon_days
         self.window = window_days
 
-    def _excess_return(self, ticker: str, as_of_date: str, market: float | None) -> float | None:
+    def _excess_return(self, ticker: str, as_of_date: str, markets: dict[str, float | None]) -> float | None:
+        """相對各自市場的超額報酬：台股對加權指數、美股（.US）對 SPY。"""
         r = _window_return(self.provider.get_closes(ticker, as_of_date), self.window)
+        market = markets.get(market_index_for(ticker))
         return r - market if r is not None and market is not None else None
 
     def _revenue_yoy(self, ticker: str, as_of_date: str) -> float | None:
@@ -96,18 +98,21 @@ class SupplyChainAgent(BaseAgent):
 
     def compute_features(self, ticker: str, as_of_date: str) -> dict:
         edges = self.graph.get("edges", {}).get(ticker, [])
-        market = _window_return(self.provider.get_closes(MARKET_INDEX, as_of_date), self.window)
+        markets = {
+            index: _window_return(self.provider.get_closes(index, as_of_date), self.window)
+            for index in {market_index_for(e["to"]) for e in edges} | {MARKET_INDEX}
+        }
         downstream = [e for e in edges if e["relation"] == "downstream"]
         leaders = [e for e in edges if e["relation"] in ("leader", "group")]
         feats = {
             "downstream_excess_ret_pct": _weighted_mean(
-                [(self._excess_return(e["to"], as_of_date, market), float(e["weight"])) for e in downstream]
+                [(self._excess_return(e["to"], as_of_date, markets), float(e["weight"])) for e in downstream]
             ),
             "downstream_revenue_yoy_pct": _weighted_mean(
                 [(self._revenue_yoy(e["to"], as_of_date), float(e["weight"])) for e in downstream]
             ),
             "leader_excess_ret_pct": _weighted_mean(
-                [(self._excess_return(e["to"], as_of_date, market), float(e["weight"])) for e in leaders]
+                [(self._excess_return(e["to"], as_of_date, markets), float(e["weight"])) for e in leaders]
             ),
         }
         return {k: v for k, v in feats.items() if v is not None and not (isinstance(v, float) and math.isnan(v))}

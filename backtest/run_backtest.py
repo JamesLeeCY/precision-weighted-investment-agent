@@ -489,7 +489,11 @@ def generate_finmind_events(config: dict, llm=None) -> list[PredictionEvent]:
         fetcher = ArticleFetcher(offline=bool(config["news"].get("content_offline", False)))
     builders = {
         "fundamentals_agent": lambda: FundamentalsAgent(
-            FinMindFundamentalsProvider(client), llm=llm, horizon_days=horizon
+            FinMindFundamentalsProvider(
+                client, history_start=config.get("fundamentals", {}).get("history_start", "2020-01-01")
+            ),
+            llm=llm,
+            horizon_days=horizon,
         ),
         "news_agent": lambda: NewsAgent(
             FinMindNewsProvider(client),
@@ -500,7 +504,7 @@ def generate_finmind_events(config: dict, llm=None) -> list[PredictionEvent]:
             content_fetcher=fetcher.fetch if fetcher else None,
         ),
         "macro_agent": lambda: MacroAgent(
-            FinMindMacroProvider(client),
+            FinMindMacroProvider(client, history_start=config.get("macro", {}).get("history_start", "2023-01-01")),
             llm=llm,
             horizon_days=horizon,
             window_days=int(config.get("macro", {}).get("window_days", 20)),
