@@ -107,12 +107,30 @@ def test_auto_predicts_current_month_once_and_skips_publish_without_push(env, mo
 
     monkeypatch.setattr(fw.dt, "date", Today)
     published = []
-    monkeypatch.setattr(fw, "git_publish", lambda msg, push: published.append((msg, push)))
+    monkeypatch.setattr(fw, "git_publish", lambda msg, push, extra_files=None: published.append((msg, push, extra_files)))
+    monkeypatch.setattr(fw, "update_site", lambda: True)
     run("freeze")
     run("auto")
     preds = pd.read_csv(fw.PREDICTIONS)
     assert set(preds["as_of_date"]) == {"2026-08-03"}  # 當月第一個交易日
-    assert published == [("forward: auto update 2026-08-20", False)]
+    assert published == [("forward: auto update 2026-08-20", False, fw.SITE_FILES)]
     run("auto")  # 再跑一次：已預測、沒有可結算的 → 不重複、不 publish
     assert len(pd.read_csv(fw.PREDICTIONS)) == 3
     assert len(published) == 1
+
+
+def test_auto_site_failure_still_publishes_records(env, monkeypatch):
+    import datetime as dt
+
+    class Today(dt.date):
+        @classmethod
+        def today(cls):
+            return cls(2026, 8, 20)
+
+    monkeypatch.setattr(fw.dt, "date", Today)
+    published = []
+    monkeypatch.setattr(fw, "git_publish", lambda msg, push, extra_files=None: published.append(extra_files))
+    monkeypatch.setattr(fw, "ROOT", env)  # 找不到 site/build_site.py → 更新失敗
+    run("freeze")
+    run("auto")
+    assert published == [None]  # 前瞻紀錄照常 commit，但不含網站檔案

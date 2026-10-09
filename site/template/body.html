@@ -4,10 +4,10 @@
   <h1>多代理人精度加權投資研究系統</h1>
   <p class="lede">台股電子／半導體多代理人預測研究：每個 Agent 輸出「20 個交易日後含息報酬為正」的機率，再依過往準確度合併。本頁整理目前的股票池、Agent 架構與財報 Agent 的逐股分析數據。</p>
   <div class="status">
-    <span>資料截至 <b class="mono">2026-10-10</b></span>
+    <span>資料截至 <b class="mono" data-fill="generated"></b></span>
     <span>前瞻規格 <b class="mono">fv1</b>（凍結於 git 57c364d）</span>
-    <span>預測 <b class="mono">5</b> 批／已結算 <b class="mono">4</b> 批</span>
-    <span>下次自動預測 <b class="mono">2026-11-02</b>（工作排程器，平日 18:30 檢查）</span>
+    <span>預測 <b class="mono" data-fill="nPred"></b> 批／已結算 <b class="mono" data-fill="nResolved"></b> 批</span>
+    <span>下次自動預測 <b data-fill="nextPred"></b>（工作排程器，平日 18:30 檢查）</span>
   </div>
 </header>
 
@@ -45,9 +45,9 @@
       <span class="verdict v-no">✗ 真實資料未成立</span>
     </div>
     <div class="finding">
-      <span class="lab">前瞻驗證（回填 4 期平均 IC）</span>
-      <span class="big">+0.005</span>
-      <span class="small">每期標準差 ≈ 0.122，需約 73 期才能達 t = 2；正式檢定只算 live 期數</span>
+      <span class="lab" data-fill="fwdLabel"></span>
+      <span class="big" data-fill="fwdMean"></span>
+      <span class="small"><span data-fill="fwdOther"></span>每期標準差 ≈ 0.122，需約 73 期才能達 t = 2；正式檢定只算 live 期數</span>
       <span class="verdict v-wait">… 累積中</span>
     </div>
   </div>
@@ -91,8 +91,8 @@ flowchart TD
   <p class="muted">研究過程用過三個股票池。正式結論以「無選股偏誤」股票池為準：每年 1 月依前 60 個交易日平均成交金額，從當時上市櫃電子／半導體股（含之後下市者）取前 100 檔。</p>
   <div class="two">
     <div class="detail">
-      <h3>無選股偏誤股票池（2019–2026）</h3>
-      <p class="small">8 年共 <span class="mono">271</span> 檔曾入選，每年 100 檔。2026 年的 100 檔就是目前前瞻驗證的股票，見下方逐股表。</p>
+      <h3>無選股偏誤股票池（<span data-fill="pitRange"></span>）</h3>
+      <p class="small"><span data-fill="pitYears"></span> 年共 <span class="mono" data-fill="pitUnique"></span> 檔曾入選，每年 100 檔。<span data-fill="year"></span> 年的 100 檔就是目前前瞻驗證的股票，見下方逐股表。</p>
       <div class="tablebox" id="sectorYears"></div>
     </div>
     <div class="detail">
@@ -106,8 +106,8 @@ flowchart TD
 
 <section id="stocks">
   <div class="eyebrow">04 · Stock analysis</div>
-  <h2>逐股分析：2026 前瞻股票池 100 檔</h2>
-  <p class="muted">「10 月 p」是財報 Agent 在 2026-10-01 對「之後 20 個交易日含息報酬為正」的機率（尚未結算）。6–9 月欄位顯示當期預測 p 與實際 20 日報酬。點選任一列看完整財報特徵。</p>
+  <h2>逐股分析：<span data-fill="year"></span> 前瞻股票池 <span data-fill="nStocks"></span> 檔</h2>
+  <p class="muted">「最新 p」是財報 Agent 在 <span class="mono" data-fill="latest"></span> 對「之後 20 個交易日含息報酬為正」的機率<span data-fill="latestState"></span>。其後各欄為最近幾期已結算的預測 p 與實際 20 日報酬。點選任一列看完整財報特徵。</p>
   <div class="toolbar">
     <input type="search" id="q" placeholder="搜尋代號或名稱" aria-label="搜尋代號或名稱">
     <div class="seg" id="sectorSeg" role="group" aria-label="產業篩選"></div>
@@ -131,7 +131,7 @@ flowchart TD
 <section id="forward">
   <div class="eyebrow">05 · Forward validation</div>
   <h2>前瞻驗證</h2>
-  <p class="muted">規則凍結後才產生預測，結果出來再對答案。2026-06 至 09 為回填（backfill，凍結後補做，不計入正式檢定）；2026-10-01 待 20 個交易日後結算。</p>
+  <p class="muted">規則凍結後才產生預測，結果出來再對答案。回填（backfill）期是凍結後補做的開發未用期間，不計入正式檢定；live 期是當月即時預測。<span data-fill="pendingText"></span></p>
   <div class="two">
     <div class="chartbox" id="icChart"></div>
     <div class="detail">
@@ -169,7 +169,8 @@ flowchart TD
   const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const fmt = (v, d = 1, sign = false) => v == null || isNaN(v) ? '<span class="na">—</span>' : (sign && v > 0 ? '+' : '') + Number(v).toFixed(d);
   const pct = (v, d = 1) => v == null ? '<span class="na">—</span>' : (v > 0 ? '+' : '') + (v * 100).toFixed(d) + '%';
-  const HD = ['2026-06-01', '2026-07-01', '2026-08-03', '2026-09-01'];
+  const F = D.forward, pending = D.forward_pending, latest = D.latest;
+  const HD = F.map(f => f.d).slice(-4);  // 逐股表顯示最近 4 期已結算
 
   // Agents
   const agents = [
@@ -190,6 +191,24 @@ flowchart TD
   const secs = Object.keys(D.pit_sector_by_year[String(yrs[yrs.length - 1])]);
   $('#sectorYears').innerHTML = `<table><thead><tr><th>產業</th>${yrs.map(y => `<th class="n">${y}</th>`).join('')}</tr></thead><tbody>${secs.map(s => `<tr style="cursor:default"><td>${esc(s)}</td>${yrs.map(y => `<td class="n">${D.pit_sector_by_year[String(y)][s] ?? 0}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
 
+  // Fill text that changes every month
+  const mean = a => a.reduce((x, y) => x + y, 0) / a.length;
+  const sgn = v => (v > 0 ? '+' : '') + v.toFixed(3);
+  const live = F.filter(f => f.mode === 'live'), back = F.filter(f => f.mode !== 'live');
+  const [ly, lm] = latest.split('-').map(Number);
+  const next = lm === 12 ? `${ly + 1}-01` : `${ly}-${String(lm + 1).padStart(2, '0')}`;
+  const fill = {
+    generated: D.generated, nPred: D.n_predictions, nResolved: F.length,
+    nextPred: `${next} 月第一個交易日`, latest, year: D.year, nStocks: D.stocks.length,
+    latestState: pending.includes(latest) ? '（尚未結算）' : '',
+    pitRange: `${yrs[0]}–${yrs[yrs.length - 1]}`, pitYears: yrs.length, pitUnique: D.pit_unique,
+    fwdLabel: live.length ? `前瞻驗證（live ${live.length} 期平均 IC）` : `前瞻驗證（回填 ${back.length} 期平均 IC）`,
+    fwdMean: live.length ? sgn(mean(live.map(f => f.ic))) : back.length ? sgn(mean(back.map(f => f.ic))) : '—',
+    fwdOther: live.length ? (back.length ? `回填 ${back.length} 期平均 ${sgn(mean(back.map(f => f.ic)))}；` : '') : '尚無 live 期；',
+    pendingText: pending.length ? `待結算：${pending.join('、')}（預測日後第 20 個交易日收盤結算）。` : '',
+  };
+  document.querySelectorAll('[data-fill]').forEach(el => { el.textContent = fill[el.dataset.fill] ?? ''; });
+
   $('#origChips').innerHTML = D.original.map(o => `<span class="chip" title="${esc(o.s)}"><span class="tk">${o.t}</span>${esc(o.n)}</span>`).join('');
   const groups = {};
   D.expanded.forEach(o => (groups[o.s] = groups[o.s] || []).push(o));
@@ -200,11 +219,11 @@ flowchart TD
     { k: 'rank', l: '成交值排名', n: true, v: s => s.rank, h: s => s.rank },
     { k: 'name', l: '股票', v: s => s.t, h: s => `<span class="tk">${s.t}</span><span class="name">${esc(s.n)}</span>` },
     { k: 's', l: '產業', v: s => s.s, h: s => `<span class="sector-tag">${esc(s.s)}</span>` },
-    { k: 'p', l: '10 月 p', v: s => s.p, h: s => pbar(s.p) },
+    { k: 'p', l: '最新 p', v: s => s.p, h: s => pbar(s.p) },
     { k: 'revenue_yoy_pct', l: '營收 YoY %', n: true, v: s => s.revenue_yoy_pct, h: s => fmt(s.revenue_yoy_pct, 1, true) },
     { k: 'gross_margin_pct', l: '毛利率 %', n: true, v: s => s.gross_margin_pct, h: s => fmt(s.gross_margin_pct, 1) },
     { k: 'tv', l: '日均成交值（億）', n: true, v: s => s.tv, h: s => fmt(s.tv, 1) },
-    ...HD.map(d => ({ k: 'h' + d, l: d.slice(5, 7) + ' 月 p／報酬', n: true, v: s => s.h[d] ? s.h[d].r : null, h: s => hcell(s.h[d]), td: s => { const r = s.h[d] && s.h[d].r; return r == null ? '' : r > 0 ? 'ret-pos' : r < 0 ? 'ret-neg' : ''; } })),
+    ...HD.map(d => ({ k: 'h' + d, l: d.slice(0, 7) + ' p／報酬', n: true, v: s => s.h[d] ? s.h[d].r : null, h: s => hcell(s.h[d]), td: s => { const r = s.h[d] && s.h[d].r; return r == null ? '' : r > 0 ? 'ret-pos' : r < 0 ? 'ret-neg' : ''; } })),
   ];
   function pbar(p) {
     if (p == null) return '<span class="na">—</span>';
@@ -257,9 +276,9 @@ flowchart TD
     const kv = (k, v) => `<div class="kv"><span class="k">${k}</span><span class="v">${v}</span></div>`;
     const hist = Object.entries(s.h).map(([d, h]) => `<tr style="cursor:default"><td class="mono">${d}</td><td class="n">${h.p == null ? '—' : pbar(h.p)}</td><td class="n ${h.r == null ? '' : h.r > 0 ? 'ret-pos' : 'ret-neg'}">${h.r == null ? '<span class="na">待結算</span>' : pct(h.r)}</td></tr>`).join('');
     $('#stockDetail').innerHTML = `
-      <div><span class="tk">${s.t}</span><h3 style="display:inline">${esc(s.n)}</h3> <span class="sector-tag">· ${esc(s.s)} · 2026 成交值排名 ${s.rank}</span></div>
+      <div><span class="tk">${s.t}</span><h3 style="display:inline">${esc(s.n)}</h3> <span class="sector-tag">· ${esc(s.s)} · ${D.year} 成交值排名 ${s.rank}</span></div>
       <div class="grid2">
-        ${kv('10 月 p（財報 Agent）', s.p == null ? '—' : s.p.toFixed(3))}
+        ${kv(`最新 p（${latest}）`, s.p == null ? '—' : s.p.toFixed(3))}
         ${kv('規則分數 score', fmt(s.score, 2, true))}
         ${kv('特徵覆蓋率 evidence', fmt(s.cov, 2))}
         ${kv('營收 YoY %', fmt(s.revenue_yoy_pct, 1, true))}
@@ -279,13 +298,16 @@ flowchart TD
   render();
 
   // Forward IC chart
-  const F = D.forward;
   const W = 520, H = 280, ml = 48, mr = 14, mt = 18, mb = 44;
-  const ymin = -0.15, ymax = 0.25;
+  const ics = F.map(f => f.ic);
+  const ymin = Math.min(-0.15, Math.floor((Math.min(...ics, 0) - 0.03) * 10) / 10);
+  const ymax = Math.max(0.25, Math.ceil((Math.max(...ics, 0) + 0.05) * 10) / 10);
   const y = v => mt + (ymax - v) / (ymax - ymin) * (H - mt - mb);
-  const all = [...F.map(f => f.d), ...D.forward_pending];
+  const all = [...F.map(f => f.d), ...pending].slice(-24);  // 最多顯示最近 24 期
   const bw = (W - ml - mr) / all.length;
-  const ticks = [-0.1, 0, 0.1, 0.2];
+  const labelEvery = Math.ceil(all.length / 8), showValues = all.length <= 12;
+  const ticks = [];
+  for (let t = Math.ceil(ymin * 10) / 10; t <= ymax + 1e-9; t += 0.1) ticks.push(Math.round(t * 10) / 10);
   let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="前瞻驗證各期產業內 IC 長條圖">`;
   ticks.forEach(t => { svg += `<line x1="${ml}" x2="${W - mr}" y1="${y(t)}" y2="${y(t)}" stroke="var(--rule)" stroke-width="${t === 0 ? 1.5 : 1}"/><text x="${ml - 6}" y="${y(t) + 4}" text-anchor="end">${t > 0 ? '+' : ''}${t.toFixed(2)}</text>`; });
   svg += `<line x1="${ml}" x2="${W - mr}" y1="${y(0.029)}" y2="${y(0.029)}" stroke="var(--ink-2)" stroke-dasharray="4 4" stroke-width="1.2"/><text x="${ml + 4}" y="${y(0.029) - 6}">回測預期 +0.029</text>`;
@@ -295,22 +317,22 @@ flowchart TD
     if (f) {
       const y0 = y(0), y1 = y(f.ic);
       const top = Math.min(y0, y1), h = Math.max(1, Math.abs(y1 - y0));
-      svg += `<rect class="bar" data-i="${i}" x="${cx - w / 2}" y="${top}" width="${w}" height="${h}" rx="3" fill="${f.ic >= 0 ? 'var(--pos)' : 'var(--neg)'}"/>`;
-      svg += `<text x="${cx}" y="${f.ic >= 0 ? top - 5 : top + h + 13}" text-anchor="middle">${f.ic > 0 ? '+' : ''}${f.ic.toFixed(3)}</text>`;
-      svg += `<rect class="hit" data-i="${i}" x="${cx - bw / 2}" y="${mt}" width="${bw}" height="${H - mt - mb}" fill="transparent"/>`;
+      svg += `<rect class="bar" data-i="${i}" x="${cx - w / 2}" y="${top}" width="${w}" height="${h}" rx="3" fill="${f.ic >= 0 ? 'var(--pos)' : 'var(--neg)'}" fill-opacity="${f.mode === 'live' ? 1 : 0.5}"/>`;
+      if (showValues) svg += `<text x="${cx}" y="${f.ic >= 0 ? top - 5 : top + h + 13}" text-anchor="middle">${f.ic > 0 ? '+' : ''}${f.ic.toFixed(3)}</text>`;
+      svg += `<rect class="hit" data-d="${d}" x="${cx - bw / 2}" y="${mt}" width="${bw}" height="${H - mt - mb}" fill="transparent"/>`;
     } else {
       svg += `<rect x="${cx - w / 2}" y="${y(0) - 18}" width="${w}" height="18" rx="3" fill="none" stroke="var(--ink-3)" stroke-dasharray="3 3"/><text x="${cx}" y="${y(0) - 24}" text-anchor="middle">待結算</text>`;
     }
-    svg += `<text x="${cx}" y="${H - mb + 18}" text-anchor="middle">${d.slice(0, 7)}</text>`;
+    if (i % labelEvery === 0 || i === all.length - 1) svg += `<text x="${cx}" y="${H - mb + 18}" text-anchor="middle">${d.slice(0, 7)}</text>`;
   });
-  svg += `<text x="${ml}" y="${H - 6}">產業內 IC（回填期，不計入正式檢定）</text></svg>`;
+  svg += `<text x="${ml}" y="${H - 6}">產業內 IC（實色 live、淡色回填；回填不計入正式檢定）</text></svg>`;
   const box = $('#icChart');
   box.innerHTML = svg + '<div class="tip" hidden></div>';
   const tip = box.querySelector('.tip');
   box.querySelectorAll('.hit').forEach(el => {
     el.addEventListener('mousemove', e => {
-      const f = F[+el.dataset.i];
-      tip.innerHTML = `<b>${f.d}</b><br>產業內 IC ${f.ic > 0 ? '+' : ''}${f.ic.toFixed(3)}<br>看多組合超額 ${pct(f.ex, 2)}（${f.nl}/${f.n} 檔看多）<br>股票池平均報酬 ${pct(f.um)}`;
+      const f = F.find(x => x.d === el.dataset.d);
+      tip.innerHTML = `<b>${f.d}</b>（${f.mode}）<br>產業內 IC ${f.ic > 0 ? '+' : ''}${f.ic.toFixed(3)}<br>看多組合超額 ${pct(f.ex, 2)}（${f.nl}/${f.n} 檔看多）<br>股票池平均報酬 ${pct(f.um)}`;
       tip.hidden = false;
       const r = box.getBoundingClientRect();
       let x = e.clientX - r.left + 12; if (x > r.width - 200) x -= 220;
@@ -318,7 +340,7 @@ flowchart TD
     });
     el.addEventListener('mouseleave', () => tip.hidden = true);
   });
-  $('#fwdTable').innerHTML = `<table><thead><tr><th>預測日</th><th class="n">IC</th><th class="n">看多超額</th><th class="n">股票池平均</th></tr></thead><tbody>${F.map(f => `<tr style="cursor:default"><td class="mono">${f.d}</td><td class="n">${fmt(f.ic, 3, true)}</td><td class="n">${pct(f.ex, 2)}</td><td class="n">${pct(f.um)}</td></tr>`).join('')}${D.forward_pending.map(d => `<tr style="cursor:default"><td class="mono">${d}</td><td class="n na" colspan="3">待結算（約 10/29 後）</td></tr>`).join('')}</tbody></table>`;
+  $('#fwdTable').innerHTML = `<table><thead><tr><th>預測日</th><th>mode</th><th class="n">IC</th><th class="n">看多超額</th><th class="n">股票池平均</th></tr></thead><tbody>${F.map(f => `<tr style="cursor:default"><td class="mono">${f.d}</td><td class="small">${f.mode}</td><td class="n">${fmt(f.ic, 3, true)}</td><td class="n">${pct(f.ex, 2)}</td><td class="n">${pct(f.um)}</td></tr>`).join('')}${pending.map(d => `<tr style="cursor:default"><td class="mono">${d}</td><td></td><td class="n na" colspan="3">待結算</td></tr>`).join('')}</tbody></table>`;
 
   // Timeline
   const TL = [

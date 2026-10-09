@@ -59,6 +59,21 @@ git add forward/ && git commit -m "forward: YYYY-MM prediction" && git push
 
 每次預測與結算各約需 300 次 FinMind 呼叫（免費額度每小時約 600 次，客戶端會自動等待）。
 
+## 自動執行（Windows 工作排程器）
+
+工作 `PrecisionWeightedAgent-ForwardValidation` 每個平日 18:30 執行：
+
+```bash
+.venv/Scripts/python forward/run_forward.py auto --push    # 輸出附加到 logs/forward_auto.log
+```
+
+`auto` 依序：1 月且當年股票池不存在時 `build-universe` → 當月第一個交易日尚未預測就 `predict` → `resolve` →
+有新預測或新結算時 `report`、重新產生研究網站（`site/build_site.py`），再只 commit 前瞻紀錄三個檔案與
+`site/data.json`、`site/research-dashboard.html` 並 push。沒有變動就只補推先前失敗的 push。
+
+網站更新失敗（例如快照缺資料又遇到網路錯誤）只會寫進 log，前瞻紀錄照常 commit；下次有變動時網站會再重建。
+claude.ai 上的網站副本不會自動更新，需要時再手動重新發佈。
+
 ## 已知紀錄瑕疵
 
 - 回填的 2026-07-01 起四批預測，`git_dirty` 記為 True：當時的檢查把尚未 commit 的 `predictions.csv` 本身算成「未 commit 的修改」。規則程式碼的指紋檢查每次都通過，且四批都記錄同一個 commit `e940168`（新增 spec 檔的 commit，規則程式碼與凍結時的 `57c364d` 相同）。已於 2026-10-10 修正檢查（只看已追蹤檔案、排除前瞻紀錄本身）；既有紀錄依「只能新增」原則不修改。

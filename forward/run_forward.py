@@ -23,13 +23,14 @@
     .venv/Scripts/python forward/run_forward.py resolve          # 結算所有已到期的預測
     .venv/Scripts/python forward/run_forward.py report           # 產生 forward/REPORT.md
     .venv/Scripts/python forward/run_forward.py build-universe --year 2027   # 每年 1 月
-    .venv/Scripts/python forward/run_forward.py auto --push                  # Windows 工作排程器每個平日執行
+    .venv/Scripts/python forward/run_forward.py auto --push                  # Windows 工作排程器每個平日執行；有更新時一併重建 site/
 """
 from __future__ import annotations
 
 import argparse
 import datetime as dt
 import hashlib
+import importlib.util
 import inspect
 import json
 import math
@@ -379,9 +380,26 @@ def cmd_build_universe(args) -> None:
     print(f"{args.year} 年：{len(new)} 檔已加入 {MEMBERSHIP.name}")
 
 
-def git_publish(message: str, push: bool) -> None:
-    """只 commit 前瞻紀錄三個檔案（不動工作區其他修改），並在本機領先時 push。"""
-    files = ["forward/predictions.csv", "forward/outcomes.csv", "forward/REPORT.md"]
+PUBLISH_FILES = ["forward/predictions.csv", "forward/outcomes.csv", "forward/REPORT.md"]
+SITE_FILES = ["site/data.json", "site/research-dashboard.html"]
+
+
+def update_site() -> bool:
+    """重新產生研究網站；失敗只記錄，不影響前瞻紀錄的 commit。"""
+    try:
+        spec = importlib.util.spec_from_file_location("build_site", ROOT / "site" / "build_site.py")
+        module = importlib.util.module_from_spec(spec)  # 不用 import site：與標準函式庫同名
+        spec.loader.exec_module(module)
+        print(f"[auto] 網站已更新：{module.update()}")
+        return True
+    except Exception as exc:  # noqa: BLE001
+        print(f"[auto] 網站更新失敗（前瞻紀錄照常 commit）：{type(exc).__name__}: {str(exc)[:200]}")
+        return False
+
+
+def git_publish(message: str, push: bool, extra_files: list[str] | None = None) -> None:
+    """只 commit 前瞻紀錄（與網站）檔案，不動工作區其他修改，並在本機領先時 push。"""
+    files = PUBLISH_FILES + (extra_files or [])
     run = lambda *cmd: subprocess.run(["git", *cmd], cwd=ROOT, capture_output=True, text=True)  # noqa: E731
     run("add", "--", *files)
     if run("diff", "--cached", "--quiet", "--", *files).returncode != 0:
@@ -421,7 +439,8 @@ def cmd_auto(args) -> None:
     changed |= len(read_csv(OUTCOMES, OUTCOME_COLUMNS)) > n_before
     if changed:
         cmd_report(args)
-        git_publish(f"forward: auto update {today}", push=args.push)
+        site_ok = update_site()
+        git_publish(f"forward: auto update {today}", push=args.push, extra_files=SITE_FILES if site_ok else None)
     elif args.push:
         git_publish("", push=True)  # 只補推先前未成功的 push
     print(f"[auto] {now_utc()} 結束（{'有更新' if changed else '無更新'}）")
