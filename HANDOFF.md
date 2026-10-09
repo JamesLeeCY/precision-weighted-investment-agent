@@ -46,6 +46,7 @@
 - **產業內 IC 加權（`arbitrator/ic_weighting.py`，策略 `ic_weighted`，詳見 `docs/ic_weighting_report.md`）**：權重 = max(0, 最近 24 個已到期時點的平均產業內 IC)，不足 6 期等權；純產業押注不算產業內能力（第一版會誤算，已由測試抓到並修正）。無偏誤股票池：3 Agent IC 加權相對等權 +0.30%/期（t 1.09），簡單平均為 −0.44%；2023 年後財報 Agent 權重占 97–100%，但 2020 年權重一度幾乎全給供應鏈（雜訊）。沒有勝過財報 Agent 單獨（+0.26%，t 1.90）；只放財報 Agent 的合併（`reports/finmind_pit_fundamentals`）+0.28%（t 1.26）。關鍵數字：財報 Agent 每期產業內 IC 平均 0.029、標準差 0.122，24 期估計標準誤 0.025，要 t = 2 需約 73 期（6 年）→ 任何依歷史表現調權的機制（含精度加權）在這種訊號強度下都主要在追雜訊
 - **前瞻驗證（`forward/`，詳見 `docs/forward_validation.md`）**：規格 fv1 於 2026-10-09 凍結（git `57c364d`；spec 檔 commit `e940168`）：只用財報 Agent、連續輸出、當年無偏誤成員、每月第一個交易日預測、持有 20 個交易日；事先登錄主要指標（產業內 IC）與評估方式（只算 live；24 期檢查警訊、73 期正式檢定 t > 2）。`predict` 會比對財報 Agent / 評分 / 機率映射 / 公告遞延 / 含息還原的程式碼指紋，改了就拒絕；紀錄只能新增；每次用 `data_cache/forward/<日期>/` 的新資料快照。已回填開發未用過的 2026-06、07、08、09（結算）與 10（待結算）：產業內 IC +0.005（4 期，t 0.07）。2026-07 加權指數 20 日 −15%、股票池平均 −26%（國巨 1,140 → 456.5，連續跌停，非資料錯誤）。紀錄瑕疵：回填第 2–5 批 `git_dirty` 誤記為 True（把未 commit 的 predictions.csv 算進去），已修正檢查，既有紀錄不改
 - **回測成績單（`docs/scorecard.md`，`analysis/scorecard.py` 從 reports/ 產生，也顯示在研究網站）**：方向準確率、Brier、年化報酬、Sharpe、最大回撤，對 0050 與等權持有。方向準確率都低於「永遠猜上漲」；Sharpe 都低於 0050（無偏誤股票池：財報 Agent 1.24、產業中性做多 1.25、0050 1.49）
+- **樣本外與過度擬合（`docs/overfitting_controls.md`、`docs/oos_report.md`，2026-10-10）**：財報規則自 MVP 未調參 → 無偏誤股票池 2019–2022 為規則樣本外。21 起點中位數：原規則 Sharpe 0.48、相對等權 IR +0.13（樣本內 1.87 / +0.76）；產業中性做多 0.57 / +0.26（樣本內 1.80 / +0.80）；等權 0.59、0050 0.73。Deflated Sharpe ≤ 0.25（不顯著）。前瞻 4 期產業中性做多相對等權 +0.54%（3 正 1 負）
 - **產業中性組合（`docs/sector_neutral_report.md`，2026-10-10）**：財報 Agent 連續機率在每個產業內取前 1/3、產業權重等於股票池。未扣成本相對等權 +0.42%／期（t 2.01）、產業內多空 +0.93%／期（t 2.42），兩期與 21 起點全部為正；扣成本後做多 +0.26%（t 1.17）、多空 +0.55%。換手每期 0.60，成本吃掉約四成；加「仍在產業內前 50% 就續抱」的緩衝（事後調整）換手降到 0.44，做多扣成本 +0.35%（t 1.91）。不分產業的前 1/3 在 2024–2026 降到 +0.20%，產業中性兩期較一致。門檻模式機率明顯較差（+0.05%），前後 1/5 在 2019–2023 為負。放空成本未計，多空只作訊號強度指標
 - **data_cache 版控政策（2026-10-09 起）**：無偏誤股票池新增約 3,000 個 FinMind 快取檔（約 1.2 GB），不再納入版控（`.gitignore`：`data_cache/*`，但 `data_cache/llm/` 與既有已追蹤檔案仍版控）。重現 `finmind_pit` 需重新下載（約 4–5 小時 FinMind 額度，客戶端會自動等待額度）
 - **選股偏誤**：擴大股票池是 2026 年事後挑選的 AI 贏家（等權持有 +1,493% vs 0050 +566%），絕對報酬與跨產業 IC 都會被高估；以產業內 IC 與相對等權持有為主要指標
@@ -116,6 +117,8 @@
 .venv/Scripts/python site/build_site.py
 # 回測成績單（docs/scorecard.md、reports/scorecard.json；網站重建時會讀取）
 .venv/Scripts/python analysis/scorecard.py
+# 樣本內 / 樣本外（docs/oos_report.md）
+.venv/Scripts/python analysis/oos_report.py daily_pit.csv config/tickers_pit.yaml
 # 2 Agent 對照組
 .venv/Scripts/python backtest/run_backtest.py --mode finmind --start-date 2024-01-01 --end-date 2026-05-31 --step-days 21 --agents fundamentals_agent,news_agent --output-dir reports/finmind_full
 ```
