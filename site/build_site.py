@@ -86,7 +86,16 @@ def extract(snapshot: str | None = None, year: int | None = None) -> dict:
     return out
 
 
+def attach_scorecard(data: dict) -> dict:
+    """回測成績單（analysis/scorecard.py 產生的 reports/scorecard.json；不存在就略過）。"""
+    path = ROOT / "reports" / "scorecard.json"
+    if path.exists():
+        data["scorecard"] = json.loads(path.read_text(encoding="utf-8"))
+    return data
+
+
 def build(data: dict) -> Path:
+    data = attach_scorecard(dict(data))
     payload = json.dumps(data, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
     head = (SITE / "template/head.html").read_text(encoding="utf-8")
     body = (SITE / "template/body.html").read_text(encoding="utf-8").replace("__DATA__", payload)
