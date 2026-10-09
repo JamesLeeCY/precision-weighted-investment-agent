@@ -72,7 +72,35 @@ git add forward/ && git commit -m "forward: YYYY-MM prediction" && git push
 `site/data.json`、`site/research-dashboard.html` 並 push。沒有變動就只補推先前失敗的 push。
 
 網站更新失敗（例如快照缺資料又遇到網路錯誤）只會寫進 log，前瞻紀錄照常 commit；下次有變動時網站會再重建。
-claude.ai 上的網站副本不會自動更新，需要時再手動重新發佈。
+
+### 線上網站重新發佈（Claude 桌面 App 排程工作）
+
+線上版在 claude.ai Artifact：<https://claude.ai/artifact/UZu73HRzdmfWJrTG7TizLo>（私人，分享需從頁面的 Share 選單設定）。
+發佈 Artifact 只能在 Claude 工作階段中進行，Windows 工作排程器做不到，因此另設一個 Claude 桌面 App 的排程工作：
+
+| | |
+|---|---|
+| 名稱 | 研究網站自動重新發佈（taskId `republish-research-site`） |
+| 時間 | 每個平日 19:15（App 顯示約 19:23；排在 18:30 的 `auto` 之後） |
+| 設定檔 | `%USERPROFILE%\.claude\scheduled-tasks\republish-research-site\SKILL.md`（不在 repo 內） |
+| 狀態檔 | `logs/site_published.sha256`：上次發佈時 `site/research-dashboard.html` 的 SHA-256（logs/ 不進 git） |
+
+每次執行：
+
+1. 計算 `site/research-dashboard.html` 的 SHA-256，與 `logs/site_published.sha256` 相同就結束（線上已是最新）。
+2. 不同時先完整讀取頁面，確認是本專案產生的網站（標題、內嵌數據、免責聲明，沒有外部表單或非允許來源的腳本）；不符就不發佈。
+3. 讀取線上 Artifact 後，以同一個網址重新發佈本機檔案。
+4. 發佈成功才寫入新的雜湊；失敗不寫，下次執行會重試。
+
+它不修改、不 commit、不 push repo，也不執行 `run_forward.py`。
+
+注意事項：
+
+- 只在 Claude 桌面 App 開著時執行；App 關閉時到期的執行會在下次開啟時補跑。
+- 工具權限（PowerShell、Read、Artifact）已在 2026-10-10 首次執行時允許並存在工作上。若執行卡在權限確認，
+  到側欄 Scheduled → 研究網站自動重新發佈 打開該次執行並允許；必要時停止後按 Run now 重跑。
+- 想強制重新發佈：刪除 `logs/site_published.sha256` 後按 Run now。
+- 查看執行紀錄：側欄 Scheduled → 研究網站自動重新發佈 → Runs。
 
 ## 已知紀錄瑕疵
 

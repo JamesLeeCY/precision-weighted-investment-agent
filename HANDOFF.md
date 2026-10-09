@@ -54,7 +54,7 @@
 
 ## 待辦（依建議順序）
 1. **預設合併組成改為只放財報 Agent**（`--agents fundamentals_agent`；依全期、獨立股票池的證據，而非滾動估計）；產業內 IC 加權保留為監控工具，若要用於權重應加強先驗（向固定組成收縮）並拉長估計期間
-2. **每月執行前瞻驗證**：每月第一個交易日 `predict` → `resolve` → `report` → commit 並 push（第一個 live 預測日：2026-11-02 前後的第一個交易日）；每年 1 月先 `build-universe --year YYYY`。已由 Windows 工作排程器每個平日 18:30 執行 `auto --push` 自動化（含研究網站 `site/` 重建），只需定期查看 `logs/forward_auto.log`
+2. **每月執行前瞻驗證**：每月第一個交易日 `predict` → `resolve` → `report` → commit 並 push（第一個 live 預測日：2026-11-02 前後的第一個交易日）；每年 1 月先 `build-universe --year YYYY`。已由 Windows 工作排程器每個平日 18:30 執行 `auto --push` 自動化（含研究網站 `site/` 重建），只需定期查看 `logs/forward_auto.log`；線上網站由 Claude 桌面 App 排程工作 `republish-research-site` 每個平日 19:15 依雜湊變動重新發佈（需 App 開著，見 docs/forward_validation.md「線上網站重新發佈」）
 3. **以財報 Agent 為核心的產業中性組合**：產業內排序、產業內多空（評估腳本已有 `analysis/agent_ic.py`、`analysis/phase_robustness_agents.py`、`analysis/portfolio_phase_robustness.py`）
 4. **提升其他 Agent 的資訊量**：新聞內文已試過（規則式與 LLM 都變差），若再試應先提升來源品質（主流媒體內文）；更強的 LLM（雲端 Claude）或 qwen3 思考模式
 5. 各 Agent 可個別指定模型（目前所有 Agent 共用同一份 llm 設定）
