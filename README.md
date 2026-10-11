@@ -307,6 +307,7 @@ notebooks/              校準分析 notebook
 - [子產業分類](docs/subindustry_report.md) — 櫃買中心產業價值鏈平台、主要子產業選擇規則、財報 / 估值 / 領先落後的子產業版本
 - [基本面選股 + 技術面每日進出場](docs/fund_tech_daily_report.md) — 每日回測、個股 / 大盤濾網、財報與技術面權重混合
 - [配置研究](docs/allocation_study_report.md) — 7 種擇時規則、0050 擇時與財報選股的混合比例、個股權重方法
+- [台股特有 alpha 文獻研究](docs/taiwan_alpha_literature.md) — 月營收驚奇、投信買超、融券借券、彩券型股票等候選策略與出處
 - [產業中性組合報告](docs/sector_neutral_report.md) — 財報 Agent 的產業內排序轉成產業中性做多／多空組合、
   換手與成本、緩衝規則、敏感度
 - [前瞻驗證操作說明](docs/forward_validation.md) — 凍結規則、每月流程、完整性機制
