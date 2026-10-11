@@ -40,3 +40,14 @@ def test_daily_stock_filter_uses_previous_close():
     assert s.loc[dates[3], "expo"] == 1.0         # 第 4 天只看到第 3 天收盤（仍在均線上）
     assert s.loc[dates[4], "expo"] == 0.0         # 第 5 天看到第 4 天跌破 → 出場
     assert s.loc[dates[2], "net"] == pytest.approx(-0.5)  # 第 3 天持有，承受第 3 → 4 天的下跌
+
+
+def test_first_rebalance_on_first_day_is_not_skipped():
+    # 2026-10-12 修正的回歸測試：換倉日是回測第一天時也要建立部位
+    dates = pd.bdate_range("2024-01-01", periods=4)
+    close = pd.DataFrame({"A.TW": [10, 11, 12, 13.0]}, index=dates)
+    daily = pd.DataFrame({"i": 0, "date": dates[0], "ticker": "A.TW", "sector": "S",
+                          "pc_fundamentals_agent": 0.9, "pc_technical": 0.5}, index=[0])
+    s = ftd.run(daily, close, close, close, pd.Series(1.0, index=dates), pd.Series(0.0, index=dates), phase=0)
+    assert s["d"].iloc[0] == dates[0]
+    assert s["net"].iloc[0] == pytest.approx(0.1 - ftd.COST)   # 第一天收盤買進，賺第 1 → 2 天

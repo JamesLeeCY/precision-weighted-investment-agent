@@ -51,11 +51,23 @@ def market_on(index):
     ma = adj.rolling(200, min_periods=200).mean()
     on = (adj > ma).astype(float).where(ma.notna())
     ret = adj.pct_change()
-    return on.reindex(index, method="ffill"), ret.reindex(index).fillna(0.0)
+    # 先在 0050 自己的完整資料上位移一天（第 t 日只看到 t−1 日收盤），再對齊到回測日曆；
+    # 這樣回測第一天也有前一日的判斷（2019-01-02 的前一日在 2018 年）
+    return on.shift(1).reindex(index, method="ffill"), ret.reindex(index).fillna(0.0)
 
 
-def select(g: pd.DataFrame, held: set, mix: bool) -> dict:
-    """g：某換倉日的成員（ticker、sector、pc_fundamentals_agent、pc_technical）。回傳 {ticker: 權重}。"""
+WEIGHTINGS = ("equal", "mix", "score", "invvol", "cap")
+
+
+def select(g: pd.DataFrame, held: set, mix: bool = False, weight: str = "equal") -> dict:
+    """g：某換倉日的成員（ticker、sector、pc_fundamentals_agent、pc_technical；invvol 需 vol60、cap 需 cap）。
+
+    weight：入選股在產業內的權重分配（產業總權重固定 = 股票池產業權重）
+      equal 等權；mix 0.5 財報百分位 + 0.5 技術面百分位；score 財報百分位；invvol 60 日波動度倒數；cap 市值。
+    回傳 {ticker: 權重}。
+    """
+    if mix:
+        weight = "mix"
     w_sector = g["sector"].value_counts(normalize=True)
     out = {}
     for sector, sg in g.groupby("sector"):
@@ -65,22 +77,33 @@ def select(g: pd.DataFrame, held: set, mix: bool) -> dict:
         if len(sg) < 3 or names.empty or len(names) == len(sg):
             names = sg
             pf = pf.loc[names.index]
-        if mix:
+        if weight == "equal":
+            score = pd.Series(1.0, index=names.index)
+        elif weight == "mix":
             pt = sg["pc_technical"].rank(pct=True, method="average").fillna(0.5)
             score = 0.5 * pf.loc[names.index] + 0.5 * pt.loc[names.index]
-            score = score.clip(lower=1e-6)
-            for t, s in zip(names["ticker"], score):
-                out[t] = w_sector[sector] * s / score.sum()
+        elif weight == "score":
+            score = pf.loc[names.index]
+        elif weight == "invvol":
+            vol = names["vol60"]
+            score = (1.0 / vol).where(vol > 0)
+            score = score.fillna(score.median() if score.notna().any() else 1.0)
+        elif weight == "cap":
+            score = names["cap"].fillna(names["cap"].median() if names["cap"].notna().any() else 1.0)
         else:
-            for t in names["ticker"]:
-                out[t] = w_sector[sector] / len(names)
+            raise ValueError(f"weight 必須是 {WEIGHTINGS}")
+        score = score.clip(lower=1e-9)
+        for t, x in zip(names["ticker"], score):
+            out[t] = w_sector[sector] * x / score.sum()
     return out
 
 
-def run(daily, close, ma20, ma60, mkt_on, bench_ret, phase, kind="sn", mix=False, stock_ma=None, mkt=False):
+def run(daily, close, ma20, ma60, mkt_on, bench_ret, phase, kind="sn", mix=False, stock_ma=None, mkt=False, weight="equal"):
     dates = close.index
     rets = close.pct_change().fillna(0.0)
-    above = {20: (close > ma20).astype(float).where(ma20.notna()), 60: (close > ma60).astype(float).where(ma60.notna())}
+    # 個股濾網：第 t 列 = t−1 日收盤相對均線（位移一天；第一天沒有前一日資料 → 不持有該股）
+    above = {20: (close > ma20).astype(float).where(ma20.notna()).shift(1),
+             60: (close > ma60).astype(float).where(ma60.notna()).shift(1)}
     reb_dates = daily.groupby("i")["date"].first()
     reb = {d: i for i, d in reb_dates.items() if i % STEP == phase}
     tickers = list(close.columns)
@@ -90,7 +113,7 @@ def run(daily, close, ma20, ma60, mkt_on, bench_ret, phase, kind="sn", mix=False
     held = set()
     rows = []
     started = False
-    for k in range(1, len(dates)):
+    for k in range(len(dates)):  # 2026-10-12 修正：原本從 1 開始，起點 0 漏掉第一次換倉（2019-01-02）
         d = dates[k]
         if d in reb:
             g = daily[daily["i"] == reb[d]]
@@ -102,7 +125,7 @@ def run(daily, close, ma20, ma60, mkt_on, bench_ret, phase, kind="sn", mix=False
             elif kind == "0050":
                 pass
             else:
-                sel = select(g.dropna(subset=["pc_fundamentals_agent"]), held, mix)
+                sel = select(g.dropna(subset=["pc_fundamentals_agent"]), held, mix, weight)
                 held = set(sel)
                 for t, x in sel.items():
                     if t in col:
@@ -112,9 +135,9 @@ def run(daily, close, ma20, ma60, mkt_on, bench_ret, phase, kind="sn", mix=False
             continue
         w = base.copy()
         if stock_ma:
-            ok = above[stock_ma].iloc[k - 1].fillna(0.0).to_numpy()  # 前一日收盤相對均線
+            ok = above[stock_ma].iloc[k].fillna(0.0).to_numpy()  # 已位移：前一日收盤相對均線
             w = w * ok
-        cash_all = mkt and mkt_on.iloc[k - 1] == 0
+        cash_all = mkt and mkt_on.iloc[k] == 0  # mkt_on 已是前一日的判斷
         if kind == "0050":
             wb = 0.0 if cash_all else 1.0
             to = abs(wb - (rows[-1]["w0050"] if rows else 0.0))
