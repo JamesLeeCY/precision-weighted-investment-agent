@@ -79,7 +79,7 @@ def load_chips(client, sid):
 
 
 def tx_continuous(client) -> pd.Series:
-    d = client.get("TaiwanFuturesDaily", "TX", EV_START, EV_END)
+    d = client.get("TaiwanFuturesDaily", "TX", "2019-01-01", EV_END)  # 對沖只用 2019 年起；與既有快取同鍵
     d = d[(d["trading_session"] == "position") & d["contract_date"].str.fullmatch(r"\d{6}") & (d["close"].astype(float) > 0)].copy()
     d["date"] = pd.to_datetime(d["date"])
     d["close"] = d["close"].astype(float)
