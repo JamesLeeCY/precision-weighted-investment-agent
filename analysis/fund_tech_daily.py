@@ -59,7 +59,7 @@ def market_on(index):
 WEIGHTINGS = ("equal", "mix", "score", "invvol", "cap")
 
 
-def select(g: pd.DataFrame, held: set, mix: bool = False, weight: str = "equal") -> dict:
+def select(g: pd.DataFrame, held: set, mix: bool = False, weight: str = "equal", signal: str = "pc_fundamentals_agent") -> dict:
     """g：某換倉日的成員（ticker、sector、pc_fundamentals_agent、pc_technical；invvol 需 vol60、cap 需 cap）。
 
     weight：入選股在產業內的權重分配（產業總權重固定 = 股票池產業權重）
@@ -71,7 +71,7 @@ def select(g: pd.DataFrame, held: set, mix: bool = False, weight: str = "equal")
     w_sector = g["sector"].value_counts(normalize=True)
     out = {}
     for sector, sg in g.groupby("sector"):
-        pf = sg["pc_fundamentals_agent"].rank(pct=True, method="average")
+        pf = sg[signal].rank(pct=True, method="average")
         chosen = (pf > 1 - Q) | (sg["ticker"].isin(held) & (pf > KEEP))
         names = sg[chosen]
         if len(sg) < 3 or names.empty or len(names) == len(sg):
@@ -98,14 +98,19 @@ def select(g: pd.DataFrame, held: set, mix: bool = False, weight: str = "equal")
     return out
 
 
-def run(daily, close, ma20, ma60, mkt_on, bench_ret, phase, kind="sn", mix=False, stock_ma=None, mkt=False, weight="equal"):
+def run(daily, close, ma20, ma60, mkt_on, bench_ret, phase, kind="sn", mix=False, stock_ma=None, mkt=False, weight="equal",
+        signal="pc_fundamentals_agent", rebalance_on=None):
+    """rebalance_on：指定換倉日（例如月營收公告期限後），給定時忽略 phase。"""
     dates = close.index
     rets = close.pct_change().fillna(0.0)
     # 個股濾網：第 t 列 = t−1 日收盤相對均線（位移一天；第一天沒有前一日資料 → 不持有該股）
     above = {20: (close > ma20).astype(float).where(ma20.notna()).shift(1),
              60: (close > ma60).astype(float).where(ma60.notna()).shift(1)}
     reb_dates = daily.groupby("i")["date"].first()
-    reb = {d: i for i, d in reb_dates.items() if i % STEP == phase}
+    if rebalance_on is not None:
+        reb = {d: i for i, d in reb_dates.items() if d in rebalance_on}
+    else:
+        reb = {d: i for i, d in reb_dates.items() if i % STEP == phase}
     tickers = list(close.columns)
     col = {t: k for k, t in enumerate(tickers)}
     base = np.zeros(len(tickers))
@@ -125,7 +130,7 @@ def run(daily, close, ma20, ma60, mkt_on, bench_ret, phase, kind="sn", mix=False
             elif kind == "0050":
                 pass
             else:
-                sel = select(g.dropna(subset=["pc_fundamentals_agent"]), held, mix, weight)
+                sel = select(g.dropna(subset=[signal]), held, mix, weight, signal)
                 held = set(sel)
                 for t, x in sel.items():
                     if t in col:
