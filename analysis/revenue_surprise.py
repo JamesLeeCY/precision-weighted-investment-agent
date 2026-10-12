@@ -25,37 +25,12 @@ sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "analysis"))
 import sector_neutral_portfolio as snp  # noqa: E402
 from data.fetch_financials import FinMindClient  # noqa: E402
+from data.revenue_signal import event_dates, revenue_surprise  # noqa: E402,F401  （與前瞻規格 fv2 共用）
 from data.fetch_technical import FinMindTechnicalProvider  # noqa: E402
 
 SPLIT = "2023-01-01"
 SEGMENTS = [("2019–2022（樣本外）", lambda d: d < SPLIT), ("2023–2026/05", lambda d: d >= SPLIT)]
 PPY = 12
-
-
-def event_dates(trading_days: pd.DatetimeIndex) -> list[pd.Timestamp]:
-    out = []
-    s = pd.Series(trading_days, index=trading_days)
-    for _, days in s.groupby([trading_days.year, trading_days.month]):
-        days = list(days)
-        k = next((j for j, d in enumerate(days) if d.day >= 10), None)
-        if k is not None and k + 1 < len(days):
-            out.append(days[k + 1])
-    return out
-
-
-def revenue_surprise(rev: pd.DataFrame) -> pd.DataFrame:
-    """rev：FinMind 月營收；回傳 [avail_month（公告月份第一天）, sue, yoy_timely]。"""
-    r = rev.copy()
-    r["ym"] = pd.to_datetime(dict(year=r["revenue_year"], month=r["revenue_month"], day=1))
-    r = r.drop_duplicates("ym", keep="last").set_index("ym")["revenue"].astype(float).asfreq("MS")
-    diff = r - r.shift(12)
-    mu = diff.shift(1).rolling(24, min_periods=12).mean()
-    sd = diff.shift(1).rolling(24, min_periods=12).std()
-    sue = (diff - mu) / sd.where(sd > 0)
-    yoy = r / r.shift(12) - 1
-    out = pd.DataFrame({"sue": sue, "yoy_timely": yoy})
-    out.index = out.index + pd.offsets.MonthBegin(1)  # 營收月份 m → 次月可用
-    return out.rename_axis("avail_month").reset_index()
 
 
 def within_ic(df, col, ret):
