@@ -6,6 +6,8 @@
 ![Tests](https://img.shields.io/badge/tests-53%20passed-brightgreen)
 ![License](https://img.shields.io/badge/license-MIT-lightgrey)
 
+🔗 **研究紀錄網站：<https://jamesleecy.github.io/precision-weighted-investment-agent/>**（研究結果，非投資建議）
+
 借用神經科學**預測處理框架（predictive processing）**中的 precision
 weighting 概念建構的多智能體投資研究系統：多個專家 Agent（財報、新聞事件、總經/籌碼、供應鏈）
 各自產出帶信心值的判斷，仲裁層依各 Agent 的**歷史準確度**（Brier score
@@ -292,9 +294,10 @@ notebooks/              校準分析 notebook
 
 ## 文件
 
-- [研究網站](site/research-dashboard.html) — 單一 HTML（下載後用瀏覽器開啟）：目前股票池、
+- **[研究網站（公開版）](https://jamesleecy.github.io/precision-weighted-investment-agent/)**（GitHub Pages，`main` 分支根目錄的 `index.html`）。
+  原始檔 [site/research-dashboard.html](site/research-dashboard.html) 為單一 HTML（下載後用瀏覽器開啟）：目前股票池、
   Agent 架構圖、2026 前瞻股票池 100 檔的財報特徵與預測、前瞻驗證 IC。
-  每月前瞻驗證自動執行（`forward/run_forward.py auto`）有新預測或結算時會一併重建；
+  每月前瞻驗證自動執行（`forward/run_forward.py auto --push`）有新預測或結算時會一併重建並推上 GitHub，公開版隨之更新；
   手動更新：`.venv/Scripts/python site/build_site.py`（架構圖在 claude.ai 由平台繪製；其他地方開啟時自動從 cdnjs 載入 mermaid 繪製）。
   線上版由 Claude 桌面 App 排程工作在檔案變動後自動重新發佈，見
   [前瞻驗證操作說明](docs/forward_validation.md)「線上網站重新發佈」
