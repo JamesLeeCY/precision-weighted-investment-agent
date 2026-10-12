@@ -109,3 +109,46 @@ git add forward/ && git commit -m "forward: YYYY-MM prediction" && git push
 ## 回填（backfill）
 
 2026-06 到 2026-10 在開發時沒有使用過（回測資料只到 2026-05），已在凍結後以 `backfill` 標記補做，作為第一批檢查。回填使用的是今天抓取的資料，若 FinMind 事後修正過歷史財報，會與當時實際可得的資料略有差異，因此不算入正式檢定。
+
+
+---
+
+# 前瞻驗證 fv2：月營收驚奇（SUE）
+
+| | |
+|---|---|
+| 規格 | [forward/fv2/spec.yaml](../forward/fv2/spec.yaml)（2026-10-12 凍結於 git `c06469a`） |
+| 程式 | [forward/run_forward_fv2.py](../forward/run_forward_fv2.py)、訊號 [data/revenue_signal.py](../data/revenue_signal.py) |
+| 紀錄 | `forward/fv2/predictions.csv`（含每檔入選與權重）、`outcomes.csv`、`periods.csv`（每期組合 / 等權 / 0050 / 0050 擇時 / 50-50 的報酬）；只能新增 |
+| 報告 | [forward/fv2/REPORT.md](../forward/fv2/REPORT.md) |
+| 依據 | [revenue_surprise_report.md](revenue_surprise_report.md)：SUE 是第一個在 2019–2022、2023–2026 兩段都顯著的訊號 |
+
+## 凍結了什麼
+
+- **預測日**：每月「10 日或之後第一個加權指數交易日」（營收公告期限）的下一個交易日。
+- **訊號**：SUE =（本月營收 − 去年同月 − μ）÷ σ，μ、σ 為過去 24 個月營收年差的平均與標準差。
+  **只採用 create_time ≤ 公告期限交易日的營收**（前瞻期間 FinMind 有收錄時間），避免逾期才公告的資料混入。
+- **組合**：當年無偏誤成員，產業內 SUE 前 1/3；已持有者產業內百分位 > 50% 續留；產業權重 = 股票池權重。預測時就寫下每檔權重。
+- **持有**：預測日收盤到第 20 個交易日收盤的含息總報酬。
+- **主要指標（事先登錄）**：產業內 IC；回測預期平均 +0.044、每期標準差 0.119（88 期，t 3.5）。
+- **評估**：只算 live 期數；12 期時平均 IC < 0 視為警訊；30 期（約 2.5 年）時正式檢定，t > 2 才算確認。
+- **次要指標**：組合（扣成本）相對等權的每期超額報酬（回測 +0.44%）；50% 組合 + 50%「0050 + 每日 200 日線濾網」相對 0050 買進持有。
+- **程式碼指紋**：`data/revenue_signal.py` 全檔、選股、期間報酬計算與常數；改了就拒絕預測（修改規則請建立 fv3）。
+- fv1 的規格、紀錄與指紋完全不受影響。
+
+## 回填與排程
+
+- 開發時最後一個事件是 2026-04-13，因此 2026-05 到 2026-09 共 5 期以 `backfill` 補做（不計入正式檢定）。
+  4 期已結算：產業內 IC 平均 −0.015（每期標準差約 0.12，4 期無統計意義）。
+- 第一個 live 預測日：2026-10-13（10 月公告期限 10-12）。
+- 自動執行：`forward/run_forward.py auto` 每個平日 18:30 會一併呼叫 fv2（預測當月、結算到期者、更新報告，並 commit / push fv2 紀錄）；
+  fv2 出錯只寫入 log，fv1 照常。
+
+手動操作：
+
+```bash
+.venv/Scripts/python forward/run_forward_fv2.py schedule
+.venv/Scripts/python forward/run_forward_fv2.py predict --as-of YYYY-MM-DD
+.venv/Scripts/python forward/run_forward_fv2.py resolve
+.venv/Scripts/python forward/run_forward_fv2.py report
+```

@@ -53,6 +53,7 @@
 - **子產業分類（`docs/subindustry_report.md`，`config/subindustry_pit.csv`，2026-10-10）**：來源櫃買中心產業價值鏈資訊平台（`data/fetch_subindustry.py`；主要子產業 = 電子核心產業鏈中、與大產業對應、公司申報筆數最多者），265/271 檔、63 種。子產業 ≥ 5 檔才獨立成組（每日 11.8 組 vs 大產業 7 組）。財報 Agent 組內 IC 樣本外 +0.017 → +0.015（緩衝組合 +0.25% → +0.24%）；估值在子產業 × 市值五分位樣本外 IC +0.014（20/21）但 2023–2026 −0.014、組合仍虧損；領先落後仍無效。主要限制：股票池 100 檔太小
 - **基本面選股 + 技術面每日進出場（`docs/fund_tech_daily_report.md`，`analysis/fund_tech_daily.py` 每日回測，2026-10-10；2026-10-12 修正起點 0 漏掉第一次換倉的 bug）**：財報產業中性 + 緩衝，樣本外 / 2023–2026 Sharpe 0.68 / 2.00（每日回撤 −44% / −40%）；個股 60 日線每日進出 0.19 / 1.69（年換手 17）；20 日線 0.49 / 1.12；大盤每日濾網 0.52 / 2.13；財報 + 技術面權重混合 0.63 / 2.08。對照：0050 0.77 / 2.40；0050 + 每日 200 日線濾網 0.80 / 2.41、回撤 −16%（Sharpe 打平、回撤減半；更正前誤記 0.81 vs 0.71）
 - **配置研究（`docs/allocation_study_report.md`，`analysis/allocation_study.py`，2026-10-12）**：0050 擇時 7 規則（樣本外 / 2023–2026 Sharpe）：買進持有 0.77 / 2.41；120 日 0.85 / 2.15；200 日 0.80 / 2.42；250 日 0.78 / 2.22；雙均線 0.62 / 1.82；200 日 ±2% 緩衝帶 0.99 / 2.42（每年進出 1 次）；每週判斷 0.72 / 2.47；所有規則報酬都低於買進持有。混合（0050 + 200 日線濾網 a、財報選股 1 − a）：a = 75% 0.89 / 2.53、50% 0.85 / 2.44（年化 +16.4% / +55.6%，回撤 −30% / −25%）、0% 0.68 / 2.00（年化 +19.9% / +59.7%）。個股權重：等權 0.68 / 2.00、財報加權 0.65 / 2.03、波動度倒數 0.71 / 1.94、市值加權 0.69 / 2.57（2023 年後 +73%，行情）
+- **前瞻驗證 fv2（2026-10-12 凍結於 git `c06469a`）**：SUE、公告期限後進場（只採 create_time ≤ 期限的營收）、產業中性前 1/3 + 緩衝；回測預期 IC +0.044（sd 0.119）。回填 2026-05～09：4 期已結算，IC 平均 −0.015（無統計意義）
 - **月營收驚奇 SUE（`docs/revenue_surprise_report.md`，`analysis/revenue_surprise.py`，2026-10-12）**：進場 = 當月 10 日或之後第一個交易日的下一個交易日；SUE = (R − R₋₁₂ − μ)/σ（過去 24 個月年差）。產業內 IC 20 日 +0.032（t 2.0）/ +0.059（t 2.9），60 日 +0.044 / +0.091；準時年增率 +0.015 / +0.058；財報 Agent −0.013 / +0.045。公告期間事先反映 IC +0.14 / +0.19。延後 1–10 日仍有效。每日回測：SUE 產業中性 + 緩衝 0.73 / 2.32（年化 +21.3% / +69.3%），財報 Agent 0.61 / 2.17，0050 0.75 / 2.40，50% SUE + 50% 0050 擇時 0.88 / 2.64。**現行財報 Agent 的月營收遞延 40 天，比實際公告晚約一個月使用**
 - **產業中性組合（`docs/sector_neutral_report.md`，2026-10-10）**：財報 Agent 連續機率在每個產業內取前 1/3、產業權重等於股票池。未扣成本相對等權 +0.42%／期（t 2.01）、產業內多空 +0.93%／期（t 2.42），兩期與 21 起點全部為正；扣成本後做多 +0.26%（t 1.17）、多空 +0.55%。換手每期 0.60，成本吃掉約四成；加「仍在產業內前 50% 就續抱」的緩衝（事後調整）換手降到 0.44，做多扣成本 +0.35%（t 1.91）。不分產業的前 1/3 在 2024–2026 降到 +0.20%，產業中性兩期較一致。門檻模式機率明顯較差（+0.05%），前後 1/5 在 2019–2023 為負。放空成本未計，多空只作訊號強度指標
 - **data_cache 版控政策（2026-10-09 起）**：無偏誤股票池新增約 3,000 個 FinMind 快取檔（約 1.2 GB），不再納入版控（`.gitignore`：`data_cache/*`，但 `data_cache/llm/` 與既有已追蹤檔案仍版控）。重現 `finmind_pit` 需重新下載（約 4–5 小時 FinMind 額度，客戶端會自動等待額度）
@@ -68,7 +69,7 @@
 1. **每月執行前瞻驗證**：已全自動（Windows 工作排程器每個平日 18:30 執行 `forward/run_forward.py auto --push`，含研究網站 `site/` 重建；線上網站由 Claude 桌面 App 排程工作 `republish-research-site` 每個平日 19:15 依雜湊變動重新發佈，需 App 開著，見 docs/forward_validation.md）。只需定期查看 `logs/forward_auto.log`。時程：2026-10-01 批約 10/29 結算；第一個 live 預測約 2026-11-02；2027 年 1 月自動建立當年股票池
 2. **降低產業中性組合的換手**（`docs/sector_neutral_report.md`）：換倉頻率改每 2 期、只在月營收公布後換倉、以分數變化決定進出；緩衝規則應在新資料上（例如前瞻紀錄）驗證，避免事後調整
 3. **優化供應鏈 Agent**（使用者 2026-10-10 提出）：目前只捕捉產業輪動、產業內 IC ≈ 0，圖譜多為產業預設邊；方向可考慮客戶集中度、上下游營收領先關係、只用年報確認的邊
-4. **SUE 前瞻規格 fv2**：月營收驚奇已通過兩段檢驗（docs/revenue_surprise_report.md）；fv1 不能改，另立 fv2（SUE、公告期限後進場、產業中性前 1/3 + 緩衝，並記錄與 0050 擇時部位的混合），可延伸 SUE + 季報盈餘驚奇、持有 40–60 日
+4. **前瞻驗證 fv2（月營收驚奇，已建立 2026-10-12）**：`forward/run_forward_fv2.py`，紀錄在 `forward/fv2/`，由 `run_forward.py auto` 每日一併執行；第一個 live 預測日 2026-10-13；12 個 live 期數檢查警訊、30 期正式檢定（docs/forward_validation.md 下半部）。可延伸研究：SUE + 季報盈餘驚奇、持有 40–60 日
 5. **其餘台股文獻候選（docs/taiwan_alpha_literature.md）**：(b) 投信淨買超（產業內 z 分數、只用買方、持有 6–15 日）、(c) 融券流量 / 借券 / 券資比（月頻）、(d) 漲停觸及率 / MAX 負向濾網
 6. **擇時與混合配置的前瞻確認**：200 日線 ±2% 緩衝帶（7 種規則中樣本外最佳，2023 年後與買進持有相當）與「0050 擇時 + 財報選股」混合（兩段 Sharpe 都高於 0050），但都是看過許多設定後得到（docs/allocation_study_report.md）；可比照 fv1 另立前瞻規格，每月記錄。更強的選股訊號仍待找（法說會／財報文字、分析師預估修正需付費資料）
 7. **提升其他 Agent 的資訊量**：新聞內文已試過（規則式與 LLM 都變差），若再試應先提升來源品質（主流媒體內文）；更強的 LLM（雲端 Claude）或 qwen3 思考模式
@@ -86,7 +87,7 @@
 
 ## 操作
 ```bash
-.venv/Scripts/python -m pytest tests -q          # 171 tests（Windows；macOS/Linux 用 .venv/bin/python）
+.venv/Scripts/python -m pytest tests -q          # 174 tests（Windows；macOS/Linux 用 .venv/bin/python）
 # 3 Agent（config 預設）
 .venv/Scripts/python backtest/run_backtest.py --mode finmind --start-date 2024-01-01 --end-date 2026-05-31 --step-days 21 --agents fundamentals_agent,news_agent,macro_agent --output-dir reports/finmind_macro
 # LLM 判讀（需 Ollama + qwen3:8b；回應已快取，重跑秒完）
@@ -137,6 +138,10 @@
 .venv/Scripts/python analysis/subindustry_eval.py daily_pit_val_tech.csv config/tickers_pit.yaml
 # 基本面選股 + 技術面每日進出場（每日回測，約 15 分鐘）
 .venv/Scripts/python analysis/fund_tech_daily.py daily_pit_val_tech.csv config/tickers_pit.yaml
+# 前瞻驗證 fv2（月營收驚奇；auto 會一併執行）
+.venv/Scripts/python forward/run_forward_fv2.py schedule
+.venv/Scripts/python forward/run_forward_fv2.py resolve
+.venv/Scripts/python forward/run_forward_fv2.py report
 # 月營收驚奇 SUE（約 3 分鐘）
 .venv/Scripts/python analysis/revenue_surprise.py daily_pit_val_tech.csv config/tickers_pit.yaml
 # 配置研究：擇時規則 / 混合比例 / 個股權重（約 20 分鐘）
