@@ -381,7 +381,7 @@ def cmd_build_universe(args) -> None:
 
 
 PUBLISH_FILES = ["forward/predictions.csv", "forward/outcomes.csv", "forward/REPORT.md"]
-SITE_FILES = ["site/data.json", "site/research-dashboard.html"]
+SITE_FILES = ["site/data.json", "site/research-dashboard.html", "index.html"]
 
 
 def update_site() -> bool:

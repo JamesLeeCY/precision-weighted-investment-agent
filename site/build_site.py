@@ -102,6 +102,11 @@ def build(data: dict) -> Path:
     body = (SITE / "template/body.html").read_text(encoding="utf-8").replace("__DATA__", payload)
     out = SITE / "research-dashboard.html"
     out.write_text('<meta charset="utf-8">\n' + head + body, encoding="utf-8")
+    # GitHub Pages 首頁（https://jamesleecy.github.io/precision-weighted-investment-agent/）：同內容，補完整文件骨架
+    (ROOT / "index.html").write_text(
+        '<!doctype html>\n<html lang="zh-Hant">\n<head>\n<meta charset="utf-8">\n'
+        '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n'
+        + head + '\n</head>\n<body>\n' + body + '\n</body>\n</html>\n', encoding="utf-8")
     return out
 
 
