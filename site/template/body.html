@@ -29,36 +29,49 @@
   <h2>重點結論</h2>
   <div class="findings">
     <div class="finding">
-      <span class="lab">月營收驚奇 SUE 產業內 IC（2019–2022）</span>
+      <span class="lab">月營收驚奇 SUE 的選股能力：產業內 IC（2019–2022）</span>
       <span class="big">+0.032</span>
-      <span class="small">t 2.0；2023–2026 為 +0.059（t 2.9）；公告期限後進場、延後 1–10 日仍有效；與 0050 擇時各半混合 Sharpe 0.88 / 2.64（0050 為 0.75 / 2.40）</span>
-      <span class="verdict v-yes">✓ 第一個兩段都顯著的訊號</span>
+      <span class="small">IC = 同產業內「訊號排名」與「之後 20 個交易日報酬排名」的相關係數（−1～1，0 = 沒有預測力）。t 2.0（統計上顯著）；2023–2026 為 +0.059（t 2.9）。換成組合：與 0050 擇時部位各半混合，Sharpe 0.88 / 2.64，高於 0050 買進持有的 0.75 / 2.40。</span>
+      <span class="verdict v-yes">✓ 第一個兩段期間都顯著的訊號</span>
     </div>
     <div class="finding">
-      <span class="lab">財報 Agent 產業內 IC（無偏誤股票池 2019–2026）</span>
+      <span class="lab">財報 Agent 的選股能力：產業內 IC（2019–2026）</span>
       <span class="big">+0.029</span>
-      <span class="small">t = 2.16，85 期中 55 期為正；21 個取樣相位全部為正</span>
+      <span class="small">同上定義（−1～1，0 = 沒有預測力）。t 2.16；85 期中 55 期為正，21 種換倉起點全部為正。</span>
       <span class="verdict v-yes">✓ 穩定但較弱</span>
     </div>
     <div class="finding">
-      <span class="lab">財報 Agent 看多組合 vs 等權（扣成本，每期）</span>
+      <span class="lab">財報 Agent 選股組合：每期比「等權持有全部股票」多賺</span>
       <span class="big">+0.26%</span>
-      <span class="small">t = 1.90；三 Agent 合併為 −0.44%，產業內 IC 加權 +0.30%</span>
+      <span class="small">每期 = 20 個交易日，已扣交易成本；比較對象是等權持有股票池全部 100 檔（不是 0050）。t 1.90。三個 Agent 合併為 −0.44%，產業內 IC 加權合併 +0.30%。</span>
       <span class="verdict v-wait">△ 邊際顯著</span>
     </div>
     <div class="finding">
-      <span class="lab">精度加權（核心假說）</span>
+      <span class="lab">精度加權（本專案的核心假說）</span>
       <span class="big">未成立</span>
-      <span class="small">合成資料 17/20 有效；真實資料各 Agent Brier 從未優於基準率，精度權重無從發揮</span>
+      <span class="small">合成資料 20 次模擬中 17 次有效；真實資料中每個 Agent 的 Brier 分數（機率預測誤差，越低越好）都沒有優於「永遠猜歷史上漲比例」，精度權重無從發揮。</span>
       <span class="verdict v-no">✗ 真實資料未成立</span>
     </div>
     <div class="finding">
       <span class="lab" data-fill="fwdLabel"></span>
       <span class="big" data-fill="fwdMean"></span>
-      <span class="small"><span data-fill="fwdOther"></span>每期標準差 ≈ 0.122，需約 73 期才能達 t = 2；正式檢定只算 live 期數</span>
+      <span class="small">產業內 IC（−1～1，0 = 沒有預測力；回測預期 +0.029）。<span data-fill="fwdOther"></span>每期標準差約 0.122，需約 73 期才能達 t = 2；正式檢定只算 live（即時）期數，回填期不算。</span>
       <span class="verdict v-wait">… 累積中</span>
     </div>
   </div>
+  <details class="detail" open>
+    <summary><h3 style="display:inline">怎麼讀這些數字</h3></summary>
+    <div class="grid2" style="margin-top:10px">
+      <div class="kv"><span class="k">產業內 IC</span><span class="small">同產業內，訊號排名與之後 20 個交易日報酬排名的 Spearman 相關係數，再依產業股票數加權平均。範圍 −1～1；0 代表沒有預測力；量化選股中 0.02～0.05 已算有用。</span></div>
+      <div class="kv"><span class="k">t 值</span><span class="small">平均值除以標準誤；大約 |t| &gt; 2 才算統計上顯著（不太可能是運氣）。</span></div>
+      <div class="kv"><span class="k">超額報酬（做多 − 等權）</span><span class="small">組合報酬減去「等權持有股票池全部股票」的報酬，每期 20 個交易日，已扣交易成本（換手 × 單邊 0.29625%）。比較對象不是 0050。</span></div>
+      <div class="kv"><span class="k">Sharpe</span><span class="small">年化報酬 ÷ 年化波動（無風險利率以 0 計）；衡量每承擔一單位波動賺多少，用來和 0050 比較風險調整後的表現。</span></div>
+      <div class="kv"><span class="k">最大回撤</span><span class="small">淨值從高點到之後低點的最大跌幅（每日回測以每日淨值計，較深；每期回測以每期淨值計，較淺）。</span></div>
+      <div class="kv"><span class="k">2019–2022 / 2023–2026</span><span class="small">2019–2022 是規則沒看過的樣本外期間；2023–2026 與開發期重疊，且是 AI 多頭行情。兩段都有效才算穩健。</span></div>
+      <div class="kv"><span class="k">為正起點（例如 21/21）</span><span class="small">每 21 個交易日換倉一次時，起始日不同結果會不同；括號表示 21 種起始日中有幾種為正。</span></div>
+      <div class="kv"><span class="k">0050</span><span class="small">元大台灣 50 ETF，作為大盤基準；「0050 擇時」指 0050 跌破 200 日均線時轉為現金。</span></div>
+    </div>
+  </details>
 </section>
 
 <section id="scorecard">
@@ -230,7 +243,7 @@ flowchart TD
     nextPred: `${next} 月第一個交易日`, latest, year: D.year, nStocks: D.stocks.length,
     latestState: pending.includes(latest) ? '（尚未結算）' : '',
     pitRange: `${yrs[0]}–${yrs[yrs.length - 1]}`, pitYears: yrs.length, pitUnique: D.pit_unique,
-    fwdLabel: live.length ? `前瞻驗證（live ${live.length} 期平均 IC）` : `前瞻驗證（回填 ${back.length} 期平均 IC）`,
+    fwdLabel: live.length ? `前瞻驗證：財報 Agent 產業內 IC（live ${live.length} 期平均）` : `前瞻驗證：財報 Agent 產業內 IC（回填 ${back.length} 期平均）`,
     fwdMean: live.length ? sgn(mean(live.map(f => f.ic))) : back.length ? sgn(mean(back.map(f => f.ic))) : '—',
     fwdOther: live.length ? (back.length ? `回填 ${back.length} 期平均 ${sgn(mean(back.map(f => f.ic)))}；` : '') : '尚無 live 期；',
     pendingText: pending.length ? `待結算：${pending.join('、')}（預測日後第 20 個交易日收盤結算）。` : '',
@@ -353,7 +366,7 @@ flowchart TD
     }
     if (i % labelEvery === 0 || i === all.length - 1) svg += `<text x="${cx}" y="${H - mb + 18}" text-anchor="middle">${d.slice(0, 7)}</text>`;
   });
-  svg += `<text x="${ml}" y="${H - 6}">產業內 IC（實色 live、淡色回填；回填不計入正式檢定）</text></svg>`;
+  svg += `<text x="${ml}" y="${H - 6}">產業內 IC（−1～1，0 = 無預測力；實色 live、淡色回填）</text></svg>`;
   const box = $('#icChart');
   box.innerHTML = svg + '<div class="tip" hidden></div>';
   const tip = box.querySelector('.tip');
@@ -368,7 +381,7 @@ flowchart TD
     });
     el.addEventListener('mouseleave', () => tip.hidden = true);
   });
-  $('#fwdTable').innerHTML = `<table><thead><tr><th>預測日</th><th>mode</th><th class="n">IC</th><th class="n">看多超額</th><th class="n">股票池平均</th></tr></thead><tbody>${F.map(f => `<tr style="cursor:default"><td class="mono">${f.d}</td><td class="small">${f.mode}</td><td class="n">${fmt(f.ic, 3, true)}</td><td class="n">${pct(f.ex, 2)}</td><td class="n">${pct(f.um)}</td></tr>`).join('')}${pending.map(d => `<tr style="cursor:default"><td class="mono">${d}</td><td></td><td class="n na" colspan="3">待結算</td></tr>`).join('')}</tbody></table>`;
+  $('#fwdTable').innerHTML = `<table><thead><tr><th>預測日</th><th>mode</th><th class="n">產業內 IC（−1～1）</th><th class="n">看多組合 − 等權（每期）</th><th class="n">股票池平均報酬（20 日）</th></tr></thead><tbody>${F.map(f => `<tr style="cursor:default"><td class="mono">${f.d}</td><td class="small">${f.mode}</td><td class="n">${fmt(f.ic, 3, true)}</td><td class="n">${pct(f.ex, 2)}</td><td class="n">${pct(f.um)}</td></tr>`).join('')}${pending.map(d => `<tr style="cursor:default"><td class="mono">${d}</td><td></td><td class="n na" colspan="3">待結算</td></tr>`).join('')}</tbody></table>`;
 
   // Scorecard
   const SC = D.scorecard || [];
@@ -399,16 +412,16 @@ flowchart TD
     const tr = cells => `<tr style="cursor:default">${cells.map((c, k) => `<td class="${k ? 'n' : ''}">${c}</td>`).join('')}</tr>`;
     $('#signalPanels').innerHTML = `
       <div style="display:grid;gap:8px"><h3>產業內選股能力（20 日預測期）</h3><p class="small">${esc(ST.signals_20d.note)}</p>
-      ${tbl(['訊號', '產業內 IC 2019–2022（為正起點）', '產業內 IC 2023–2026', '做多 − 等權 2019–2022', '2023–2026', '每期換手'],
+      ${tbl(['訊號', '產業內 IC 2019–2022（−1～1；為正起點）', '產業內 IC 2023–2026', '每期超額報酬：做多 − 等權 2019–2022（扣成本）', '同左 2023–2026', '每期換手（權重變動合計）'],
         ST.signals_20d.rows.map(r => tr([esc(r.label), icCell(r.ic_oos, r.ic_oos_pos, 21), icCell(r.ic_is, r.ic_is_pos, 21), pp(r.ex_oos), pp(r.ex_is), r.to.toFixed(2)])))}</div>
       <div style="display:grid;gap:8px"><h3>進出場濾網（Sharpe／最大回撤）</h3><p class="small">${esc(ST.timing.note)}</p>
-      ${tbl(['組合', 'Sharpe 2019–2022', '最大回撤 2019–2022', 'Sharpe 2023–2026', '最大回撤 2023–2026', '持股比例 2019–2022'],
+      ${tbl(['組合', 'Sharpe 2019–2022（年化報酬 ÷ 波動）', '最大回撤 2019–2022', 'Sharpe 2023–2026', '最大回撤 2023–2026', '平均持股比例 2019–2022'],
         ST.timing.rows.map(r => tr([esc(r.label), r.sh_oos.toFixed(2), pp(r.mdd_oos, 0), r.sh_is.toFixed(2), pp(r.mdd_is, 0), (r.expo_oos * 100).toFixed(0) + '%'])))}</div>
       <div style="display:grid;gap:8px"><h3>短期反轉、過度反應、領先落後（5 日預測期）</h3><p class="small">${esc(ST.reversal_5d.note)}</p>
-      ${tbl(['訊號', '產業內 IC 2019–2022', '2023–2026', '做多 − 等權（未扣成本）2019–2022', '扣成本', '每期換手'],
+      ${tbl(['訊號', '產業內 IC 2019–2022（−1～1）', '產業內 IC 2023–2026', '每期超額報酬：做多 − 等權，未扣成本 2019–2022', '同左扣成本', '每期換手'],
         ST.reversal_5d.rows.map(r => tr([esc(r.label), `${icCell(r.ic_oos)} <span class="small">t ${r.t_oos.toFixed(1)}</span>`, `${icCell(r.ic_is)} <span class="small">t ${r.t_is.toFixed(1)}</span>`, pp(r.gross_oos), pp(r.net_oos), r.to == null ? '<span class="na">—</span>' : r.to.toFixed(2)])))}</div>
       ${ST.execution ? `<div style="display:grid;gap:8px"><h3>用短期反轉降低財報組合交易成本</h3><p class="small">${esc(ST.execution.note)}</p>
-      ${tbl(['組合', '超額 2019–2022（為正起點）', '超額 2023–2026', '每期換手', 'Sharpe 2019–2022', 'Sharpe 2023–2026'],
+      ${tbl(['組合', '每期超額報酬（相對等權、扣成本）2019–2022（為正起點）', '同左 2023–2026', '每期換手', 'Sharpe 2019–2022', 'Sharpe 2023–2026'],
         ST.execution.rows.map(r => tr([esc(r.label), r.ex_oos == null ? '<span class="na">—</span>' : `${pp(r.ex_oos)} <span class="small">(${r.pos_oos}/21)</span>`, pp(r.ex_is), r.to == null ? '<span class="na">—</span>' : r.to.toFixed(2), r.sh_oos.toFixed(2), r.sh_is.toFixed(2)])))}</div>` : ''}
       ${(ST.extra_tables || []).map(t => `<div style="display:grid;gap:8px"><h3>${esc(t.title)}</h3><p class="small">${esc(t.note)}</p>
       ${tbl(t.headers.map(esc), t.rows.map(r => tr(r.map(esc))))}</div>`).join('')}`;

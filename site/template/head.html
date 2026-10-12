@@ -137,6 +137,8 @@ ul.plain { margin: 0; padding-left: 1.2em; display: grid; gap: 4px; }
 .tl { position: relative; padding: 0 0 16px 18px; display: grid; gap: 2px; }
 .tl::before { content: ""; position: absolute; left: -6px; top: 8px; width: 10px; height: 10px; border-radius: 50%; background: var(--panel); border: 2px solid var(--accent); }
 .tl .when { font-family: var(--font-data); font-size: 12px; color: var(--ink-3); }
+details > summary { cursor: pointer; list-style: revert; }
+details .kv .k { font-weight: 500; color: var(--ink); font-size: 13px; }
 footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--rule); font-size: 12px; color: var(--ink-3); display: grid; gap: 4px; }
 @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition: none !important; } }
 @media (max-width: 520px) { .wrap { padding-inline: 16px; } th, td { padding: 6px 8px; } }
