@@ -294,7 +294,7 @@ notebooks/              校準分析 notebook
 - [研究網站](site/research-dashboard.html) — 單一 HTML（下載後用瀏覽器開啟）：目前股票池、
   Agent 架構圖、2026 前瞻股票池 100 檔的財報特徵與預測、前瞻驗證 IC。
   每月前瞻驗證自動執行（`forward/run_forward.py auto`）有新預測或結算時會一併重建；
-  手動更新：`.venv/Scripts/python site/build_site.py`（架構圖為 mermaid，本機開啟時顯示原始碼）。
+  手動更新：`.venv/Scripts/python site/build_site.py`（架構圖在 claude.ai 由平台繪製；其他地方開啟時自動從 cdnjs 載入 mermaid 繪製）。
   線上版由 Claude 桌面 App 排程工作在檔案變動後自動重新發佈，見
   [前瞻驗證操作說明](docs/forward_validation.md)「線上網站重新發佈」
 - [技術規格](docs/spec.md) — 系統的原始設計規格（v0.1）

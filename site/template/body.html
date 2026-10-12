@@ -449,3 +449,26 @@ flowchart TD
   $('#tl').innerHTML = TL.map(([w, t]) => `<div class="tl"><span class="when">${w}</span><span>${esc(t)}</span></div>`).join('');
 })();
 </script>
+<script>
+// 架構圖：claude.ai Artifact 會原生繪製 <pre class="mermaid">；在其他地方（GitHub Pages、本機開啟）
+// 若稍後仍是原始碼，才從 cdnjs 載入 mermaid 繪圖套件繪製，避免重複繪製。
+(function () {
+  function pending() {
+    const pre = document.querySelector('pre.mermaid');
+    return pre && !pre.querySelector('svg') && !pre.getAttribute('data-processed') && /flowchart/.test(pre.textContent) ? pre : null;
+  }
+  setTimeout(function () {
+    if (!pending()) return;
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js';
+    s.onload = function () {
+      if (!pending() || !window.mermaid) return;
+      const root = document.documentElement.getAttribute('data-theme');
+      const dark = root ? root === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+      window.mermaid.initialize({ startOnLoad: false, theme: dark ? 'dark' : 'default', securityLevel: 'strict' });
+      window.mermaid.run({ querySelector: 'pre.mermaid' });
+    };
+    document.head.appendChild(s);
+  }, 1500);
+})();
+</script>
