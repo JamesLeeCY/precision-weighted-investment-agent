@@ -397,6 +397,21 @@ def update_site() -> bool:
         return False
 
 
+def run_fv2_auto() -> tuple[bool, list[str]]:
+    """前瞻規格 fv2（月營收驚奇，forward/run_forward_fv2.py）；失敗只記錄，不影響 fv1。"""
+    try:
+        from forward import run_forward_fv2 as fv2
+
+        if not fv2.SPEC_PATH.exists():
+            return False, []
+        return fv2.auto(), fv2.PUBLISH_FILES
+    except SystemExit as exc:
+        print(f"[auto] fv2 略過：{exc}")
+    except Exception as exc:  # noqa: BLE001
+        print(f"[auto] fv2 失敗（fv1 照常）：{type(exc).__name__}: {str(exc)[:200]}")
+    return False, []
+
+
 def git_publish(message: str, push: bool, extra_files: list[str] | None = None) -> None:
     """只 commit 前瞻紀錄（與網站）檔案，不動工作區其他修改，並在本機領先時 push。"""
     files = PUBLISH_FILES + (extra_files or [])
@@ -437,10 +452,16 @@ def cmd_auto(args) -> None:
     n_before = len(read_csv(OUTCOMES, OUTCOME_COLUMNS))
     cmd_resolve(args)
     changed |= len(read_csv(OUTCOMES, OUTCOME_COLUMNS)) > n_before
-    if changed:
-        cmd_report(args)
-        site_ok = update_site()
-        git_publish(f"forward: auto update {today}", push=args.push, extra_files=SITE_FILES if site_ok else None)
+    fv2_changed, fv2_files = run_fv2_auto()
+    if changed or fv2_changed:
+        extra = []
+        if changed:
+            cmd_report(args)
+            if update_site():
+                extra += SITE_FILES
+        if fv2_changed:
+            extra += fv2_files
+        git_publish(f"forward: auto update {today}", push=args.push, extra_files=extra or None)
     elif args.push:
         git_publish("", push=True)  # 只補推先前未成功的 push
     print(f"[auto] {now_utc()} 結束（{'有更新' if changed else '無更新'}）")

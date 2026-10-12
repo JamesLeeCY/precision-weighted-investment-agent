@@ -37,6 +37,7 @@ def env(tmp_path, monkeypatch):
         monkeypatch.setattr(fw, name, path)
     monkeypatch.setattr(fw, "snapshot_client", lambda date: client)
     monkeypatch.setattr(fw, "git_state", lambda: ("abc123", False))
+    monkeypatch.setattr(fw, "run_fv2_auto", lambda: (False, []))  # fv2 另有測試（tests/test_forward_fv2.py）
     return tmp_path
 
 
