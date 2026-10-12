@@ -87,7 +87,7 @@
   <h2>其他訊號、月營收驚奇與配置研究</h2>
   <p class="muted">為了找到能贏過大盤的訊號，另外測了估值、技術面、動能、反轉，以及技術面進出場濾網和 5 日短期反轉。2019–2022 對財報規則是樣本外；新訊號在兩段都必須有效才算數。<span class="small">（共測 8 個 20 日訊號、7 種濾網組合、6 個 5 日訊號，多重比較下單一好結果應打折看待）</span></p>
   <div id="signalPanels" style="display:grid;gap:22px"></div>
-  <p class="small">結論：沒有新訊號在兩段都有效——技術面與動能只在 2023 年後的多頭有效、樣本外轉負；反轉剛好相反；產業內相對估值兩段都為負。大盤濾網把回撤降低約 40%，但樣本外 Sharpe 下降。5 日短期反轉在同一收盤成交時顯著（t 3.4），但扣掉 0.3% 證交稅後全部虧損；改用反轉延後賣出只讓換手降低約 10%，Sharpe 不變。個股技術面每日進出場讓換手升到 17–30 倍、樣本外報酬大減；7 種 0050 擇時規則的報酬都低於買進持有，200 日線 ±2% 緩衝帶樣本外 Sharpe 最高；0050 擇時部位與財報選股混合的 Sharpe 兩段都高於 0050。依台股文獻研究測試的月營收驚奇（SUE）是第一個兩段都顯著的訊號（研究結果，非投資建議）。詳見 docs/technical_timing_report.md、short_term_reversal_report.md、reversal_execution_report.md、fund_tech_daily_report.md、allocation_study_report.md、revenue_surprise_report.md。</p>
+  <p class="small">結論：沒有新訊號在兩段都有效——技術面與動能只在 2023 年後的多頭有效、樣本外轉負；反轉剛好相反；產業內相對估值兩段都為負。大盤濾網把回撤降低約 40%，但樣本外 Sharpe 下降。5 日短期反轉在同一收盤成交時顯著（t 3.4），但扣掉 0.3% 證交稅後全部虧損；改用反轉延後賣出只讓換手降低約 10%，Sharpe 不變。個股技術面每日進出場讓換手升到 17–30 倍、樣本外報酬大減；7 種 0050 擇時規則的報酬都低於買進持有，200 日線 ±2% 緩衝帶樣本外 Sharpe 最高；0050 擇時部位與財報選股混合的 Sharpe 兩段都高於 0050。依台股文獻研究測試的月營收驚奇（SUE）是第一個兩段都顯著的訊號；加入季報盈餘驚奇或拉長持有都沒有更好（研究結果，非投資建議）。詳見 docs/technical_timing_report.md、short_term_reversal_report.md、reversal_execution_report.md、fund_tech_daily_report.md、allocation_study_report.md、revenue_surprise_report.md、revenue_surprise_plus_report.md。</p>
 </section>
 
 <section id="architecture">
@@ -445,6 +445,7 @@ flowchart TD
     ['子產業分類', '櫃買中心產業價值鏈平台 63 種子產業；股票池太小，財報與估值都沒有明顯改善'],
     ['技術面進出場與配置', '每日回測：個股均線進出場傷報酬；擇時規則比較；0050 擇時與財報選股混合、個股權重方法'],
     ['月營收驚奇', '依台股文獻研究：公告期限後進場的 SUE 兩段都顯著；發現現行財報 Agent 的營收晚一個月使用'],
+    ['前瞻驗證 fv2 與強化測試', '凍結 SUE 前瞻規格 fv2（2026-10-13 起 live）；加入季報盈餘驚奇、拉長持有都沒有更好'],
   ];
   $('#tl').innerHTML = TL.map(([w, t]) => `<div class="tl"><span class="when">${w}</span><span>${esc(t)}</span></div>`).join('');
 })();
