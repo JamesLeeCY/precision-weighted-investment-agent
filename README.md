@@ -94,7 +94,8 @@ EMA 的倒數，即「精度」）動態加權合成投資論點——可靠度�
 2019–2022 與 2023–2026 兩段都顯著的訊號（產業內 IC +0.032 / +0.059，t 2.0 / 2.9；持有 60 日升到 +0.044 / +0.091），延後 1–10 日進場仍有效。
 每日回測：SUE 產業中性組合 Sharpe 0.73 / 2.32（0050 為 0.75 / 2.40），報酬高很多；與 0050 擇時部位各半混合為 0.88 / 2.64，
 兩段都高於 0050。另發現現行財報 Agent 的月營收比實際公告晚約一個月使用。已建立前瞻規格 fv2（[說明](docs/forward_validation.md)、
-[報告](forward/fv2/REPORT.md)），2026-10-13 起每月自動記錄。
+[報告](forward/fv2/REPORT.md)），2026-10-13 起每月自動記錄。加入季報盈餘驚奇或拉長持有都沒有更好
+（[報告](docs/revenue_surprise_plus_report.md)）：盈餘驚奇在法定期限時點下偏弱、合成反而稀釋；每 3 個月換倉換手減半、Sharpe 相當。
 
 ### 評估指標速覽
 
@@ -280,7 +281,7 @@ agents/                 Agent 基底 + 財報/新聞/總經籌碼/供應鏈/技�
 arbitrator/             精度追蹤（Brier EMA）+ 合併公式 + Agent 層級重新校準 + 產業內 IC 加權
 data/                   FinMind 抓取（快取/節流/額度等待）、含息還原價、總經/籌碼、供應鏈、新聞內文、RSS 新聞、向量庫
 backtest/               walk-forward 回測 + 評估指標 + 報酬層級評估（vs 0050）
-tests/                  174 個單元測試
+tests/                  176 個單元測試
 forward/                前瞻驗證：凍結規格、預測 / 結算紀錄、自動報告
 analysis/               訊號穩定性分析（分期 IC、產業內 IC、取樣起點穩健性）
 site/                   研究網站（股票池、Agent 架構、逐股分析、前瞻驗證）；build_site.py 重新產生
@@ -315,6 +316,7 @@ notebooks/              校準分析 notebook
 - [配置研究](docs/allocation_study_report.md) — 7 種擇時規則、0050 擇時與財報選股的混合比例、個股權重方法
 - [台股特有 alpha 文獻研究](docs/taiwan_alpha_literature.md) — 月營收驚奇、投信買超、融券借券、彩券型股票等候選策略與出處
 - [月營收驚奇 SUE](docs/revenue_surprise_report.md) — 公告期限對齊、IC 與漂移、延後進場、每日回測與 0050 比較
+- [強化月營收驚奇](docs/revenue_surprise_plus_report.md) — 季報盈餘驚奇、合成、每 1 / 2 / 3 個月換倉
 - [產業中性組合報告](docs/sector_neutral_report.md) — 財報 Agent 的產業內排序轉成產業中性做多／多空組合、
   換手與成本、緩衝規則、敏感度
 - [前瞻驗證操作說明](docs/forward_validation.md) — 凍結規則、每月流程、完整性機制

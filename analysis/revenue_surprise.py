@@ -80,10 +80,8 @@ def seg_port(p, m):
     return cells
 
 
-def main(path, config):
-    import dotenv
-
-    dotenv.load_dotenv(ROOT / ".env")
+def build_events(path, config):
+    """回傳 (ev, daily, days, events, tickers)：ev 為各公告後進場日的成員與 SUE、40 / 60 日報酬、公告期間報酬。"""
     cfg = yaml.safe_load(open(config, encoding="utf-8"))
     tickers = [u["ticker"] for u in cfg["universe"]]
     daily = pd.read_csv(path, parse_dates=["date"], usecols=["i", "date", "ticker", "sector", "ret", "pc_fundamentals_agent"])
@@ -127,6 +125,15 @@ def main(path, config):
             row["pre"] = c.iloc[pos - 1] / c.iloc[p0] - 1 if p0 >= 0 and pos - 1 > p0 else np.nan
             extra.append(row)
     ev = ev.merge(pd.DataFrame(extra), on=["ticker", "date"], how="left")
+    return ev, daily, days, events, tickers
+
+
+def main(path, config):
+    import dotenv
+
+    dotenv.load_dotenv(ROOT / ".env")
+    ev, daily, days, events, tickers = build_events(path, config)
+    client = FinMindClient()
     cover = ev["sue"].notna().mean()
 
     out = ["# 月營收驚奇（自動產生）", "",
