@@ -75,18 +75,23 @@ def load_short_data(client, tickers, index):
     return Qd, lend60
 
 
+def raw_close(c) -> pd.DataFrame:
+    """未還原收盤價（算需借股數用）。"""
+    out = {}
+    for sid in c.ids:
+        px = c.client.get("TaiwanStockPrice", sid, lp.PX_START)
+        if not px.empty:
+            px = px[px["close"].astype(float) > 0]
+            out[sid + ".TW"] = pd.Series(px["close"].astype(float).to_numpy(), index=pd.to_datetime(px["date"]))
+    return pd.DataFrame(out).reindex(index=c.adj.index, columns=c.tickers)
+
+
 def main(top_n: int):
     c = lp.prepare(top_n)
     scores = lp.leg_scores(c, "sue")
     fee = hc.lending_fees(c.client, c.tickers, c.adj.index)
     quota, lend60 = load_short_data(c.client, c.tickers, c.adj.index)
-    raw_close = {}
-    for sid in c.ids:
-        px = c.client.get("TaiwanStockPrice", sid, lp.PX_START)
-        if not px.empty:
-            px = px[px["close"].astype(float) > 0]
-            raw_close[sid + ".TW"] = pd.Series(px["close"].astype(float).to_numpy(), index=pd.to_datetime(px["date"]))
-    close = pd.DataFrame(raw_close).reindex(index=c.adj.index, columns=c.tickers)
+    close = raw_close(c)
     size_pct = np.exp(c.logcap).where(c.member).rank(axis=1, pct=True)
 
     # ---- 可借量檢查 ----

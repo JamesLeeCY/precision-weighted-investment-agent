@@ -38,3 +38,19 @@ def test_short_data_uses_previous_day_and_lots_to_shares():
     q, l60 = bc.load_short_data(C(), ["X.TW"], days)
     assert np.isnan(q.iloc[0, 0]) and q.iloc[1, 0] == 100   # 換倉日只看到前一日額度
     assert l60.iloc[1, 0] == 5000                           # 5 張 = 5,000 股
+
+
+def test_buffer_keeps_holdings_in_top_half_and_drops_unborrowable_shorts():
+    import ls_turnover as lt
+
+    sec = pd.Series("s", index=list("ABCDEF"))
+    score = pd.Series({"A": 6.0, "B": 5.0, "C": 4.0, "D": 3.0, "E": 2.0, "F": 1.0})
+    ok = pd.Series(True, index=sec.index)
+    w = lt.ew_ls_buffer(score, sec, ok, prev_long=frozenset({"C"}), prev_short=frozenset({"D"}))
+    assert set(w[w > 0].index) == {"A", "B", "C"}          # C 在前 1/2 → 續抱
+    assert set(w[w < 0].index) == {"D", "E", "F"}          # D 在後 1/2 → 續抱
+    ok["D"] = False
+    w = lt.ew_ls_buffer(score, sec, ok, prev_long=frozenset(), prev_short=frozenset({"D"}))
+    assert "D" not in w.index                              # 借不到就不能續抱空單
+    w = lt.ew_ls_buffer(score, sec, ok, prev_long=frozenset({"C"}), q_keep=None)
+    assert "C" not in w.index                              # 無緩衝
