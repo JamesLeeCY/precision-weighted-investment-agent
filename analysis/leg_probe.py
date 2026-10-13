@@ -24,6 +24,7 @@ import argparse
 import math
 import sys
 from pathlib import Path
+from types import SimpleNamespace
 
 import numpy as np
 import pandas as pd
@@ -222,17 +223,15 @@ def within_ic(score: pd.Series, fwd: pd.Series, sector: pd.Series) -> float:
 # 主程式
 # ---------------------------------------------------------------------------
 
-def main(argv=None):
-    ap = argparse.ArgumentParser()
-    ap.add_argument("top_n", type=int)
-    ap.add_argument("--membership", default=str(ROOT / "config" / "universe_mcap_membership.csv"))
-    args = ap.parse_args(argv)
+def prepare(top_n: int, membership=None) -> SimpleNamespace:
+    """載入股票池前 N 名的價量、籌碼、SUE、β、台指期；只讀快取（缺的才呼叫 API）。"""
+    membership = membership or str(ROOT / "config" / "universe_mcap_membership.csv")
     import dotenv
 
     dotenv.load_dotenv(ROOT / ".env")
     client = FinMindClient()
-    mem = pd.read_csv(args.membership, dtype={"stock_id": str})
-    mem = mem[mem["rank"] <= args.top_n]
+    mem = pd.read_csv(membership, dtype={"stock_id": str})
+    mem = mem[mem["rank"] <= top_n]
     ids = sorted(mem["stock_id"].unique())
     sector = mem.drop_duplicates("stock_id", keep="last").set_index("stock_id")["sector"]
     sector.index = sector.index + ".TW"
@@ -294,6 +293,34 @@ def main(argv=None):
             sue_rows[t] = s
     sue = pd.DataFrame(sue_rows)
 
+    return SimpleNamespace(client=client, mem=mem, ids=ids, sector=sector, adj=adj, tickers=tickers, member=member,
+                           raws=raws, logcap=logcap, rets=rets, betas=betas, tx=tx, schedule=schedule, fwd20=fwd20, sue=sue)
+
+
+def leg_scores(c: SimpleNamespace, name: str) -> dict:
+    """{換倉日: 包裝後並對產業與 log 市值中性化的分數}。"""
+    if name == "sue":
+        scores = {}
+        for d in c.schedule:
+            mo = d.to_period("M").to_timestamp()
+            v = c.sue.loc[mo] if mo in c.sue.index else pd.Series(dtype=float)
+            v = v.reindex(c.tickers).where(c.member.loc[d])
+            z = v.groupby(c.sector.reindex(v.index)).transform(lambda x: (x - x.mean()) / x.std())
+            scores[d] = neutralize(z, c.sector, c.logcap.loc[d])
+        return scores
+    wz = wrap(c.raws[name], c.member, c.sector)
+    return {d: neutralize(wz.loc[d], c.sector, c.logcap.loc[d]) for d in c.schedule}
+
+
+def main(argv=None):
+    ap = argparse.ArgumentParser()
+    ap.add_argument("top_n", type=int)
+    ap.add_argument("--membership", default=str(ROOT / "config" / "universe_mcap_membership.csv"))
+    args = ap.parse_args(argv)
+    c = prepare(args.top_n, args.membership)
+    client, sector, tickers, member, raws = c.client, c.sector, c.tickers, c.member, c.raws
+    rets, betas, tx, schedule, fwd20 = c.rets, c.betas, c.tx, c.schedule, c.fwd20
+
     # 股票池基準（看完第一版結果後加的診斷）：同樣產業權重、產業內持有全部成員，同樣 β 對沖。
     # 腿的「超額」= 腿的純 alpha − 基準的純 alpha，只留下選股本身的貢獻（去掉等權 vs 市值加權指數的結構差）。
     base_scores = {d: pd.Series(1.0, index=member.columns[member.loc[d]]) for d in schedule}
@@ -302,16 +329,7 @@ def main(argv=None):
     results, pnl = [], {}
     leg_names = ["sue"] + [n for n in LEGS_PRICE + LEGS_CHIP if n in raws]
     for name in leg_names:
-        if name == "sue":
-            scores = {}
-            for d in schedule:
-                v = sue.loc[d.to_period("M").to_timestamp()] if d.to_period("M").to_timestamp() in sue.index else pd.Series(dtype=float)
-                v = v.reindex(tickers).where(member.loc[d])
-                z = v.groupby(sector.reindex(v.index)).transform(lambda x: (x - x.mean()) / x.std())
-                scores[d] = neutralize(z, sector, logcap.loc[d])
-        else:
-            wz = wrap(raws[name], member, sector)
-            scores = {d: neutralize(wz.loc[d], sector, logcap.loc[d]) for d in schedule}
+        scores = leg_scores(c, name)
         sim = simulate(scores, rets, betas, tx, schedule, sector)
         pnl[name] = sim["alpha"]
         ics = pd.Series({d: within_ic(scores[d], fwd20.loc[d], sector) for d in schedule})
