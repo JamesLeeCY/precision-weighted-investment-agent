@@ -58,9 +58,9 @@ def ew_ls_buffer(score: pd.Series, sector: pd.Series, shortable: pd.Series, prev
     return pd.concat(out)
 
 
-def run_variant(scores, sector, sched, k: int, buffer: bool, shortable_at) -> dict:
-    """回傳 {換倉日: 權重}；只在每 k 個換倉日調整。"""
-    dates = sched[::k]
+def run_variant(scores, sector, sched, k: int, buffer: bool, shortable_at, offset: int = 0) -> dict:
+    """回傳 {換倉日: 權重}；從第 offset 個換倉日起，每 k 個換倉日調整。"""
+    dates = sched[offset::k]
     wd, pl, ps = {}, frozenset(), frozenset()
     for d in dates:
         w = ew_ls_buffer(scores[d], sector, shortable_at(d), pl, ps, q_keep=Q_KEEP if buffer else None)

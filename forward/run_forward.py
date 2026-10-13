@@ -412,6 +412,22 @@ def run_fv2_auto() -> tuple[bool, list[str]]:
     return False, []
 
 
+def run_fv3_auto() -> tuple[bool, list[str]]:
+    """前瞻規格 fv3（月營收驚奇等權多空，forward/run_forward_fv3.py）；預測日要抓約 2,000 次 FinMind，
+    所以在 fv1 / fv2 發佈之後才執行；失敗只記錄，不影響 fv1 / fv2。"""
+    try:
+        from forward import run_forward_fv3 as fv3
+
+        if not fv3.SPEC_PATH.exists():
+            return False, []
+        return fv3.auto(), fv3.PUBLISH_FILES
+    except SystemExit as exc:
+        print(f"[auto] fv3 略過：{exc}")
+    except Exception as exc:  # noqa: BLE001
+        print(f"[auto] fv3 失敗（fv1 / fv2 照常）：{type(exc).__name__}: {str(exc)[:200]}")
+    return False, []
+
+
 def git_publish(message: str, push: bool, extra_files: list[str] | None = None) -> None:
     """只 commit 前瞻紀錄（與網站）檔案，不動工作區其他修改，並在本機領先時 push。"""
     files = PUBLISH_FILES + (extra_files or [])
@@ -464,7 +480,10 @@ def cmd_auto(args) -> None:
         git_publish(f"forward: auto update {today}", push=args.push, extra_files=extra or None)
     elif args.push:
         git_publish("", push=True)  # 只補推先前未成功的 push
-    print(f"[auto] {now_utc()} 結束（{'有更新' if changed else '無更新'}）")
+    fv3_changed, fv3_files = run_fv3_auto()
+    if fv3_changed:
+        git_publish(f"forward fv3: auto update {today}", push=args.push, extra_files=fv3_files)
+    print(f"[auto] {now_utc()} 結束（{'有更新' if changed or fv2_changed or fv3_changed else '無更新'}）")
 
 
 def main(argv=None) -> None:
