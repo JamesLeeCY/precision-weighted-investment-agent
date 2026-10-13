@@ -152,3 +152,39 @@ git add forward/ && git commit -m "forward: YYYY-MM prediction" && git push
 .venv/Scripts/python forward/run_forward_fv2.py resolve
 .venv/Scripts/python forward/run_forward_fv2.py report
 ```
+
+# 前瞻驗證 fv3：月營收驚奇等權多空（三份資金錯開、每 3 個月換倉、限制可借、台指期對沖）
+
+| | |
+|---|---|
+| 規格 | [forward/fv3/spec.yaml](../forward/fv3/spec.yaml)（2026-10-13 凍結於 git `774c33c`） |
+| 程式 | [forward/run_forward_fv3.py](../forward/run_forward_fv3.py)；權重 [analysis/ls_turnover.py](../analysis/ls_turnover.py) 的 `ew_ls_buffer`、中性化 [analysis/leg_probe.py](../analysis/leg_probe.py) 的 `neutralize` |
+| 紀錄 | `forward/fv3/predictions.csv`（每檔分數、可借、費率、β、權重）、`segments.csv`（每份資金每段的毛報酬／避險／借券費／成本／淨報酬）、`periods.csv`（組合每段淨報酬、產業內 IC、0050）；只能新增 |
+| 報告 | [forward/fv3/REPORT.md](../forward/fv3/REPORT.md) |
+| 依據 | [borrow_capacity_report.md](borrow_capacity_report.md)、[ls_turnover_report.md](ls_turnover_report.md)、[ls_offsets_top300.md](ls_offsets_top300.md)：三個換倉起點都通過，三份平均回測 Sharpe 0.93 / 1.79 |
+
+## 凍結了什麼
+
+- **預測日**：同 fv2（每月營收公告期限後的下一個交易日）。
+- **股票池**：`config/universe_mcap_membership.csv` 當年市值前 300 名；**每年 1 月需先執行 `analysis/build_universe_mcap.py` 建立當年成員**（約 4,300 次 FinMind 呼叫），否則 fv3 會略過並在 log 中提示。
+- **分數**：SUE（只採 create_time ≤ 公告期限的營收）→ 產業內 z → 對產業虛擬變數與 log 市值迴歸取殘差。
+- **三份資金**：每個預測日只重建一份（第 1、2、3 份輪流），持有到 3 個預測日後；組合 = 三份加總 ÷ 3（回填初期在場不足 3 份時，其餘為現金）。
+- **每份**：做多產業內前 1/3、放空後 1/3（只放空可借者），產業內等權、多空各 100%；剩餘 β 以台指期近月對沖。
+- **可借**：前 60 個交易日有借券成交、需借股數 ≤ 前一日借券賣出額度、≤ 前 60 日借券成交量的 10%、借券費 ≤ 5%／年（需借股數以 2 億元資金估計）。
+- **主要指標（事先登錄）**：組合每段（相鄰兩個預測日之間）扣成本、借券費、對沖後的淨報酬；回測平均 +0.61%／段、標準差 1.88%（85 段，t 3.0）。
+- **評估**：只算 live 段數；12 段時平均 < 0 為警訊；38 段（約 3 年）時正式檢定，t > 2 才算確認。
+- **注意**：此建構是看過多種組合建構後選出的，回測已含選擇偏誤；前瞻結果才是乾淨的驗證。
+
+## 回填與排程
+
+- 回填 2026-05 ~ 09 共 5 個預測日（`backfill`）；2026-10-13 為第一個 live 預測日。
+- 回填期間 `forward/fv3/BACKFILL_PENDING` 存在時，`auto` 會略過 fv3，避免在回填完成前結算段落（紀錄只能新增，結算錯了無法更正）。
+- 自動執行：`forward/run_forward.py auto` 在 fv1 / fv2 發佈之後才呼叫 fv3（預測日約 2,100 次 FinMind 呼叫、3–4 小時），並另外 commit / push fv3 紀錄；fv3 出錯只寫入 log。
+- fv3 使用自己的快照快取 `data_cache/forward/fv3/<日期>/`；環境變數 `FV3_FETCH_DATE` 可固定抓取日（回填跨午夜時仍命中快取）。
+
+```bash
+.venv/Scripts/python forward/run_forward_fv3.py schedule
+.venv/Scripts/python forward/run_forward_fv3.py predict --as-of YYYY-MM-DD
+.venv/Scripts/python forward/run_forward_fv3.py resolve
+.venv/Scripts/python forward/run_forward_fv3.py report
+```
