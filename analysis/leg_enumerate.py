@@ -65,16 +65,23 @@ def main(top_n: int):
         bench = e.pct_change().reindex(P.index)
     except Exception:  # noqa: BLE001
         pass
-    df, base = enumerate_combos(P.fillna(0.0), bench=bench)
+    universe = P.pop("universe").fillna(0.0) if "universe" in P.columns else None
     lines = [f"# 本機枚舉：主腿 + 稀釋腿（全市場市值前 {top_n} 檔，自動產生）", "",
              "由 [analysis/leg_enumerate.py](../analysis/leg_enumerate.py) 產生。組合報酬 = 各腿每日純 alpha（產業中性做多 − β × 台指期，扣成本）的加權和；"
-             "Sharpe 為年化（無風險利率 0）。", "",
-             f"- 主腿 sue 單獨：Sharpe 2019–2022 {base['sh_oos']:.2f}、2023–2026/04 {base['sh_is']:.2f}；最差一年 {base['worst_year']:+.2f}",
-             f"- 共測試 {len(df)} 組（{len(P.columns) - 1} 條稀釋腿取 1–3 條 × 主腿權重 {len(MAIN_WEIGHTS)} 種）；通過篩選 {int(df['passed'].sum())} 組", "",
-             "| 稀釋腿 | 主腿權重 | Sharpe 2019–2022 | 2023–2026/04 | 最差一年 | 為正年數 | 與 0050 相關 | 通過 |", "|---|---|---|---|---|---|---|---|"]
-    for r in df.head(15).itertuples():
-        lines.append(f"| {r.legs} | {r.w_main:.0%} | {r.sh_oos:.2f} | {r.sh_is:.2f} | {r.worst_year:+.2f} | {r.pos_years}/{r.n_years} | "
-                     f"{r.corr_0050:+.2f} | {'✓' if r.passed else '—'} |")
+             "Sharpe 為年化（無風險利率 0）。篩選條件看結果前固定：兩段 Sharpe 都高於主腿單獨、最差一年 ≥ −0.5、至少 6 年為正、與 0050 日報酬相關 |ρ| ≤ 0.3。"]
+    modes = [("純 alpha（原定指標）", P)]
+    if universe is not None:
+        modes.append(("超額（純 alpha 減股票池基準；看完第一版結果後加的診斷）", P.sub(universe, axis=0)))
+    for title, X in modes:
+        df, base = enumerate_combos(X.fillna(0.0), bench=bench)
+        lines += ["", f"## {title}", "",
+                  f"- 主腿 sue 單獨：Sharpe 2019–2022 {base['sh_oos']:.2f}、2023–2026/04 {base['sh_is']:.2f}；最差一年 {base['worst_year']:+.2f}；"
+                  f"為正 {base['pos_years']}/{base['n_years']} 年",
+                  f"- 共測試 {len(df)} 組（{len(X.columns) - 1} 條稀釋腿取 1–3 條 × 主腿權重 {len(MAIN_WEIGHTS)} 種）；通過篩選 {int(df['passed'].sum())} 組", "",
+                  "| 稀釋腿 | 主腿權重 | Sharpe 2019–2022 | 2023–2026/04 | 最差一年 | 為正年數 | 與 0050 相關 | 通過 |", "|---|---|---|---|---|---|---|---|"]
+        for r in df.head(15).itertuples():
+            lines.append(f"| {r.legs} | {r.w_main:.0%} | {r.sh_oos:.2f} | {r.sh_is:.2f} | {r.worst_year:+.2f} | {r.pos_years}/{r.n_years} | "
+                         f"{r.corr_0050:+.2f} | {'✓' if r.passed else '—'} |")
     (ROOT / "docs" / f"leg_enumerate_top{top_n}.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     print("\n".join(lines))
 

@@ -162,7 +162,7 @@ def neutralize(score: pd.Series, sector: pd.Series, logcap: pd.Series) -> pd.Ser
 # 組合與指標
 # ---------------------------------------------------------------------------
 
-def select(score: pd.Series, sector: pd.Series) -> dict:
+def select(score: pd.Series, sector: pd.Series, q: float = Q) -> dict:
     s = score.dropna()
     sec = sector.reindex(s.index)
     w_sec = sec.value_counts(normalize=True)
@@ -173,19 +173,19 @@ def select(score: pd.Series, sector: pd.Series) -> dict:
             for t in sub.index:
                 w[t] = w_sec[name] / len(sub)
             continue
-        top = sub[sub.rank(pct=True) > 1 - Q]
+        top = sub[sub.rank(pct=True) > 1 - q]
         for t in top.index:
             w[t] = w_sec[name] / len(top)
     return w
 
 
-def simulate(scores: dict, rets: pd.DataFrame, betas: pd.DataFrame, tx: pd.Series, schedule: list, sector: pd.Series):
+def simulate(scores: dict, rets: pd.DataFrame, betas: pd.DataFrame, tx: pd.Series, schedule: list, sector: pd.Series, q: float = Q):
     """scores：{換倉日: 中性化分數}；回傳每日 DataFrame [alpha, long, beta, turnover]。"""
     rows, w_prev, b_prev = [], {}, 0.0
     days = rets.index
     for k, d in enumerate(schedule):
         nxt = schedule[k + 1] if k + 1 < len(schedule) else HOLDOUT
-        w = select(scores[d], sector)
+        w = select(scores[d], sector, q)
         tickers = list(w)
         wv = np.array([w[t] for t in tickers])
         b = float(np.nansum(wv * betas.loc[d, tickers].fillna(1.0).to_numpy())) if tickers else 0.0
@@ -294,6 +294,11 @@ def main(argv=None):
             sue_rows[t] = s
     sue = pd.DataFrame(sue_rows)
 
+    # 股票池基準（看完第一版結果後加的診斷）：同樣產業權重、產業內持有全部成員，同樣 β 對沖。
+    # 腿的「超額」= 腿的純 alpha − 基準的純 alpha，只留下選股本身的貢獻（去掉等權 vs 市值加權指數的結構差）。
+    base_scores = {d: pd.Series(1.0, index=member.columns[member.loc[d]]) for d in schedule}
+    base = simulate(base_scores, rets, betas, tx, schedule, sector, q=1.0)["alpha"]
+
     results, pnl = [], {}
     leg_names = ["sue"] + [n for n in LEGS_PRICE + LEGS_CHIP if n in raws]
     for name in leg_names:
@@ -313,6 +318,7 @@ def main(argv=None):
         row = {"leg": name}
         for seg, mask in (("oos", sim.index < SPLIT), ("is", sim.index >= SPLIT)):
             row[f"sh_{seg}"] = sharpe(sim.loc[mask, "alpha"])
+            row[f"ex_{seg}"] = sharpe((sim["alpha"] - base.reindex(sim.index))[mask])
             icm = ics[(ics.index < SPLIT) if seg == "oos" else (ics.index >= SPLIT)].dropna()
             row[f"ic_{seg}"] = icm.mean()
             row[f"ict_{seg}"] = icm.mean() / (icm.std(ddof=1) / math.sqrt(len(icm))) if len(icm) > 2 else float("nan")
@@ -320,13 +326,15 @@ def main(argv=None):
         row["turnover_yr"] = sim["turnover"].sum() / (len(sim) / 252)
         row["beta"] = sim["beta"].mean()
         results.append(row)
-        print(f"  {name}: Sharpe {row['sh_oos']:.2f} / {row['sh_is']:.2f}；IC {row['ic_oos']:+.3f} / {row['ic_is']:+.3f}", flush=True)
+        print(f"  {name}: Sharpe {row['sh_oos']:.2f} / {row['sh_is']:.2f}；超額 {row['ex_oos']:.2f} / {row['ex_is']:.2f}；"
+              f"IC {row['ic_oos']:+.3f} / {row['ic_is']:+.3f}", flush=True)
 
     P = pd.DataFrame(pnl)
+    P["universe"] = base.reindex(P.index)   # 基準欄；leg_enumerate.py 用來算超額，不當成腿
     out_dir = ROOT / "reports" / "legs"
     out_dir.mkdir(parents=True, exist_ok=True)
     P.to_csv(out_dir / f"pnl_top{args.top_n}.csv")
-    corr = P.corr()
+    corr = P.drop(columns="universe").corr()
     b0050 = None
     try:
         from data.fetch_financials import get_total_return_prices
@@ -339,12 +347,17 @@ def main(argv=None):
              "由 [analysis/leg_probe.py](../analysis/leg_probe.py) 產生。純 alpha = 產業中性做多（前 1/3）減去 β × 台指期報酬，扣股票與期貨成本；"
              "Sharpe 為年化（無風險利率 0）；產業內 IC 為同產業內訊號排名與之後 20 日報酬排名的相關係數（−1～1）。"
              f"換倉日 {len(schedule)} 個（{schedule[0]:%Y-%m} ~ {schedule[-1]:%Y-%m}），2026-05 之後保留給前瞻驗證。", "",
-             "| 腿 | 純 alpha Sharpe 2019–2022 | 2023–2026/04 | 產業內 IC 2019–2022（t） | 2023–2026（t） | 年換手 | 平均 β | 與 0050 相關 | 逐年 Sharpe |",
-             "|---|---|---|---|---|---|---|---|---|"]
+             f"股票池基準（產業內持有全部成員、同樣對沖）純 alpha Sharpe：2019–2022 {sharpe(base[base.index < SPLIT]):.2f}、"
+             f"2023–2026/04 {sharpe(base[base.index >= SPLIT]):.2f}；逐年 "
+             + "、".join(f"{y}:{sharpe(g):+.1f}" for y, g in base.groupby(base.index.year))
+             + "。「超額」= 腿的純 alpha 減去此基準的每日報酬後的年化 Sharpe，只衡量選股（看完第一版結果後加的診斷欄）。", "",
+             "| 腿 | 純 alpha Sharpe 2019–2022 | 2023–2026/04 | 超額 Sharpe 2019–2022 | 2023–2026/04 | 產業內 IC 2019–2022（t） | 2023–2026（t） | 年換手 | 平均 β | 與 0050 相關 | 逐年 Sharpe |",
+             "|---|---|---|---|---|---|---|---|---|---|---|"]
     for r in results:
         c0050 = P[r["leg"]].corr(b0050) if b0050 is not None else float("nan")
         yearly = "、".join(f"{y}:{v:+.1f}" for y, v in r["yearly"].items())
-        lines.append(f"| {r['leg']} | {r['sh_oos']:.2f} | {r['sh_is']:.2f} | {r['ic_oos']:+.3f}（{r['ict_oos']:+.1f}） | "
+        lines.append(f"| {r['leg']} | {r['sh_oos']:.2f} | {r['sh_is']:.2f} | {r['ex_oos']:.2f} | {r['ex_is']:.2f} | "
+                     f"{r['ic_oos']:+.3f}（{r['ict_oos']:+.1f}） | "
                      f"{r['ic_is']:+.3f}（{r['ict_is']:+.1f}） | {r['turnover_yr']:.1f} | {r['beta']:.2f} | {c0050:+.2f} | {yearly} |")
     names = list(corr.columns)
     lines += ["", "## 腿與腿之間的每日純 alpha 報酬相關", "", "| | " + " | ".join(names) + " |", "|---|" + "---|" * len(names)]

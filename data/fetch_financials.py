@@ -60,13 +60,21 @@ class FinMindClient:
 
         cache_path = self._cache_path(params)
         if self.use_cache and cache_path.exists():
-            return pd.DataFrame(json.loads(cache_path.read_text(encoding="utf-8")))
+            try:
+                return pd.DataFrame(json.loads(cache_path.read_text(encoding="utf-8")))
+            except (json.JSONDecodeError, UnicodeDecodeError):
+                # 寫到一半被中斷（關機、強制結束）留下的壞檔：刪掉重抓
+                print(f"[cache] 快取檔損毀，重新下載：{cache_path.name}", flush=True)
+                cache_path.unlink()
 
         rows = self._request_with_quota_retry(params)
 
         if self.use_cache:
             self.cache_dir.mkdir(parents=True, exist_ok=True)
-            cache_path.write_text(json.dumps(rows, ensure_ascii=False), encoding="utf-8")
+            # 先寫暫存檔再改名（原子取代），中斷時不會留下半個檔案
+            tmp = cache_path.with_name(cache_path.name + ".tmp")
+            tmp.write_text(json.dumps(rows, ensure_ascii=False), encoding="utf-8")
+            os.replace(tmp, cache_path)
         return pd.DataFrame(rows)
 
     # 免費 register 等級約 600 req/hr；超額時 FinMind 回覆 402/400 與

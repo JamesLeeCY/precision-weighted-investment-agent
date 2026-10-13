@@ -99,6 +99,11 @@ EMA 的倒數，即「精度」）動態加權合成投資論點——可靠度�
 [報告](forward/fv2/REPORT.md)），2026-10-13 起每月自動記錄。加入季報盈餘驚奇或拉長持有都沒有更好
 （[報告](docs/revenue_surprise_plus_report.md)）：盈餘驚奇在法定期限時點下偏弱、合成反而稀釋；每 3 個月換倉換手減半、Sharpe 相當。
 
+**腿池第一輪（全市場市值前 300 檔，[報告](docs/leg_pool_report.md)）**：依 WorldQuant 流程以固定包裝測 11 條腿（月營收驚奇 + 低波動、殘差波動、異常量、Amihud、季節性、券資比、融券增量、投信買超、外資持股變化），
+以台指期對沖後的純 alpha 年化 Sharpe 為主要指標。所有腿與 700 個組合都不為正：產業內等權做多 vs 市值加權（台積電主導）指數的結構差，
+使「持有整個股票池」本身就是 −0.25 / −0.67（2019–2022 / 2023–2026/04）。扣掉此基準後，**月營收驚奇的選股超額 Sharpe 為 1.24 / 1.73、8 年全為正**，
+其餘 10 條腿扣成本後都為負，沒有組合兩段都勝過月營收驚奇單獨。
+
 ### 評估指標速覽
 
 - **平均 Brier score**（越低越好）：每筆預測先轉成「看多機率」p（bullish
@@ -320,6 +325,7 @@ notebooks/              校準分析 notebook
 - [台股特有 alpha 文獻研究](docs/taiwan_alpha_literature.md) — 月營收驚奇、投信買超、融券借券、彩券型股票等候選策略與出處
 - [月營收驚奇 SUE](docs/revenue_surprise_report.md) — 公告期限對齊、IC 與漂移、延後進場、每日回測與 0050 比較
 - [強化月營收驚奇](docs/revenue_surprise_plus_report.md) — 季報盈餘驚奇、合成、每 1 / 2 / 3 個月換倉
+- [腿池第一輪](docs/leg_pool_report.md) — 全市場市值前 300 檔、11 條腿單腿探針與本機枚舉、台指期對沖純 alpha 與股票池基準（[探針表](docs/leg_probe_top300.md)、[枚舉表](docs/leg_enumerate_top300.md)）
 - [產業中性組合報告](docs/sector_neutral_report.md) — 財報 Agent 的產業內排序轉成產業中性做多／多空組合、
   換手與成本、緩衝規則、敏感度
 - [前瞻驗證操作說明](docs/forward_validation.md) — 凍結規則、每月流程、完整性機制

@@ -1,12 +1,12 @@
 # HANDOFF — 專案交接狀態
 
-更新日期：2026-10-12
+更新日期：2026-10-13
 
 ## 一句話
 多代理人精度加權投資研究系統（台股）。精度加權機制在 synthetic 中成立，但真實資料上各 Agent 沒有絕對方向資訊；之後轉向「找可交易的選股訊號」。到 2026-10-12：
 - 唯一兩段（2019–2022 / 2023–2026）都顯著的訊號是**月營收驚奇 SUE**（公告期限後進場，產業內 IC +0.032 / +0.059；與 0050 擇時各半混合 Sharpe 0.88 / 2.64 > 0050 0.75 / 2.40），已凍結為前瞻規格 **fv2**（10-13 起 live）；
 - 財報 Agent（fv1 前瞻中）產業內 IC 約 +0.03，穩定但弱；估值、技術面、動能、反轉、領先落後、子產業、技術面進出場、盈餘驚奇皆未通過兩段一致性；
-- **進行中**：依使用者 WorldQuant 流程建「腿池」——全市場市值前 300 / 500 / 1000 檔、固定包裝單腿探針、台指期對沖的純 alpha Sharpe 為主要指標（0050 為輔），本機枚舉「SUE 主腿 + 稀釋腿」（見下方「進行中」）。
+- **腿池第一輪（全市場市值前 300 檔，docs/leg_pool_report.md，2026-10-13）**：原定指標（台指期對沖純 alpha Sharpe）下所有腿與 700 個組合都不為正——等權做多 vs 市值加權（台積電主導）指數的結構差使股票池基準本身 −0.25 / −0.67；扣掉基準後 **SUE 超額 Sharpe 1.24 / 1.73、8/8 年為正**，其餘 10 條價量／籌碼腿都為負，沒有組合兩段都勝過 SUE 單獨 → 腿池目前只有 SUE；下一步待決定（見下方「腿池流程」）。
 
 ## 架構
 - `config/tickers.yaml`：股票池與全部參數（horizon、閾值、EMA α、冷啟動門檻、基準 0050、交易成本、`outcome_basis`、`agents` 清單、`macro` 窗口）
@@ -73,31 +73,29 @@
 - FinMind 客戶端：網路錯誤會退避重試（30s → 600s），最終錯誤訊息不含帶 token 的網址
 - 履歷/對外描述注意：Agent 有財報、新聞、總經/籌碼、供應鏈、技術面五個（技術面與供應鏈未採用），目前最強的是月營收驚奇（非 Agent，獨立訊號）；供應鏈圖譜是需求代理而非確認的客戶關係；也不要宣稱打敗大盤或有預測力（Brier 都不如基率）。可宣稱的是：完整的 walk-forward 評估框架、精度加權機制在 synthetic 中驗證有效、對真實資料負結果的誠實分析，以及財報 Agent 在無選股偏誤股票池上有小幅、穩健的產業內排序能力（IC 約 0.02–0.04）。
 
-## 進行中（2026-10-12）：腿池流程
+## 腿池流程（第一輪完成 2026-10-13，報告 docs/leg_pool_report.md）
 
 使用者決策（2026-10-12）：依其 WorldQuant 研究流程（選方向 → 盤點原料 → 固定包裝單腿探針 → 腿池 → 本機枚舉 → 實測 → 提交）建台股版；
-股票池擴大到全市場市值前 300 / 500 / 1000 檔；**主要指標改為台指期對沖後的純 alpha Sharpe，0050 為輔**。討論重點見對話：
-可移植的腿為低波動、殘差波動、異常成交量、Amihud、季節性、空單擁擠（融券／借券）、法人流量；短期反轉在台股扣 0.3% 證交稅後不可行；股票池廣度決定弱腿能否發揮。
+股票池擴大到全市場市值前 300 / 500 / 1000 檔；**主要指標改為台指期對沖後的純 alpha Sharpe，0050 為輔**。
 
-| 步驟 | 程式 | 狀態（2026-10-12 15:30） |
+| 步驟 | 程式 | 狀態 |
 |---|---|---|
-| 1. 全市場市值股票池 | `analysis/build_universe_mcap.py` → `config/universe_mcap_membership.csv` | 進行中：300 / 2,154 檔（FinMind 額度等待中，約 3,800 次呼叫，可中斷重跑接續） |
-| 2. 腿資料 | `analysis/fetch_leg_data.py 300`（之後 500、1000） | 未開始（前 300 約 2,100 次呼叫） |
-| 3. 單腿探針 | `analysis/leg_probe.py 300` → `docs/leg_probe_top300.md`、`reports/legs/pnl_top300.csv` | 程式完成、測試通過 |
-| 4. 本機枚舉 | `analysis/leg_enumerate.py 300` → `docs/leg_enumerate_top300.md` | 程式完成、測試通過 |
-| 5. 合成訊號實際建倉驗證、另立前瞻規格 | 未寫 | — |
+| 1. 全市場市值股票池 | `analysis/build_universe_mcap.py` → `config/universe_mcap_membership.csv` | 完成（每年前 1000 名；前 300 / 500 / 1000 的 8 年聯集 480 / 776 / 1,387 檔） |
+| 2. 腿資料 | `analysis/fetch_leg_data.py 300` | 前 300 完成；500、1000 未抓 |
+| 3. 單腿探針 | `analysis/leg_probe.py 300` → `docs/leg_probe_top300.md`、`reports/legs/pnl_top300.csv`（含 `universe` 基準欄） | 完成 |
+| 4. 本機枚舉 | `analysis/leg_enumerate.py 300` → `docs/leg_enumerate_top300.md`（純 alpha 與超額兩種） | 完成：通過 0 組 |
+| 5. 合成訊號實際建倉驗證、另立前瞻規格 | 未寫 | 沒有通過的組合，暫不需要 |
 
-- 腿（事先固定方向）：lowvol20 / lowvol60、resvol60、abvol60、amihud20、season、short_ratio、short_flow、trust_buy、foreign_chg；主腿 sue；
-  借券（TaiwanStockSecuritiesLending）待看過欄位格式再加入。
-- 包裝：產業內 z 分數 → 20 日平均 → 對產業與 log 市值迴歸取殘差；組合：產業內前 1/3 等權；純 alpha = Σw·r − β·台指期近月報酬
-  （β = 持股 250 日 β 加權，換倉日決定），扣股票 0.29625% / 期貨 0.005% 單邊成本。
-- **2026-05 之後的資料保留不用**（fv2 回填與 live 期間）；枚舉只在 2019-01 ~ 2026-04 做，選出的組合需另立前瞻規格。
+- 結果：純 alpha Sharpe（2019–2022 / 2023–2026/04）SUE 0.17 / −0.07，其餘 −0.25 ~ −0.91 / −0.56 ~ −1.21；股票池基準 −0.25 / −0.67（年化 −4.2%）。
+  超額（減基準，看完結果後加的診斷）：SUE 1.24 / 1.73（年化 +4.6%，8/8 年正），lowvol60 0.01 / −0.48、short_ratio 0.08 / −0.94，其餘更差；成本（年換手 × 0.29625%）是弱腿虧損的主因之一。
+- 腿（事先固定方向）：lowvol20 / lowvol60、resvol60、abvol60、amihud20、season、short_ratio、short_flow、trust_buy、foreign_chg；主腿 sue；借券資料已下載、腿未加入。
+- 包裝：產業內 z 分數 → 20 日平均 → 對產業與 log 市值迴歸取殘差；組合：產業內前 1/3 等權；純 alpha = Σw·r − β·台指期近月報酬（β = 持股 250 日 β 加權），扣股票 0.29625% / 期貨 0.005% 單邊成本。
+- **2026-05 之後的資料保留不用**（fv2 回填與 live 期間）。
 - 市值以「前一交易日收盤 × 普通股股本 ÷ 10」計（股本季報遞延 75 天；FinMind 免費層無市值）；探針中的市值與比率改用外資持股資料的每日已發行股數。
-- **API 額度與 fv2 的安排**：工作階段內的背景守護程式（`scratchpad/pause_guard.sh`，非系統排程）會在 2026-10-13 17:00 停掉下載，
-  fv2 寫入 2026-10-13 預測後（最晚 22:00）重新啟動（股票池已完成則接著抓前 300 檔資料）。工作階段中斷時守護程式不會執行，需手動重跑步驟 1 / 2。
-
+- 下一步選項（待使用者決定）：產業內市值加權或股票池內多空以處理結構差；前 500 / 1000 檔；SUE 每 3 個月換倉；加入借券腿。
+- 長時間下載的經驗：工作階段結束會連帶結束 Claude 啟動的背景程式，需用 `Invoke-CimMethod Win32_Process Create` 啟動獨立行程；重開機曾留下寫一半的快取檔（已改原子寫入、壞檔自動重抓）；使用者要求長時間執行時監控 CPU / RAM（≥ 90% 即停止）並持續記錄進度（`logs/leg_pipeline/status.log`）。
 ## 待辦（依建議順序）
-1. **腿池流程（進行中，見上節）**：完成步驟 1–4，依純 alpha Sharpe 挑選組合，以合成訊號實際建倉驗證後另立前瞻規格；之後擴大到前 500 / 1000 檔
+1. **腿池流程（第一輪完成，見上節）**：前 300 檔只有 SUE 有選股能力，台指期對沖的結構差待處理；下一步待使用者決定（組合建構、前 500 / 1000 檔、降換手、借券腿）
 2. **每月執行前瞻驗證**：已全自動（Windows 工作排程器每個平日 18:30 執行 `forward/run_forward.py auto --push`，含研究網站 `site/` 重建；線上網站由 Claude 桌面 App 排程工作 `republish-research-site` 每個平日 19:15 依雜湊變動重新發佈，需 App 開著，見 docs/forward_validation.md）。只需定期查看 `logs/forward_auto.log`。時程：2026-10-01 批約 10/29 結算；第一個 live 預測約 2026-11-02；2027 年 1 月自動建立當年股票池。fv2（月營收驚奇）在同一個 auto 流程中執行：第一個 live 預測日 2026-10-13，之後每月公告期限後的下一個交易日
 3. **降低產業中性組合的換手**（`docs/sector_neutral_report.md`）：換倉頻率改每 2 期、只在月營收公布後換倉、以分數變化決定進出；緩衝規則應在新資料上（例如前瞻紀錄）驗證，避免事後調整
 4. **優化供應鏈 Agent**（使用者 2026-10-10 提出）：目前只捕捉產業輪動、產業內 IC ≈ 0，圖譜多為產業預設邊；方向可考慮客戶集中度、上下游營收領先關係、只用年報確認的邊
@@ -119,7 +117,7 @@
 
 ## 操作
 ```bash
-.venv/Scripts/python -m pytest tests -q          # 182 tests（Windows；macOS/Linux 用 .venv/bin/python）
+.venv/Scripts/python -m pytest tests -q          # 183 tests（Windows；macOS/Linux 用 .venv/bin/python）
 # 3 Agent（config 預設）
 .venv/Scripts/python backtest/run_backtest.py --mode finmind --start-date 2024-01-01 --end-date 2026-05-31 --step-days 21 --agents fundamentals_agent,news_agent,macro_agent --output-dir reports/finmind_macro
 # LLM 判讀（需 Ollama + qwen3:8b；回應已快取，重跑秒完）

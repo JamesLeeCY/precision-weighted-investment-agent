@@ -99,3 +99,23 @@ def test_finmind_client_retries_network_errors_without_leaking_token(monkeypatch
         client.get("TaiwanStockPrice", "2330", "2024-01-01")
     assert "SECRET-TOKEN" not in str(exc.value)
     assert exc.value.__cause__ is None and exc.value.__suppress_context__
+
+
+def test_finmind_client_refetches_corrupt_cache(monkeypatch, tmp_path):
+    from data import fetch_financials
+    from data.fetch_financials import FinMindClient
+
+    client = FinMindClient(token="T", cache_dir=tmp_path)
+    path = client._cache_path({"dataset": "TaiwanStockPrice", "data_id": "2330", "start_date": "2024-01-01"})
+    path.write_text("", encoding="utf-8")            # 中斷留下的空檔
+
+    class Ok:
+        status_code = 200
+
+        def json(self):
+            return {"data": [{"x": 1}]}
+
+    monkeypatch.setattr(fetch_financials.requests, "get", lambda url, params, timeout: Ok())
+    assert client.get("TaiwanStockPrice", "2330", "2024-01-01").to_dict("records") == [{"x": 1}]
+    assert path.read_text(encoding="utf-8") == '[{"x": 1}]'
+    assert not list(tmp_path.glob("*.tmp"))
