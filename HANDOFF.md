@@ -92,11 +92,12 @@
 - 包裝：產業內 z 分數 → 20 日平均 → 對產業與 log 市值迴歸取殘差；組合：產業內前 1/3 等權；純 alpha = Σw·r − β·台指期近月報酬（β = 持股 250 日 β 加權），扣股票 0.29625% / 期貨 0.005% 單邊成本。
 - **2026-05 之後的資料保留不用**（fv2 回填與 live 期間）。
 - 市值以「前一交易日收盤 × 普通股股本 ÷ 10」計（股本季報遞延 75 天；FinMind 免費層無市值）；探針中的市值與比率改用外資持股資料的每日已發行股數。
-- 對沖結構差（nalysis/hedge_construction.py，2026-10-13）：市值加權做多、市值加權多空（借券費 = 前 60 日借券成交量加權費率，無成交視為借不到；成員 95% 可借、費率中位數 1.62%／年）都沒有讓 SUE 兩段為正，見 docs/hedge_construction_report.md。\n- 連漲進場 / 連跌出場（nalysis/sue_breakout.py，2026-10-13）：見 docs/sue_breakout_report.md；拆解見 docs/sue_breakout_decompose_report.md（nalysis/sue_breakout_decompose.py；acktest() 的 timing / adv_tilt / gain_tilt 參數）。漲幅加權已檢驗為高波動傾斜（nalysis/sue_tilt_momentum.py；acktest() 另有 	ilt 參數可傳入自訂倍數）。prepare() 另提供每日成交金額 money。
+- 對沖結構差（`analysis/hedge_construction.py`，2026-10-13）：市值加權做多、市值加權多空（借券費 = 前 60 日借券成交量加權費率，無成交視為借不到；成員 95% 可借、費率中位數 1.62%／年）都沒有讓 SUE 兩段為正，見 docs/hedge_construction_report.md。
+- 連漲進場 / 連跌出場（`analysis/sue_breakout.py`，2026-10-13）：見 docs/sue_breakout_report.md；拆解見 docs/sue_breakout_decompose_report.md（`analysis/sue_breakout_decompose.py`；`backtest()` 的 timing / adv_tilt / gain_tilt 參數）。漲幅加權已檢驗為高波動傾斜（`analysis/sue_tilt_momentum.py`；`backtest()` 另有 `tilt` 參數可傳入自訂倍數）。`prepare()` 另提供每日成交金額 `money`。
 - 下一步選項（待使用者決定）：等權多空（需檢查中小型股可借量）、以中型股 ETF 對沖、主要指標回到相對 0050；前 500 / 1000 檔；SUE 每 3 個月換倉；加入借券腿。
 - 長時間下載的經驗：工作階段結束會連帶結束 Claude 啟動的背景程式，需用 `Invoke-CimMethod Win32_Process Create` 啟動獨立行程；重開機曾留下寫一半的快取檔（已改原子寫入、壞檔自動重抓）；使用者要求長時間執行時監控 CPU / RAM（≥ 90% 即停止）並持續記錄進度（`logs/leg_pipeline/status.log`）。
 ## 待辦（依建議順序）
-1. **腿池流程（第一輪完成，見上節）**：前 300 檔只有 SUE 有選股能力，台指期對沖的結構差待處理；下一步待使用者決定（組合建構、前 500 / 1000 檔、降換手、借券腿）
+1. **腿池流程（第一輪完成，見上節）**：前 300 檔只有 SUE 有選股能力；市值加權與市值加權多空（含借券費）都沒有解決台指期對沖的結構差；連漲進場 / 連跌出場、進場拆解、漲幅加權 vs 動能都已完成（漲幅加權 = 高波動傾斜，不採用）。下一步待使用者決定：等權多空（需查中小型股可借量）、中型股 ETF 對沖或主要指標回到相對 0050、前 500 / 1000 檔、SUE 每 3 個月換倉、借券腿
 2. **每月執行前瞻驗證**：已全自動（Windows 工作排程器每個平日 18:30 執行 `forward/run_forward.py auto --push`，含研究網站 `site/` 重建；線上網站由 Claude 桌面 App 排程工作 `republish-research-site` 每個平日 19:15 依雜湊變動重新發佈，需 App 開著，見 docs/forward_validation.md）。只需定期查看 `logs/forward_auto.log`。時程：2026-10-01 批約 10/29 結算；第一個 live 預測約 2026-11-02；2027 年 1 月自動建立當年股票池。fv2（月營收驚奇）在同一個 auto 流程中執行：第一個 live 預測日 2026-10-13，之後每月公告期限後的下一個交易日
 3. **降低產業中性組合的換手**（`docs/sector_neutral_report.md`）：換倉頻率改每 2 期、只在月營收公布後換倉、以分數變化決定進出；緩衝規則應在新資料上（例如前瞻紀錄）驗證，避免事後調整
 4. **優化供應鏈 Agent**（使用者 2026-10-10 提出）：目前只捕捉產業輪動、產業內 IC ≈ 0，圖譜多為產業預設邊；方向可考慮客戶集中度、上下游營收領先關係、只用年報確認的邊
