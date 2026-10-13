@@ -1,0 +1,49 @@
+spec_version: fv3
+frozen_utc: '2026-10-13T08:10:59Z'
+frozen_git_commit: 774c33c944490ffdfeaeda9c15ac4776fe5eaa4f
+frozen_git_dirty: false
+rules:
+  signal: 月營收驚奇 SUE（同 fv2，只採 create_time ≤ 公告期限的營收）→ 產業內 z → 對產業虛擬變數與 log 市值（前一日收盤
+    × 已發行股數）迴歸取殘差
+  schedule: 每月營收公告期限後的下一個交易日（同 fv2）
+  universe: config/universe_mcap_membership.csv 當年市值前 300 名
+  tranches: 資金分 3 份；每個預測日只重建一份（預測日序號 mod 3），持有到 3 個預測日後
+  portfolio: 每份：多產業內前 1/3、空產業內後 1/3（只空可借者），產業內等權，產業權重 = 參與產業檔數占比，多空各 100%；成員 < 3 檔或沒有可放空股票的產業不做
+  shortable: 前 60 個交易日有借券成交；需借股數 ≤ 前一日借券賣出額度；≤ 前 60 日借券成交量 × 0.1；成交量加權借券費 ≤ 5.0%／年；需借股數
+    = 200000000 ÷（成員數 / 3）÷ 預測日收盤價
+  hedge: 剩餘 β（持股 250 日 β 以權重加總，至少 120 日；缺值以 1 計）以台指期近月（一般交易時段成交量最大的月合約）對沖
+  costs: 股票換手（相對同一份資金上一期）× 0.0029625、期貨 β 變動 × 5e-05、借券費逐日（費率缺值以 5.0% 計）
+  return: 預測日收盤後起算的含息每日報酬，權重在每段持有期間內固定
+  backfill_start: '2026-05-01'
+preregistration:
+  primary_metric: 組合（三份平均）每段（相鄰兩個預測日之間）扣成本、扣借券費、台指期對沖後的淨報酬
+  hypothesis: 每段淨報酬的長期平均 > 0
+  backtest_expectation:
+    mean_period_net: 0.0061
+    sd_period_net: 0.0188
+    t: 3.02
+    n: 85
+    sharpe_2019_2022: 0.93
+    sharpe_2023_2026: 1.79
+    source: docs/ls_offsets_top300.md（三起點平均，2019-03 ~ 2026-04，市值前 300 檔）
+  evaluation:
+  - 只把 mode = live 的期數算入正式檢定，backfill 另列；前兩個 live 期只有 1–2 份資金在場（其餘為現金）
+  - 12 個 live 期數時檢查：平均淨報酬 < 0 視為失效警訊
+  - 38 個 live 期數（約 3 年）時正式檢定：t > 2 才算確認（依回測平均與標準差估計所需期數）
+  secondary_metrics:
+  - 每個預測日 SUE 分數與下一段報酬的產業內 IC
+  - 0050 同期報酬（對照，不作為檢定）
+  notes: 此建構是看過多種組合建構（等權／市值加權、做多／多空、換倉頻率、緩衝）後選出的，回測數字已含選擇偏誤；前瞻結果才是乾淨的驗證，不得依前瞻結果回頭調整規則。每年
+    1 月需先建立當年市值股票池（analysis/build_universe_mcap.py）。
+frozen_source_sha256:
+  data.revenue_signal: f08f3e9b1a798195f7501c9257abaa47ac3f51c114d7d2436296f5ba7d64ddfb
+  leg_probe.neutralize: a13dc31a440c474f823420f7822260f92eef831c4b293bec5ceff05b21a34465
+  leg_probe.tx_continuous: 50e71834e00748ae990baef2e893d7f71c43671779467ad123e353fe6943e586
+  ls_turnover.ew_ls_buffer: 5086df2b381ff0537c9343f6370459d95149f0aa39b1695e992190892967b3ac
+  fetch_financials.total_return_index: c956a972279bc2327e877fe1463368540ad6323b371f664d26ae102092591265
+  fv3.score_members: f8e620566641a43d93ef18641b6d5c34ac87c45e3cfe435e417c44680dffd5aa
+  fv3.shortable_flags: 65ee2fe6932e44b92772761ac6facafc9df8bd67aba19032af9dc9704a99b087
+  fv3.tranche_weights: a04e557ac1740211816598e6bc49701a4ec24cf17dbd4a825e98ec4286fc5f1c
+  fv3.segment_return: 290a507ef83209a1ea90159cd7a32ea10496f816f2cddc0dfc2691963db749e7
+  fv3.member_frame: f3c8fb9791b9565822568635b1f282c625c1ad3582758ae8b89e20f37acc5d1a
+  fv3.constants: 9ad9f2c18e930495cee0727ef1616cc2e79fd34f3842ce63b4a4c4ff616b33e3

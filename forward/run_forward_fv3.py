@@ -172,6 +172,9 @@ def verify_frozen(spec: dict) -> None:
 
 def snapshot(fetch_date: str):
     """fv3 自己的快照快取（data_cache/forward/fv3/<日期>/），不和 fv1 / fv2 共用。"""
+    import os
+
+    fetch_date = os.environ.get("FV3_FETCH_DATE", fetch_date)  # 回填可固定抓取日，跨午夜重跑仍命中快取
     return ff.FinMindClient(cache_dir=fv1.SNAPSHOT_ROOT / "fv3" / fetch_date)
 
 
@@ -454,6 +457,9 @@ def cmd_schedule(args) -> None:
 
 def auto() -> bool:
     """排程用（由 forward/run_forward.py auto 呼叫）：預測當月（若已過預測日）、結算已過的段落；有變動回傳 True。"""
+    if (FV3_DIR / "BACKFILL_PENDING").exists():
+        print("[fv3] 回填進行中（forward/fv3/BACKFILL_PENDING），本次略過")
+        return False
     today = pd.Timestamp(dt.date.today())
     client = snapshot(today.strftime("%Y-%m-%d"))
     calendar = fv1.trading_calendar(client, "2025-01-01")
