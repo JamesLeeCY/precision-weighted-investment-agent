@@ -99,10 +99,11 @@
 - 下一步選項（待使用者決定）：每 3 個月換倉起點穩健性與前瞻規格、以中型股 ETF 對沖、主要指標回到相對 0050；前 500 / 1000 檔；SUE 每 3 個月換倉；加入借券腿。
 - 長時間下載的經驗：工作階段結束會連帶結束 Claude 啟動的背景程式，需用 `Invoke-CimMethod Win32_Process Create` 啟動獨立行程；重開機曾留下寫一半的快取檔（已改原子寫入、壞檔自動重抓）；使用者要求長時間執行時監控 CPU / RAM（≥ 90% 即停止）並持續記錄進度（`logs/leg_pipeline/status.log`）。
 ## 待辦（依建議順序）
-1. **腿池流程（第一輪完成，見上節）**：前 300 檔只有 SUE 有選股能力；市值加權與市值加權多空（含借券費）都沒有解決台指期對沖的結構差；連漲進場 / 連跌出場、進場拆解、漲幅加權 vs 動能都已完成（漲幅加權 = 高波動傾斜，不採用）。等權多空 + 可借量、降換手（每 3 個月換倉 0.79 / 1.85）、新反轉／動能（全部失敗）已完成。起點穩健性已通過並凍結 fv3（每月自動記錄）；營收創新高為第二個兩段顯著的訊號（docs/revmom_persist_report.md）。下一步待使用者決定：SUE + 營收創新高合成另立前瞻規格 fv4、中型股 ETF 對沖或主要指標回到相對 0050、前 500 / 1000 檔、SUE 每 3 個月換倉、借券腿
+1. **腿池流程（第一輪完成，見上節）**：前 300 檔只有 SUE 有選股能力；市值加權與市值加權多空（含借券費）都沒有解決台指期對沖的結構差；連漲進場 / 連跌出場、進場拆解、漲幅加權 vs 動能都已完成（漲幅加權 = 高波動傾斜，不採用）。等權多空 + 可借量、降換手（每 3 個月換倉 0.79 / 1.85）、新反轉／動能（全部失敗）已完成。起點穩健性已通過並凍結 fv3（每月自動記錄）；營收創新高為第二個兩段顯著的訊號（docs/revmom_persist_report.md）。已另立前瞻規格 fv4（SUE + 營收創新高合成，2026-10-13 凍結於 git `e2a25be`，與 fv3 共用資料）。下一步待使用者決定：中型股 ETF 對沖或主要指標回到相對 0050、前 500 / 1000 檔、SUE 每 3 個月換倉、借券腿
 2. **每月執行前瞻驗證**：已全自動（Windows 工作排程器每個平日 18:30 執行 `forward/run_forward.py auto --push`，含研究網站 `site/` 重建；線上網站由 Claude 桌面 App 排程工作 `republish-research-site` 每個平日 19:15 依雜湊變動重新發佈，需 App 開著，見 docs/forward_validation.md）。只需定期查看 `logs/forward_auto.log`。時程：2026-10-01 批約 10/29 結算；第一個 live 預測約 2026-11-02；2027 年 1 月自動建立當年股票池。fv2（月營收驚奇）在同一個 auto 流程中執行：第一個 live 預測日 2026-10-13，之後每月公告期限後的下一個交易日
 3. **降低產業中性組合的換手**（`docs/sector_neutral_report.md`）：換倉頻率改每 2 期、只在月營收公布後換倉、以分數變化決定進出；緩衝規則應在新資料上（例如前瞻紀錄）驗證，避免事後調整
 4. **優化供應鏈 Agent**（使用者 2026-10-10 提出）：目前只捕捉產業輪動、產業內 IC ≈ 0，圖譜多為產業預設邊；方向可考慮客戶集中度、上下游營收領先關係、只用年報確認的邊
+5. **前瞻驗證 fv4（SUE + 營收創新高合成，2026-10-13 凍結）**：`forward/run_forward_fv4.py`、`forward/fv4/`；建構同 fv3、只改分數；讀 fv3 的快照快取，由 auto 在 fv3 之後執行；回測 +0.76%／段（sd 1.95%），26 段正式檢定；與 fv3 的差只作描述（docs/forward_validation.md 最後一節）
 5. **前瞻驗證 fv3（月營收驚奇等權多空，2026-10-13 凍結）**：`forward/run_forward_fv3.py`，紀錄在 `forward/fv3/`；由 `run_forward.py auto` 在 fv1 / fv2 發佈後執行（預測日約 2,100 次 FinMind、3–4 小時）；主要指標 = 組合每段淨報酬（回測 +0.61%／段、sd 1.88%），12 段警訊、38 段正式檢定。**每年 1 月須先執行 `analysis/build_universe_mcap.py` 建立當年市值股票池**，否則 fv3 略過。回填中 `forward/fv3/BACKFILL_PENDING` 存在時 auto 會略過 fv3（docs/forward_validation.md 最後一節）
 5. **前瞻驗證 fv2（月營收驚奇，已建立 2026-10-12）**：`forward/run_forward_fv2.py`，紀錄在 `forward/fv2/`，由 `run_forward.py auto` 每日一併執行；第一個 live 預測日 2026-10-13；12 個 live 期數檢查警訊、30 期正式檢定（docs/forward_validation.md 下半部）。已試延伸（docs/revenue_surprise_plus_report.md）：季報盈餘驚奇（法定期限時點）偏弱、合成變差；每 3 個月換倉換手減半、Sharpe 相當 → fv2 不變；若取得實際季報公告日可重測盈餘驚奇
 6. **其餘台股文獻候選（docs/taiwan_alpha_literature.md）**：投信淨買超、融券 / 券資比已併入腿池的籌碼腿；借券待加入；漲停觸及率 / MAX 可作為之後的腿
@@ -122,7 +123,7 @@
 
 ## 操作
 ```bash
-.venv/Scripts/python -m pytest tests -q          # 204 tests（Windows；macOS/Linux 用 .venv/bin/python）
+.venv/Scripts/python -m pytest tests -q          # 207 tests（Windows；macOS/Linux 用 .venv/bin/python）
 # 3 Agent（config 預設）
 .venv/Scripts/python backtest/run_backtest.py --mode finmind --start-date 2024-01-01 --end-date 2026-05-31 --step-days 21 --agents fundamentals_agent,news_agent,macro_agent --output-dir reports/finmind_macro
 # LLM 判讀（需 Ollama + qwen3:8b；回應已快取，重跑秒完）

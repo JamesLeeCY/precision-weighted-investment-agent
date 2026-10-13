@@ -188,3 +188,24 @@ git add forward/ && git commit -m "forward: YYYY-MM prediction" && git push
 .venv/Scripts/python forward/run_forward_fv3.py resolve
 .venv/Scripts/python forward/run_forward_fv3.py report
 ```
+
+# 前瞻驗證 fv4：月營收驚奇 + 營收創新高（fv3 建構）
+
+| | |
+|---|---|
+| 規格 | [forward/fv4/spec.yaml](../forward/fv4/spec.yaml)（2026-10-13 凍結於 git `e2a25be`） |
+| 程式 | [forward/run_forward_fv4.py](../forward/run_forward_fv4.py)（由 fv3 程式產生，只改分數與紀錄位置） |
+| 紀錄 | `forward/fv4/`（同 fv3 的 predictions / segments / periods，另多一欄 `rec24`）；只能新增 |
+| 報告 | [forward/fv4/REPORT.md](../forward/fv4/REPORT.md) |
+| 依據 | [revmom_persist_report.md](revmom_persist_report.md)：營收創新高是第二個兩段都顯著的訊號；與 SUE 各半合成 1.22 / 2.13（SUE 單獨 0.93 / 1.79） |
+
+- **與 fv3 唯一的差別是分數**：SUE 與營收創新高（本月營收 ÷ 前 24 個月最高 − 1）各自產業內 z → 中性化 → 全體 z，兩者平均；任一缺值不入選；兩者都只採 create_time ≤ 公告期限的營收。其餘（股票池、三份資金、可借條件、對沖、成本）與 fv3 相同。
+- **主要指標（事先登錄）**：組合每段淨報酬；回測平均 +0.76%／段、標準差 1.95%（85 段，t 3.6）；12 段警訊、26 段（約 2 年）正式檢定 t > 2。
+- **與 fv3 比較**：同期 fv4 − fv3 每段淨報酬差只作描述（回測 +2.0%／年，t 1.7），不作為確認條件。
+- **共用資料**：fv4 讀 fv3 的快照快取（`data_cache/forward/fv3/<日期>/`），由 auto 在 fv3 之後執行，每月不多花 FinMind 額度；`forward/fv4/BACKFILL_PENDING` 存在時 auto 略過 fv4。
+- 營收創新高是同一批 5 個候選中唯一通過判準者，回測數字已含選擇偏誤；前瞻結果才是乾淨的驗證。
+
+```bash
+.venv/Scripts/python forward/run_forward_fv4.py schedule
+.venv/Scripts/python forward/run_forward_fv4.py report
+```
