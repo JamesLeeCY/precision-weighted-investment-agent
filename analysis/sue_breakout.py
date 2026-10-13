@@ -50,7 +50,8 @@ def eligibility(c, scores: dict) -> pd.DataFrame:
 def backtest(rets: pd.DataFrame, elig: pd.DataFrame, adv: pd.DataFrame, below_ma: pd.DataFrame,
              start: pd.Timestamp, end: pd.Timestamp, tech_exit: bool = True,
              betas: pd.DataFrame | None = None, timing: str = "breakout", adv_tilt: bool = True,
-             gain_tilt: bool = True, size_pct: pd.DataFrame | None = None) -> tuple[pd.DataFrame, int]:
+             gain_tilt: bool = True, size_pct: pd.DataFrame | None = None,
+             tilt: pd.DataFrame | None = None) -> tuple[pd.DataFrame, int]:
     """逐日模擬。訊號用第 t 日收盤（含）以前的資料，於 t+1 日收盤成交。
     timing="breakout"：兩日連漲才加碼；"any"：可買期間每隔 2 日就加碼（拆解用）。adv_tilt / gain_tilt：加碼金額是否乘上
     成交金額比、兩日漲幅比。回傳每日 [ret, exposure, turnover, beta_exp, n_hold, size]（beta_exp = 期初 Σw·β；
@@ -129,6 +130,9 @@ def backtest(rets: pd.DataFrame, elig: pd.DataFrame, adv: pd.DataFrame, below_ma
                 a *= float(np.clip(g2.at[d, t] / G_REF, 0.25, 2.5))
             if adv_tilt:
                 a *= float(np.clip(adv_ratio.at[d, t], 0.5, 2.0))
+            if tilt is not None:                  # 自訂傾斜倍數（第 t 日收盤以前的資料算出）
+                m = tilt.at[d, t]
+                a *= float(m) if m == m else 1.0
             buys[t] = float(np.clip(a, ADD_MIN, ADD_MAX))
         pending = (sells, buys)
     df = pd.DataFrame(rows, columns=["date", "ret", "exposure", "turnover", "beta_exp", "n_hold", "size"]).set_index("date")

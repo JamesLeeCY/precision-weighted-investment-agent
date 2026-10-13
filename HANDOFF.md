@@ -6,7 +6,7 @@
 多代理人精度加權投資研究系統（台股）。精度加權機制在 synthetic 中成立，但真實資料上各 Agent 沒有絕對方向資訊；之後轉向「找可交易的選股訊號」。到 2026-10-12：
 - 唯一兩段（2019–2022 / 2023–2026）都顯著的訊號是**月營收驚奇 SUE**（公告期限後進場，產業內 IC +0.032 / +0.059；與 0050 擇時各半混合 Sharpe 0.88 / 2.64 > 0050 0.75 / 2.40），已凍結為前瞻規格 **fv2**（10-13 起 live）；
 - 財報 Agent（fv1 前瞻中）產業內 IC 約 +0.03，穩定但弱；估值、技術面、動能、反轉、領先落後、子產業、技術面進出場、盈餘驚奇皆未通過兩段一致性；
-- **腿池第一輪（全市場市值前 300 檔，docs/leg_pool_report.md，2026-10-13）**：原定指標（台指期對沖純 alpha Sharpe）下所有腿與 700 個組合都不為正——等權做多 vs 市值加權（台積電主導）指數的結構差使股票池基準本身 −0.25 / −0.67；扣掉基準後 **SUE 超額 Sharpe 1.24 / 1.73、8/8 年為正**，其餘 10 條價量／籌碼腿都為負，沒有組合兩段都勝過 SUE 單獨 → 腿池目前只有 SUE。**對沖結構差（docs/hedge_construction_report.md）**：產業內市值加權讓基準從 −4.5%／年縮到 −1.2%，但 SUE 的選股能力也被稀釋（市值加權做多 −0.14 / 0.26；市值加權多空含實際借券費 1.56%／年 0.22 / −0.02）→ SUE 的 alpha 在權重小的股票，台指期對沖下沒有可交易的實作。**使用者規則「SUE + 兩日連漲進場（依漲幅 × 成交金額加碼、單檔 ≤ 20%）、連跌兩日且破 20 日線賣半、連跌三日全賣」（docs/sue_breakout_report.md）**：0.50 / 1.06（換手 35 倍），差於月換倉 SUE 0.91 / 1.42；同一進場但不做技術面出場 1.06 / 1.56（兩段都高於月換倉，2023 年後仍低於 0050 1.90）。**拆解（docs/sue_breakout_decompose_report.md，8 個版本）**：分批機制本身 +1.5%／年（t 0.8）、兩日連漲時點與成交金額加權兩段方向相反；只有「漲幅加權」兩段一致（報酬 +5–9%／年，扣 0050 β 後 t ≈ 2，但波動 +15–22%，Sharpe 只 +0.09），屬邊際結果。
+- **腿池第一輪（全市場市值前 300 檔，docs/leg_pool_report.md，2026-10-13）**：原定指標（台指期對沖純 alpha Sharpe）下所有腿與 700 個組合都不為正——等權做多 vs 市值加權（台積電主導）指數的結構差使股票池基準本身 −0.25 / −0.67；扣掉基準後 **SUE 超額 Sharpe 1.24 / 1.73、8/8 年為正**，其餘 10 條價量／籌碼腿都為負，沒有組合兩段都勝過 SUE 單獨 → 腿池目前只有 SUE。**對沖結構差（docs/hedge_construction_report.md）**：產業內市值加權讓基準從 −4.5%／年縮到 −1.2%，但 SUE 的選股能力也被稀釋（市值加權做多 −0.14 / 0.26；市值加權多空含實際借券費 1.56%／年 0.22 / −0.02）→ SUE 的 alpha 在權重小的股票，台指期對沖下沒有可交易的實作。**使用者規則「SUE + 兩日連漲進場（依漲幅 × 成交金額加碼、單檔 ≤ 20%）、連跌兩日且破 20 日線賣半、連跌三日全賣」（docs/sue_breakout_report.md）**：0.50 / 1.06（換手 35 倍），差於月換倉 SUE 0.91 / 1.42；同一進場但不做技術面出場 1.06 / 1.56（兩段都高於月換倉，2023 年後仍低於 0050 1.90）。**拆解（docs/sue_breakout_decompose_report.md，8 個版本）**：分批機制本身 +1.5%／年（t 0.8）、兩日連漲時點與成交金額加權兩段方向相反；只有「漲幅加權」兩段一致（報酬 +5–9%／年，扣 0050 β 後 t ≈ 2，但波動 +15–22%，Sharpe 只 +0.09），屬邊際結果。**是否為動能（docs/sue_tilt_momentum_report.md）**：依兩日報酬排名加碼 +0.0%／年、1 個月 / 3 個月 / 12-1 動能 +0.8% / +1.7% / +0.6%；原版比值的 +4.7%（t 3.8）與 60 日波動度傾斜相同（超額相關 0.75，控制後剩 +2.1%）且集中在 2023 年後 → 主要是偏向高波動股，不是動能，不建議採用。
 
 ## 架構
 - `config/tickers.yaml`：股票池與全部參數（horizon、閾值、EMA α、冷啟動門檻、基準 0050、交易成本、`outcome_basis`、`agents` 清單、`macro` 窗口）
@@ -92,7 +92,7 @@
 - 包裝：產業內 z 分數 → 20 日平均 → 對產業與 log 市值迴歸取殘差；組合：產業內前 1/3 等權；純 alpha = Σw·r − β·台指期近月報酬（β = 持股 250 日 β 加權），扣股票 0.29625% / 期貨 0.005% 單邊成本。
 - **2026-05 之後的資料保留不用**（fv2 回填與 live 期間）。
 - 市值以「前一交易日收盤 × 普通股股本 ÷ 10」計（股本季報遞延 75 天；FinMind 免費層無市值）；探針中的市值與比率改用外資持股資料的每日已發行股數。
-- 對沖結構差（nalysis/hedge_construction.py，2026-10-13）：市值加權做多、市值加權多空（借券費 = 前 60 日借券成交量加權費率，無成交視為借不到；成員 95% 可借、費率中位數 1.62%／年）都沒有讓 SUE 兩段為正，見 docs/hedge_construction_report.md。\n- 連漲進場 / 連跌出場（nalysis/sue_breakout.py，2026-10-13）：見 docs/sue_breakout_report.md；拆解見 docs/sue_breakout_decompose_report.md（nalysis/sue_breakout_decompose.py；acktest() 的 timing / adv_tilt / gain_tilt 參數）。下一步可檢驗漲幅加權是否就是動能、或為「SUE 前 1/3 + 漲幅加權」另立前瞻規格。prepare() 另提供每日成交金額 money。
+- 對沖結構差（nalysis/hedge_construction.py，2026-10-13）：市值加權做多、市值加權多空（借券費 = 前 60 日借券成交量加權費率，無成交視為借不到；成員 95% 可借、費率中位數 1.62%／年）都沒有讓 SUE 兩段為正，見 docs/hedge_construction_report.md。\n- 連漲進場 / 連跌出場（nalysis/sue_breakout.py，2026-10-13）：見 docs/sue_breakout_report.md；拆解見 docs/sue_breakout_decompose_report.md（nalysis/sue_breakout_decompose.py；acktest() 的 timing / adv_tilt / gain_tilt 參數）。漲幅加權已檢驗為高波動傾斜（nalysis/sue_tilt_momentum.py；acktest() 另有 	ilt 參數可傳入自訂倍數）。prepare() 另提供每日成交金額 money。
 - 下一步選項（待使用者決定）：等權多空（需檢查中小型股可借量）、以中型股 ETF 對沖、主要指標回到相對 0050；前 500 / 1000 檔；SUE 每 3 個月換倉；加入借券腿。
 - 長時間下載的經驗：工作階段結束會連帶結束 Claude 啟動的背景程式，需用 `Invoke-CimMethod Win32_Process Create` 啟動獨立行程；重開機曾留下寫一半的快取檔（已改原子寫入、壞檔自動重抓）；使用者要求長時間執行時監控 CPU / RAM（≥ 90% 即停止）並持續記錄進度（`logs/leg_pipeline/status.log`）。
 ## 待辦（依建議順序）
@@ -118,7 +118,7 @@
 
 ## 操作
 ```bash
-.venv/Scripts/python -m pytest tests -q          # 191 tests（Windows；macOS/Linux 用 .venv/bin/python）
+.venv/Scripts/python -m pytest tests -q          # 192 tests（Windows；macOS/Linux 用 .venv/bin/python）
 # 3 Agent（config 預設）
 .venv/Scripts/python backtest/run_backtest.py --mode finmind --start-date 2024-01-01 --end-date 2026-05-31 --step-days 21 --agents fundamentals_agent,news_agent,macro_agent --output-dir reports/finmind_macro
 # LLM 判讀（需 Ollama + qwen3:8b；回應已快取，重跑秒完）

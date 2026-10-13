@@ -2,6 +2,7 @@
 import sys
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import pytest
 
@@ -55,3 +56,20 @@ def test_timing_any_adds_without_up_days_and_tilts_switch_off():
     assert df["exposure"].max() == 0.0                              # 沒有連漲 → 不買
     df, _ = sb.backtest(rets, E, adv, B, days[0], days[-1], tech_exit=False, timing="any", adv_tilt=False, gain_tilt=False)
     assert df["exposure"].iloc[1] == pytest.approx(sb.UNIT, rel=1e-2)   # 第 1 日收盤訊號 → 第 2 日買進 5%
+
+
+def test_rank_tilt_and_spanning():
+    import sue_tilt_momentum as tm
+
+    days = pd.bdate_range("2024-01-01", periods=3)
+    x = pd.DataFrame({"A": [1.0] * 3, "B": [2.0] * 3, "C": [3.0] * 3}, index=days)
+    E = x.notna()
+    E["C"] = False
+    t = tm.rank_tilt(x, E)
+    assert t.iloc[0]["A"] == pytest.approx(0.25 + 2.25 * 0.5) and t.iloc[0]["B"] == pytest.approx(2.5)
+    assert np.isnan(t.iloc[0]["C"])                                  # 不在名單內不排名
+    rng = np.random.default_rng(0)
+    idx = pd.bdate_range("2020-01-01", periods=2000)
+    xs = pd.Series(rng.normal(0, 0.01, len(idx)), index=idx)
+    a, tval, b = tm.spanning(2 * xs, xs)                             # y 完全由 x 解釋 → 截距 0、b = 2
+    assert abs(a) < 1e-9 and b == pytest.approx(2.0)
