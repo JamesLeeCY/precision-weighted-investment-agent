@@ -293,7 +293,7 @@ def prepare(top_n: int, membership=None) -> SimpleNamespace:
             sue_rows[t] = s
     sue = pd.DataFrame(sue_rows)
 
-    return SimpleNamespace(client=client, mem=mem, ids=ids, sector=sector, adj=adj, tickers=tickers, member=member,
+    return SimpleNamespace(client=client, mem=mem, ids=ids, sector=sector, adj=adj, money=money.reindex(columns=tickers), tickers=tickers, member=member,
                            raws=raws, logcap=logcap, rets=rets, betas=betas, tx=tx, schedule=schedule, fwd20=fwd20, sue=sue)
 
 
