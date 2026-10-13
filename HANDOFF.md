@@ -97,7 +97,8 @@
 - 等權多空與可借量（`analysis/fetch_short_balances.py`、`analysis/borrow_capacity.py`，2026-10-13）：借券賣出額度資料 `TaiwanDailyShortSaleBalances` 免費層可逐檔取得；借券成交量單位為張。
 - 降換手與新訊號（`analysis/ls_turnover.py`：`ew_ls_buffer()` 換倉頻率與緩衝；`analysis/reversal_signals.py`：隔夜／盤中拆解 `split_returns()`、殘差反轉、季節性動能），2026-10-13。
 - 股權分散、MAX 濾網、營收創新高窗口穩健性已完成（docs/max_rec_robust_report.md）。
-- 下一步選項（待使用者決定）：每週累積集保股權分散資料、前 500 / 1000 檔、借券腿、以中型股 ETF 對沖或主要指標回到相對 0050。
+- 借券腿已完成（不採用，docs/lending_legs_report.md）。
+- 下一步選項（待使用者決定）：每週累積集保股權分散資料、前 500 / 1000 檔、以中型股 ETF 對沖或主要指標回到相對 0050。
 - 長時間下載的經驗：工作階段結束會連帶結束 Claude 啟動的背景程式，需用 `Invoke-CimMethod Win32_Process Create` 啟動獨立行程；重開機曾留下寫一半的快取檔（已改原子寫入、壞檔自動重抓）；使用者要求長時間執行時監控 CPU / RAM（≥ 90% 即停止）並持續記錄進度（`logs/leg_pipeline/status.log`）。
 ## 待辦（依建議順序）
 1. **前瞻驗證（全自動，定期查看）**：Windows 工作排程器每個平日 18:30 執行 `forward/run_forward.py auto --push`，依序 fv1 → fv2 → 發佈 → fv3 → fv4 → 發佈（含研究網站 `site/` 重建；線上網站由 Claude 桌面 App 排程工作 `republish-research-site` 每個平日 19:15 依雜湊變動重新發佈，需 App 開著）。只需查看 `logs/forward_auto.log` 與各 `forward/fv*/REPORT.md`。
@@ -107,7 +108,7 @@
    - fv4（SUE + 營收創新高，同 fv3 建構、共用資料）：第一個 live 2026-10-13；回填 5 段平均 +0.24%；12 段警訊、26 段檢定。
    - **2027 年 1 月**：fv1 / fv2 的電子股池由 auto 自動建立；**fv3 / fv4 的市值股票池須手動執行 `analysis/build_universe_mcap.py`**（約 4,300 次 FinMind），否則兩者略過。
 2. **新訊號候選（已完成，docs/max_rec_robust_report.md）**：股權分散（集保）—— FinMind 為付費資料、集保開放資料只有最新一週，**無法回測**；可選擇從現在起每週下載集保開放資料自行累積（需新增每週排程，待使用者決定）。MAX／漲停濾網在 SUE 做多端反而有害（0.75 / 1.76、0.60 / 1.76 vs 0.93 / 1.79），不採用。營收創新高窗口 12 / 24 / 36 個月與 SUE 合成皆通過（1.33 / 2.05、1.22 / 2.13、1.18 / 1.94），fv4 不變。
-3. **腿池延伸**：前 500 / 1000 檔（前 500 約再 2,000 次 FinMind）、借券腿（資料已下載）、以中型股 ETF 對沖或主要指標回到相對 0050。
+3. **腿池延伸**：前 500 / 1000 檔（前 500 約再 2,000 次 FinMind）、以中型股 ETF 對沖或主要指標回到相對 0050。借券腿已完成（docs/lending_legs_report.md）：借券賣出餘額比、借券費率 60 日 IC 兩段顯著（t 3.6–5.6）、與 SUE 幾乎不相關，但多空扣成本後 2019–2022 不賺錢，與 SUE（+ 營收創新高）合成都是 2023 年後變好、2019–2022 變差 → 不採用；「放空端借不到」的解釋經檢查不成立。
 4. **擇時與混合配置的前瞻確認**：200 日線 ±2% 緩衝帶與「0050 擇時 + 選股」混合都是看過許多設定後得到（docs/allocation_study_report.md）；可另立前瞻規格每月記錄。
 5. **降低產業中性做多組合的換手**（`docs/sector_neutral_report.md`）：多空版已改每 3 個月（fv3）；做多版可比照，緩衝規則應在新資料上驗證。
 6. **優化供應鏈 Agent**（使用者 2026-10-10 提出）：目前只捕捉產業輪動、產業內 IC ≈ 0；台股客戶多以代號揭露，可靠的供應關係資料不足，產業領先落後也已失敗，優先度低。
@@ -121,7 +122,7 @@
 
 ## 操作
 ```bash
-.venv/Scripts/python -m pytest tests -q          # 209 tests（Windows；macOS/Linux 用 .venv/bin/python）
+.venv/Scripts/python -m pytest tests -q          # 210 tests（Windows；macOS/Linux 用 .venv/bin/python）
 # 3 Agent（config 預設）
 .venv/Scripts/python backtest/run_backtest.py --mode finmind --start-date 2024-01-01 --end-date 2026-05-31 --step-days 21 --agents fundamentals_agent,news_agent,macro_agent --output-dir reports/finmind_macro
 # LLM 判讀（需 Ollama + qwen3:8b；回應已快取，重跑秒完）
