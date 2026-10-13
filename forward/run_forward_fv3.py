@@ -437,7 +437,7 @@ def cmd_report(args) -> None:
     lines += ["", "## 各段", "", "| 段落 | mode | 在場資金份數 | 組合淨報酬 | 產業內 IC | 0050 |", "|---|---|---|---|---|---|"]
     for r in per.itertuples():
         lines.append(f"| {r.seg_start} → {r.seg_end} | {r.mode} | {int(r.n_active)} | {r.book_net * 100:+.2f}% | {r.ic:+.3f} | {r.b0050 * 100:+.2f}% |")
-    lines += ["", "## 各預測日", "", "| 預測日 | mode | 資金份 | 做多檔數 | 放空檔數 | 可借比例（後 1/3 中） | β |", "|---|---|---|---|---|---|---|"]
+    lines += ["", "## 各預測日", "", "| 預測日 | mode | 資金份 | 做多檔數 | 放空檔數 | 可借比例（全部成員） | β |", "|---|---|---|---|---|---|---|"]
     for a, bt in preds.groupby("as_of_date"):
         lines.append(f"| {a} | {bt['mode'].iloc[0]} | {int(bt['tranche'].iloc[0]) + 1} | {(bt['weight'] > 0).sum()} | {(bt['weight'] < 0).sum()} | "
                      f"{bt['shortable'].mean():.0%} | {bt['tranche_beta'].iloc[0]:+.2f} |")
