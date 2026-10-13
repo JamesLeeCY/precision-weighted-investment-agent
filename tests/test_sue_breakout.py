@@ -43,3 +43,15 @@ def test_two_down_below_ma_sells_half_three_down_sells_all():
 def test_costs_reduce_return_on_trade_day():
     df, _ = run([0.05, 0.05, 0.0, 0.0])
     assert df["ret"].iloc[2] == pytest.approx(-0.10 * sb.lp.STOCK_COST, rel=1e-3)
+
+
+def test_timing_any_adds_without_up_days_and_tilts_switch_off():
+    days = pd.bdate_range("2024-01-01", periods=4)
+    rets = pd.DataFrame({"A": [0.0, -0.01, -0.01, 0.0]}, index=days)
+    E = pd.DataFrame({"A": True}, index=days)
+    adv = pd.DataFrame({"A": 1e8}, index=days)
+    B = pd.DataFrame({"A": False}, index=days)
+    df, _ = sb.backtest(rets, E, adv, B, days[0], days[-1], tech_exit=False, timing="breakout")
+    assert df["exposure"].max() == 0.0                              # 沒有連漲 → 不買
+    df, _ = sb.backtest(rets, E, adv, B, days[0], days[-1], tech_exit=False, timing="any", adv_tilt=False, gain_tilt=False)
+    assert df["exposure"].iloc[1] == pytest.approx(sb.UNIT, rel=1e-2)   # 第 1 日收盤訊號 → 第 2 日買進 5%

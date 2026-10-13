@@ -49,9 +49,12 @@ def eligibility(c, scores: dict) -> pd.DataFrame:
 
 def backtest(rets: pd.DataFrame, elig: pd.DataFrame, adv: pd.DataFrame, below_ma: pd.DataFrame,
              start: pd.Timestamp, end: pd.Timestamp, tech_exit: bool = True,
-             betas: pd.DataFrame | None = None) -> tuple[pd.DataFrame, int]:
+             betas: pd.DataFrame | None = None, timing: str = "breakout", adv_tilt: bool = True,
+             gain_tilt: bool = True, size_pct: pd.DataFrame | None = None) -> tuple[pd.DataFrame, int]:
     """逐日模擬。訊號用第 t 日收盤（含）以前的資料，於 t+1 日收盤成交。
-    回傳每日 [ret, exposure, turnover, beta_exp]（beta_exp = 當日期初 Σw·β）與完整出清次數。"""
+    timing="breakout"：兩日連漲才加碼；"any"：可買期間每隔 2 日就加碼（拆解用）。adv_tilt / gain_tilt：加碼金額是否乘上
+    成交金額比、兩日漲幅比。回傳每日 [ret, exposure, turnover, beta_exp, n_hold, size]（beta_exp = 期初 Σw·β；
+    size = 持股依權重平均的市值百分位）與完整出清次數。"""
     days = rets.index[(rets.index >= start) & (rets.index <= end)]
     cols = rets.columns
     up = (rets > 0).astype(int)
@@ -99,7 +102,9 @@ def backtest(rets: pd.DataFrame, elig: pd.DataFrame, adv: pd.DataFrame, below_ma
                         last_add[t] = i
             cost = to * lp.STOCK_COST
             w = w / (1 - cost)
-        rows.append((d, (1 + port) * (1 - to * lp.STOCK_COST) - 1, float(w.sum()), to, bexp))
+        held_w = w[w > 1e-9]
+        size = float((held_w * size_pct.loc[d, held_w.index]).sum() / held_w.sum()) if size_pct is not None and len(held_w) else float("nan")
+        rows.append((d, (1 + port) * (1 - to * lp.STOCK_COST) - 1, float(w.sum()), to, bexp, len(held_w), size))
         # 3) 用當日收盤（含）以前的資料產生明日委託
         held = w[w > 0].index
         sells = {}
@@ -114,14 +119,19 @@ def backtest(rets: pd.DataFrame, elig: pd.DataFrame, adv: pd.DataFrame, below_ma
                 if not elig.at[d, t]:
                     sells[t] = 1.0
         buys = {}
-        cand = cols[(elig.loc[d] & up2.loc[d]).to_numpy()]
+        trig = elig.loc[d] & up2.loc[d] if timing == "breakout" else elig.loc[d]
+        cand = cols[trig.to_numpy()]
         for t in cand:
             if t in sells or i - last_add[t] < 2 or w[t] >= STOCK_MAX - 1e-9:
                 continue
-            a = UNIT * float(np.clip(g2.at[d, t] / G_REF, 0.25, 2.5)) * float(np.clip(adv_ratio.at[d, t], 0.5, 2.0))
+            a = UNIT
+            if gain_tilt:
+                a *= float(np.clip(g2.at[d, t] / G_REF, 0.25, 2.5))
+            if adv_tilt:
+                a *= float(np.clip(adv_ratio.at[d, t], 0.5, 2.0))
             buys[t] = float(np.clip(a, ADD_MIN, ADD_MAX))
         pending = (sells, buys)
-    df = pd.DataFrame(rows, columns=["date", "ret", "exposure", "turnover", "beta_exp"]).set_index("date")
+    df = pd.DataFrame(rows, columns=["date", "ret", "exposure", "turnover", "beta_exp", "n_hold", "size"]).set_index("date")
     return df, exits
 
 
