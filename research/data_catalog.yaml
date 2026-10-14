@@ -1,0 +1,31 @@
+# 可用資料盤點（strategy-scout 判斷點子是否能在台股測試）
+# access：free（FinMind 免費等級或公開網站可直接抓）／paid（需付費）／manual（需另行下載或爬蟲）
+# used：本專案是否已使用
+datasets:
+  - {name: TaiwanStockPrice, source: FinMind, access: free, used: true, note: 日收盤、成交量、成交金額（未還原）}
+  - {name: TaiwanStockDividendResult + TaiwanStockSplitPrice, source: FinMind, access: free, used: true, note: 自行還原含息報酬}
+  - {name: TaiwanStockDividend, source: FinMind, access: free, used: true, note: 股利政策、除權息交易日與公告日}
+  - {name: TaiwanStockMonthRevenue, source: FinMind, access: free, used: true, note: 月營收；create_time 2026-05 起才等於公告日}
+  - {name: TaiwanStockFinancialStatements / BalanceSheet / CashFlowsStatement, source: FinMind, access: free, used: true, note: 季報；無實際公告日}
+  - {name: TaiwanStockMarginPurchaseShortSale, source: FinMind, access: free, used: true, note: 融資融券餘額}
+  - {name: TaiwanStockInstitutionalInvestorsBuySell, source: FinMind, access: free, used: true, note: 三大法人買賣超}
+  - {name: TaiwanStockShareholding, source: FinMind, access: free, used: true, note: 外資持股比例、已發行股數}
+  - {name: TaiwanStockSecuritiesLending, source: FinMind, access: free, used: true, note: 借券成交（費率、量）}
+  - {name: TaiwanDailyShortSaleBalances, source: FinMind, access: free, used: true, note: 借券賣出餘額與可用額度}
+  - {name: TaiwanStockTotalReturnIndex, source: FinMind, access: free, used: true, note: 加權指數含息}
+  - {name: TaiwanFuturesDaily, source: FinMind, access: free, used: true, note: 期貨日資料（台指期）}
+  - {name: TaiwanOptionDaily, source: FinMind, access: free, used: true, note: 選擇權日資料（自算台指 VIX）}
+  - {name: TaiwanFuturesInstitutionalInvestors, source: FinMind, access: free, used: false, note: 期貨三大法人未平倉（未驗證是否免費）}
+  - {name: TaiwanStockDayTrading, source: FinMind, access: free, used: false, note: 當沖成交（未驗證是否免費）}
+  - {name: TaiwanStockNews, source: FinMind, access: free, used: true, note: 新聞標題}
+  - {name: TaiwanStockHoldingSharesPer, source: FinMind, access: paid, used: false, note: 集保股權分散；集保開放資料只有最新一週}
+  - {name: TaiwanStockDispositionSecuritiesPeriod, source: FinMind, access: paid, used: false, note: 改用證交所／櫃買公開查詢}
+  - {name: TaiwanStockPriceAdj, source: FinMind, access: paid, used: false, note: 改用除權息自行還原}
+  - {name: TaiwanStockTradingDailyReport, source: FinMind, access: paid, used: false, note: 券商分點進出}
+  - {name: 處置有價證券, source: 證交所 /rwd/zh/announcement/punish、櫃買 /www/zh-tw/bulletin/disposal, access: free, used: true, note: analysis/fetch_events.py}
+  - {name: 注意股, source: 證交所 /rwd/zh/announcement/notice, access: free, used: false, note: 與處置同一系統}
+  - {name: 庫藏股買回, source: 公開資訊觀測站 t35sc09（/mops/api/redirectToOld）, access: free, used: true, note: analysis/fetch_events.py；其他 MOPS 彙總表可用同一方式抓}
+  - {name: 景氣指標與燈號, source: 國發會開放資料, access: free, used: true, note: data_cache/ndc}
+  - {name: 台指 VIX, source: 期交所, access: free, used: true, note: data_cache/taifex_vix}
+  - {name: 指數成分股調整（台灣 50、MSCI、富時）, source: 證交所新聞稿／指數公司公告, access: manual, used: false, note: 歷史異動需逐筆整理}
+  - {name: 董監持股與申報轉讓, source: 公開資訊觀測站, access: manual, used: false, note: 可試同一 redirectToOld 方式}

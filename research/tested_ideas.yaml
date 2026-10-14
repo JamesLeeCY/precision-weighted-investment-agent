@@ -1,0 +1,144 @@
+# 已測過的策略點子登錄表（strategy-scout 去重用；新研究完成後要補上）
+# status：effective（兩段顯著、可交易）／partial（有預測力但不能直接用）／candidate（待驗證）／failed（無效）
+# keywords：中英文關鍵字，供 research/scout.py dedup 比對（小寫、子字串比對）
+ideas:
+  - id: sue
+    name: 月營收驚奇 SUE
+    status: effective
+    keywords: [月營收驚奇, revenue surprise, sales surprise, unexpected revenue, standardized unexpected revenue, sue, 營收驚奇, post-revenue-announcement drift]
+    report: docs/revenue_surprise_report.md
+  - id: rec24
+    name: 營收創新高（÷ 前 24 個月最高）
+    status: effective
+    keywords: [營收創新高, record revenue, revenue high, 52-week high revenue, revenue momentum]
+    report: docs/revmom_persist_report.md
+  - id: fundamentals_agent
+    name: 財報 Agent（營收、毛利、存貨、應收）
+    status: partial
+    keywords: [財報, gross margin, inventory, receivable, accrual, 毛利率, 存貨週轉, 應收帳款]
+    report: forward/REPORT.md
+  - id: yoy_accel
+    name: 年增率加速、3 個月年增率
+    status: partial
+    keywords: [年增率加速, revenue acceleration, growth acceleration, 3-month yoy]
+    report: docs/revmom_persist_report.md
+  - id: lending
+    name: 借券賣出餘額比、借券費率、增量、需求量
+    status: partial
+    keywords: [借券, securities lending, short interest, lending fee, borrow fee, short sale balance, 借券賣出]
+    report: docs/lending_legs_report.md
+  - id: reversal_1d
+    name: 1 日短期反轉
+    status: partial
+    keywords: [短期反轉, short-term reversal, 1-day reversal, daily reversal]
+    report: docs/short_term_reversal_report.md
+  - id: business_cycle
+    name: 景氣燈號逆向擇時
+    status: partial
+    keywords: [景氣燈號, business cycle indicator, monitoring indicator, 景氣對策信號]
+    report: docs/business_cycle_timing_report.md
+  - id: post_ex_dividend
+    name: 除息後偏弱（高殖利率）
+    status: candidate
+    keywords: [除息, ex-dividend, dividend capture, 填息, post-ex-dividend, dividend drift, 高殖利率]
+    report: docs/dividend_events_report.md
+  - id: disposition
+    name: 處置股（做空與做多）
+    status: failed
+    keywords: [處置股, disposition, trading restriction, attention stock, 注意股, 處置有價證券]
+    report: docs/event_study_report.md
+  - id: buyback
+    name: 庫藏股買回
+    status: failed
+    keywords: [庫藏股, buyback, share repurchase, treasury stock, repurchase announcement]
+    report: docs/event_study_report.md
+  - id: sue_event_entry
+    name: 月營收依公告日提早進場
+    status: failed
+    keywords: [公告日, announcement day, early announcer, 提早公告, announcement timing]
+    report: docs/sue_event_entry_report.md
+  - id: eps_surprise
+    name: 季報盈餘驚奇
+    status: failed
+    keywords: [盈餘驚奇, earnings surprise, pead, post-earnings announcement drift, eps surprise]
+    report: docs/revenue_surprise_plus_report.md
+  - id: lowvol
+    name: 低波動、殘差波動
+    status: failed
+    keywords: [低波動, low volatility, idiosyncratic volatility, residual volatility, betting against beta, ivol]
+    report: docs/leg_pool_report.md
+  - id: liquidity
+    name: Amihud 非流動性、異常成交量
+    status: failed
+    keywords: [amihud, illiquidity, abnormal volume, 異常成交量, 流動性]
+    report: docs/leg_pool_report.md
+  - id: margin_short
+    name: 券資比、融券增量
+    status: failed
+    keywords: [券資比, 融券, margin trading, short ratio, 融資]
+    report: docs/leg_pool_report.md
+  - id: institutional
+    name: 投信買超、外資持股變化
+    status: failed
+    keywords: [投信, 外資, institutional flow, foreign investor, investment trust, 三大法人]
+    report: docs/leg_pool_report.md
+  - id: seasonality
+    name: 季節性、季節性動能
+    status: failed
+    keywords: [季節性, seasonality, same-month, seasonal momentum, heston sadka]
+    report: docs/reversal_signals_report.md
+  - id: momentum
+    name: 12-1 動能、持續性動能、frog-in-the-pan
+    status: failed
+    keywords: [動能, momentum, 12-1, frog in the pan, information discreteness, persistent momentum]
+    report: docs/revmom_persist_report.md
+  - id: reversal
+    name: 1 個月反轉、5 日反轉、殘差反轉
+    status: failed
+    keywords: [反轉, reversal, residual reversal, 1-month reversal, contrarian]
+    report: docs/reversal_signals_report.md
+  - id: overnight
+    name: 隔夜／盤中報酬拆解
+    status: failed
+    keywords: [隔夜, overnight return, intraday return, tug of war, 盤中]
+    report: docs/reversal_signals_report.md
+  - id: max_lottery
+    name: MAX／漲停濾網（彩券型股票）
+    status: failed
+    keywords: [max effect, lottery, 彩券, 漲停, skewness]
+    report: docs/max_rec_robust_report.md
+  - id: breakout
+    name: 連漲進場、連跌出場（技術面）
+    status: failed
+    keywords: [連漲, breakout, 均線, moving average, technical, 技術分析, trend following]
+    report: docs/sue_breakout_report.md
+  - id: valuation
+    name: 產業內相對估值
+    status: failed
+    keywords: [估值, valuation, value, book-to-market, pe ratio, 本益比, 股價淨值比]
+    report: docs/effective_signals.md
+  - id: supply_chain
+    name: 產業領先落後、供應鏈
+    status: failed
+    keywords: [供應鏈, supply chain, customer momentum, lead-lag, 產業領先落後, economic links]
+    report: docs/effective_signals.md
+  - id: news
+    name: 新聞情緒（含內文）
+    status: failed
+    keywords: [新聞, news sentiment, text, nlp, 情緒]
+    report: docs/effective_signals.md
+  - id: ma_timing
+    name: 均線擇時（0050）
+    status: failed
+    keywords: [擇時, market timing, 200-day, moving average timing, 均線擇時]
+    report: docs/timing_oos_report.md
+  - id: vix_timing
+    name: 台指 VIX 擇時與波動率管理
+    status: failed
+    keywords: [vix, implied volatility, volatility managed, 隱含波動率, variance risk premium, 波動率管理]
+    report: docs/vix_timing_report.md
+  - id: shareholding_dist
+    name: 集保股權分散（大戶持股）
+    status: failed
+    keywords: [股權分散, 集保, 大戶, shareholder concentration, holding distribution]
+    report: docs/max_rec_robust_report.md
