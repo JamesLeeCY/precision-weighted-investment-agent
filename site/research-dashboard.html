@@ -175,7 +175,7 @@ footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--rule);
   <h2>重點結論</h2>
   <div class="findings">
     <div class="finding">
-      <span class="lab">月營收驚奇 SUE 的選股能力：產業內 IC（2019–2022）</span>
+      <span class="lab">月營收驚奇 SUE 的選股能力：產業內 IC（2019–2022）<a href="#sue-method" style="margin-left:6px">怎麼算？</a></span>
       <span class="big">+0.032</span>
       <span class="small">IC = 同產業內「訊號排名」與「之後 20 個交易日報酬排名」的相關係數（−1～1，0 = 沒有預測力）。t 2.0（統計上顯著）；2023–2026 為 +0.059（t 2.9）。換成組合：與 0050 擇時部位各半混合，Sharpe 0.88 / 2.64，高於 0050 買進持有的 0.75 / 2.40（擇時規則後經 2004 年起的樣本外驗證沒有可靠優勢，混合的好處主要來自選股部位）。</span>
       <span class="verdict v-yes">✓ 第一個兩段期間都顯著的訊號</span>
@@ -229,6 +229,19 @@ footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--rule);
       <div class="kv"><span class="k">為正起點（例如 21/21）</span><span class="small">每 21 個交易日換倉一次時，起始日不同結果會不同；括號表示 21 種起始日中有幾種為正。</span></div>
       <div class="kv"><span class="k">純 alpha（台指期對沖）</span><span class="small">做多組合的每日報酬減去 β × 台指期近月報酬（β = 持股對大盤的 250 日敏感度），扣股票與期貨成本；理想上去掉大盤漲跌，只剩選股。超額 Sharpe 再減去「同樣方式持有整個股票池」，去掉權重方式造成的結構差。</span></div>
       <div class="kv"><span class="k">0050</span><span class="small">元大台灣 50 ETF，作為大盤基準；「0050 擇時」指 0050 跌破 200 日均線時轉為現金（2004 年起的樣本外驗證顯示擇時只能降低回撤，Sharpe 與報酬沒有可靠優勢）。</span></div>
+    </div>
+  </details>
+  <details class="detail" id="sue-method">
+    <summary><h3 style="display:inline">月營收驚奇（SUE）怎麼算</h3></summary>
+    <p class="muted" style="margin-top:10px">SUE（Standardized Unexpected Revenue）衡量「這個月的營收年增，相對於這家公司平常的年增表現，意外了多少」。做法比照學術上的標準化未預期盈餘（Foster、Olsen、Shevlin 1984），把季盈餘換成台灣特有的月營收。程式：<code>data/revenue_signal.py</code>。</p>
+    <div class="grid2">
+      <div class="kv"><span class="k">1. 年增金額</span><span class="small mono">D<sub>k</sub> = R<sub>k</sub> − R<sub>k−12</sub></span><span class="small">R<sub>k</sub> 為第 k 月營收（元）；和去年同月比，消除農曆年、旺季淡季等季節性。</span></div>
+      <div class="kv"><span class="k">2. 平常的年增</span><span class="small mono">μ、σ = D<sub>m−1</sub> … D<sub>m−24</sub> 的平均、標準差</span><span class="small">只用本月以前的 24 個月（至少 12 個月），不含本月本身。</span></div>
+      <div class="kv"><span class="k">3. SUE</span><span class="small mono">SUE<sub>m</sub> = (D<sub>m</sub> − μ) ÷ σ</span><span class="small">扣掉平均：穩定成長的公司年增大是預期之內；除以標準差：營收波動大的公司（例如金控）之間才能比較。</span></div>
+      <div class="kv"><span class="k">例子</span><span class="small">9 月營收 120 億、去年 9 月 100 億 → D = +20 億；過去 24 個月年增平均 +5 億、標準差 6 億 → SUE = (20 − 5) ÷ 6 = <b>2.5</b>，比平常多 2.5 個標準差，屬很大的正向意外。</span></div>
+      <div class="kv"><span class="k">時點（避免偷看未來）</span><span class="small">上市櫃公司須在次月 10 日前公告上月營收。第 m 月營收在 m+1 月「10 日或之後第一個交易日」（公告期限）的下一個交易日才使用、以收盤進場。前瞻驗證另只採用期限前收錄的營收，15 日才申報的金控當期沒有分數。</span></div>
+      <div class="kv"><span class="k">從 SUE 到選股分數</span><span class="small">產業內轉成 z 分數 → 對產業與 log 市值迴歸取殘差（去掉產業與規模的影響）→ 每個產業內做多前 1/3、放空後 1/3（只放空借得到的股票），每 3 個月分批換倉。</span></div>
+      <div class="kv"><span class="k">預測力</span><span class="small">產業內 IC（同產業內 SUE 排名與之後 20 個交易日報酬排名的相關，−1～1）約 +0.05，2019–2022、2023–2026 兩段都顯著（t ≈ 4）；有用但不強，單一個股將近一半機會與預測方向相反。</span></div>
     </div>
   </details>
 </section>
