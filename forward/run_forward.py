@@ -443,6 +443,22 @@ def run_fv4_auto() -> tuple[bool, list[str]]:
     return False, []
 
 
+def run_fv5_auto() -> tuple[bool, list[str]]:
+    """前瞻規格 fv5（同 fv3、市值前 500 檔，forward/run_forward_fv5.py）；與 fv3 共用快照，在 fv3 / fv4 之後執行；
+    預測日只多約 1,400 次 FinMind；失敗只記錄。"""
+    try:
+        from forward import run_forward_fv5 as fv5
+
+        if not fv5.SPEC_PATH.exists():
+            return False, []
+        return fv5.auto(), fv5.PUBLISH_FILES
+    except SystemExit as exc:
+        print(f"[auto] fv5 略過：{exc}")
+    except Exception as exc:  # noqa: BLE001
+        print(f"[auto] fv5 失敗（fv1 ~ fv4 照常）：{type(exc).__name__}: {str(exc)[:200]}")
+    return False, []
+
+
 def git_publish(message: str, push: bool, extra_files: list[str] | None = None) -> None:
     """只 commit 前瞻紀錄（與網站）檔案，不動工作區其他修改，並在本機領先時 push。"""
     files = PUBLISH_FILES + (extra_files or [])
@@ -499,7 +515,11 @@ def cmd_auto(args) -> None:
     fv4_changed, fv4_files = run_fv4_auto()
     if fv3_changed or fv4_changed:
         git_publish(f"forward fv3/fv4: auto update {today}", push=args.push, extra_files=fv3_files + fv4_files)
-    print(f"[auto] {now_utc()} 結束（{'有更新' if changed or fv2_changed or fv3_changed or fv4_changed else '無更新'}）")
+    fv5_changed, fv5_files = run_fv5_auto()
+    if fv5_changed:
+        git_publish(f"forward fv5: auto update {today}", push=args.push, extra_files=fv5_files)
+    any_change = changed or fv2_changed or fv3_changed or fv4_changed or fv5_changed
+    print(f"[auto] {now_utc()} 結束（{'有更新' if any_change else '無更新'}）")
 
 
 def main(argv=None) -> None:

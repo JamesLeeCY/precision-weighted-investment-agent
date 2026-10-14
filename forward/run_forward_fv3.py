@@ -145,7 +145,7 @@ def source_hashes() -> dict[str, str]:
 def git_state() -> tuple[str, bool]:
     try:
         commit = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT, capture_output=True, text=True, check=True).stdout.strip()
-        excludes = [f":(exclude){p}" for p in PUBLISH_FILES[1:] + fv2.PUBLISH_FILES + fv1.PUBLISH_FILES + fv1.SITE_FILES + ["forward/fv4"]]
+        excludes = [f":(exclude){p}" for p in PUBLISH_FILES[1:] + fv2.PUBLISH_FILES + fv1.PUBLISH_FILES + fv1.SITE_FILES + ["forward/fv4", "forward/fv5"]]
         dirty = bool(subprocess.run(["git", "status", "--porcelain", "--untracked-files=no", "--", ".", *excludes],
                                     cwd=ROOT, capture_output=True, text=True, check=True).stdout.strip())
         return commit, dirty
