@@ -300,6 +300,7 @@ notebooks/              校準分析 notebook
 ## 文件
 
 - **[目前有效的訊號總覽](docs/effective_signals.md)** — 有效（月營收驚奇、營收創新高）、部分有效、無效的訊號與前瞻驗證狀態（2026-10-14）
+- [2026 第四季模型排名與產業營收趨勢](docs/outlook_2026q4.md) — 依 10/13 前瞻預測（fv4 / fv5）與 9 月營收整理（研究輸出，非投資建議）
 
 - **[研究網站（公開版）](https://jamesleecy.github.io/precision-weighted-investment-agent/)**（GitHub Pages，`main` 分支根目錄的 `index.html`）。
   原始檔 [site/research-dashboard.html](site/research-dashboard.html) 為單一 HTML（下載後用瀏覽器開啟）：目前股票池、
