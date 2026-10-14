@@ -1,0 +1,4 @@
+id,title,status,priority,test_type,data_access,est_api_calls,keywords,created,path
+I001,臺灣50（0050）季度換股：用市值排名事前預測納入／刪除,待確認,A,事件研究,free（預測名單）＋manual（實際異動）,約 0（價格與股本已在快取）,臺灣50;0050;006208;成分股調整;指數納入;指數刪除;換股;市值排名;index inclusion;index rebalancing;price pressure;FTSE TWSE Taiwan 50,2026-10-14,research/ideas/I001-tw50-rebalance-predicted.md
+I002,MSCI 季度調整：台股標準指數納入／刪除的公告到生效效果,待確認,B,事件研究,free,FinMind 約 0（價格、外資持股已快取）；證交所網站約 40 次（8 年列表＋約 31 篇新聞稿內文）,MSCI;季調;MSCI 季度調整;成分股調整;指數納入;外資被動資金;index inclusion;MSCI rebalancing;emerging markets;price pressure,2026-10-14,research/ideas/I002-msci-taiwan-rebalance.md
+I003,高股息 ETF 換股（0056／00878／00919 等）公告後的價格壓力與生效後反轉,待確認,B,事件研究,free（TIP 公告）＋manual（0056、00878 異動與 ETF 規模）,約 0（價格已快取）；TIP 公告 PDF 約 100–200 次網站請求,高股息 ETF;0056;00878;00919;換股;成分股調整;資金衝擊;價格壓力;ETF rebalancing;high dividend ETF;price pressure;Taiwan Index Plus,2026-10-14,research/ideas/I003-high-dividend-etf-rebalance.md

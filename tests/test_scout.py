@@ -14,6 +14,9 @@ def test_registry_and_catalog_load():
     assert all({"id", "name", "status", "keywords", "report"} <= set(i) for i in ideas)
     for i in ideas:
         assert (ROOT / i["report"]).exists(), i["report"]
+    import yaml
+    cat = yaml.safe_load((ROOT / "research" / "data_catalog.yaml").read_text(encoding="utf-8"))["datasets"]
+    assert all({"name", "source", "access", "used", "note"} <= set(d) for d in cat)
 
 
 def test_dedup_hits_tested_idea(monkeypatch, tmp_path):

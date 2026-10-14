@@ -101,12 +101,14 @@ def _openalex_abstract(inv: dict | None) -> str:
     return " ".join(w for _, w in pos)
 
 
-def openalex(query: str, n: int, since: int) -> list[dict]:
+def openalex(query: str, n: int, since: int, sort: str = "relevance") -> list[dict]:
+    """只搜標題與摘要（全文搜尋常混入無關領域）；sort = relevance 或 cited（引用數，找經典文獻）。"""
     def fetch():
         r = _get("https://api.openalex.org/works", params={
-            "search": query, "per-page": n * 2,
-            "filter": f"from_publication_date:{since}-01-01,concepts.id:C10138342",   # Finance
-            "sort": "relevance_score:desc", "mailto": "research-scout@example.invalid"})
+            "per-page": n * 2,
+            "filter": f"title_and_abstract.search:{query},from_publication_date:{since}-01-01,concepts.id:C10138342",   # Finance
+            "sort": "cited_by_count:desc" if sort == "cited" else "relevance_score:desc",
+            "mailto": "research-scout@example.invalid"})
         out = []
         for w in r.json().get("results", []):
             loc = (w.get("primary_location") or {}).get("source") or {}
@@ -115,14 +117,14 @@ def openalex(query: str, n: int, since: int) -> list[dict]:
                         "cited": w.get("cited_by_count"), "url": w.get("doi") or w.get("id"),
                         "abstract": _clip(_openalex_abstract(w.get("abstract_inverted_index")), 700)})
         return out
-    return _cached(f"openalex|{query}|{n}|{since}", fetch)[:n]
+    return _cached(f"openalex2|{query}|{n}|{since}|{sort}", fetch)[:n]
 
 
 def cmd_lit(a):
     rows = []
     for fn in (openalex, arxiv):
         try:
-            rows += fn(a.query, a.n, a.since)
+            rows += fn(a.query, a.n, a.since, a.sort) if fn is openalex else fn(a.query, a.n, a.since)
         except Exception as e:  # noqa: BLE001
             print(f"[{fn.__name__}] 失敗：{type(e).__name__} {e}", file=sys.stderr)
     for k, x in enumerate(rows, 1):
@@ -167,11 +169,19 @@ def cmd_blogs(a):
 # ---------------------------------------------------------------------------
 
 def cmd_ptt(a):
+    """PTT 搜尋只吃單一關鍵字：多詞時以第一個詞搜尋，其餘詞用來過濾標題。"""
+    words = a.query.split()
+
     def fetch():
         out = []
         for page in range(1, a.pages + 1):
-            r = _get(f"https://www.ptt.cc/bbs/{a.board}/search", params={"q": a.query, "page": page},
-                     cookies={"over18": "1"})
+            try:
+                r = _get(f"https://www.ptt.cc/bbs/{a.board}/search", params={"q": words[0], "page": page},
+                         cookies={"over18": "1"})
+            except requests.HTTPError as e:
+                if e.response is not None and e.response.status_code == 404:
+                    break                                    # 沒有下一頁
+                raise
             for blk in re.findall(r'<div class="r-ent">(.*?)</div>\s*</div>\s*</div>', r.text, flags=re.S):
                 m = re.search(r'<a href="([^"]+)">(.*?)</a>', blk)
                 if not m:
@@ -181,7 +191,8 @@ def cmd_ptt(a):
                 out.append({"title": html.unescape(m.group(2)).strip(), "url": "https://www.ptt.cc" + m.group(1),
                             "push": (push.group(1).strip() if push else ""), "date": (date.group(1).strip() if date else "")})
         return out
-    rows = _cached(f"ptt|{a.board}|{a.query}|{a.pages}", fetch, max_age_h=12)
+    rows = _cached(f"ptt|{a.board}|{words[0]}|{a.pages}", fetch, max_age_h=12)
+    rows = [x for x in rows if all(w.lower() in x["title"].lower() for w in words[1:])]
     for k, x in enumerate(rows, 1):
         print(f"P{k}. [{x['push'] or '0'}] {x['date']} {x['title']}  {x['url']}")
     print(f"共 {len(rows)} 筆（推文數為熱度參考；內文請用網頁讀取，只當假設來源）")
@@ -289,7 +300,8 @@ def cmd_card(a):
 def main(argv=None):
     p = argparse.ArgumentParser(description="strategy-scout 工具")
     sub = p.add_subparsers(dest="cmd", required=True)
-    s = sub.add_parser("lit"); s.add_argument("query"); s.add_argument("--n", type=int, default=10); s.add_argument("--since", type=int, default=2005)
+    s = sub.add_parser("lit"); s.add_argument("query"); s.add_argument("--n", type=int, default=10); s.add_argument("--since", type=int, default=1980)
+    s.add_argument("--sort", choices=["relevance", "cited"], default="relevance")
     s = sub.add_parser("blogs"); s.add_argument("--q", default=""); s.add_argument("--n", type=int, default=30)
     s = sub.add_parser("ptt"); s.add_argument("query"); s.add_argument("--board", default="Stock"); s.add_argument("--pages", type=int, default=1)
     s = sub.add_parser("dedup"); s.add_argument("text")
