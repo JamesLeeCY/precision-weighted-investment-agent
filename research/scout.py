@@ -210,7 +210,7 @@ def dedup_matches(text: str) -> list[tuple[int, dict, list[str]]]:
     t = text.lower()
     out = []
     for idea in load_tested():
-        hits = [k for k in idea["keywords"] if k.lower() in t]
+        hits = [str(k) for k in idea["keywords"] if str(k).lower() in t]
         if hits:
             out.append((len(hits), idea, hits))
     if IDEAS_CSV.exists():

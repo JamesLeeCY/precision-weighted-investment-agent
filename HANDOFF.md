@@ -136,6 +136,7 @@
 - **前瞻規格**：fv3、fv4、fv5 凍結與回填（docs/forward_validation.md）。
 - **未採用**：腿池 10 條價量／籌碼腿、連漲進場／連跌出場與漲幅加權（高波動傾斜）、隔夜／盤中、殘差反轉、季節性動能、持續性動能、MAX 濾網、借券腿（docs/lending_legs_report.md）、依公告日提早進場（扣成本前 +2%／年、扣成本後略輸，docs/sue_event_entry_report.md）、庫藏股買回（隔日開盤即反映，docs/event_study_report.md）。
 - **除權息**：除息前布局、填息無效；除息後偏弱在兩段與驗證樣本皆通過（高殖利率 20 日約 −2.4%），事後追加的放空策略 D 兩樣本 Sharpe 1.0–1.4，建議檢查可借量後凍結為 fv6、並測試作為 SUE 做多濾網（docs/dividend_events_report.md）。
+- **指數換股**（strategy-scout 點子卡 I001–I003）：臺灣50 預測命中 95% 但 2023 後無效；高股息 ETF 無效；MSCI 公告到生效 +5.5%（t 2.1）勉強通過、樣本少，建議前瞻記錄（docs/index_rebalance_report.md）。
 - **處置股做多**：前 500 名處置後 20 日 +5.3%（t 4.4），但為事後發現；在市值第 501–1000 名獨立驗證未通過（+2.8%，2019–2022 t 1.7），不採用（docs/event_study_report.md、docs/disposition_replication.md）。
 - **擇時**：均線擇時樣本外無優勢（docs/timing_oos_report.md）；景氣燈號（docs/business_cycle_timing_report.md）、台指 VIX（docs/vix_timing_report.md）皆不顯著；改用台指期執行成本降到約 0.1%／年，仍無規則勝過同曝險固定比例，可用於降低回撤（docs/timing_futures_report.md）。
 - **其他**：2026 第四季模型排名與產業營收趨勢（docs/outlook_2026q4.md）；回測中延後申報金控的營收時點有輕微前視（docs/effective_signals.md）。

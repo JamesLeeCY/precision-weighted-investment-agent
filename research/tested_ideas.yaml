@@ -42,6 +42,21 @@ ideas:
     status: candidate
     keywords: [除息, ex-dividend, dividend capture, 填息, post-ex-dividend, dividend drift, 高殖利率]
     report: docs/dividend_events_report.md
+  - id: index_tw50
+    name: 臺灣50 季度換股（實際與事前預測名單）
+    status: failed
+    keywords: [臺灣50, "0050", taiwan 50, ftse twse, 成分股調整, index inclusion, index deletion, index rebalancing, 指數納入]
+    report: docs/index_rebalance_report.md
+  - id: index_msci
+    name: MSCI 臺灣指數季度調整（公告到生效）
+    status: candidate
+    keywords: [msci, 季調, msci rebalancing, msci inclusion, msci 季度調整]
+    report: docs/index_rebalance_report.md
+  - id: index_hidiv
+    name: 高股息 ETF 換股（0056／00878／00919）
+    status: failed
+    keywords: [高股息 etf, "0056", "00878", "00919", etf rebalancing, high dividend etf, 換股]
+    report: docs/index_rebalance_report.md
   - id: disposition
     name: 處置股（做空與做多）
     status: failed
