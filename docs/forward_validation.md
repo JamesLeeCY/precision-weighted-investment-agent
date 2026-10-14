@@ -209,3 +209,19 @@ git add forward/ && git commit -m "forward: YYYY-MM prediction" && git push
 .venv/Scripts/python forward/run_forward_fv4.py schedule
 .venv/Scripts/python forward/run_forward_fv4.py report
 ```
+
+# 前瞻驗證 fv5：fv3 建構、市值前 500 檔
+
+| | |
+|---|---|
+| 規格 | [forward/fv5/spec.yaml](../forward/fv5/spec.yaml)（2026-10-14 凍結於 git `c5afa73`） |
+| 程式 | [forward/run_forward_fv5.py](../forward/run_forward_fv5.py)（由 fv3 程式產生；規則函式與 fv3 完全相同，程式碼指紋一致，只有常數 `TOP_N = 500`） |
+| 紀錄 | `forward/fv5/`（同 fv3 的 predictions / segments / periods）；只能新增 |
+| 報告 | [forward/fv5/REPORT.md](../forward/fv5/REPORT.md) |
+| 依據 | [top500_report.md](top500_report.md)：前 500 檔 SUE 等權多空 1.45 / 1.87（前 300 檔 0.93 / 1.79） |
+
+- **主要指標（事先登錄）**：組合每段淨報酬；回測平均 +0.61%／段、標準差 1.42%（85 段，t 4.0）；12 段警訊、24 段（約 2 年）正式檢定 t > 2。
+- **與 fv3 比較**：同期 fv5 − fv3 只作描述，不作為確認條件。
+- **共用資料**：讀 fv3 的快照快取，由 auto 在 fv3 / fv4 之後執行；預測日只多約 200 檔 × 7 ≈ 1,400 次 FinMind。
+- **注意**：前 500 檔是看過前 300 檔結果後才測的，回測數字已含選擇偏誤。
+- 回填 2026-05 ~ 09（backfill）與 2026-10-13（live）；回填期間 `forward/fv5/BACKFILL_PENDING` 存在時 auto 略過 fv5。
