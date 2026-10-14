@@ -55,7 +55,8 @@ PREDICTIONS = FV5_DIR / "predictions.csv"
 SEGMENTS = FV5_DIR / "segments.csv"
 PERIODS = FV5_DIR / "periods.csv"
 REPORT = FV5_DIR / "REPORT.md"
-PUBLISH_FILES = [str(p.relative_to(ROOT)).replace("\\", "/") for p in (SPEC_PATH, PREDICTIONS, SEGMENTS, PERIODS, REPORT)]
+CORRECTIONS = REPORT.parent / "corrections.csv"  # 紀錄更正（只新增；原紀錄不改）
+PUBLISH_FILES = [str(p.relative_to(ROOT)).replace("\\", "/") for p in (SPEC_PATH, PREDICTIONS, SEGMENTS, PERIODS, REPORT, CORRECTIONS)]
 MEMBERSHIP = ROOT / "config" / "universe_mcap_membership.csv"
 TOP_N = 500
 N_TRANCHE = 3
@@ -406,7 +407,8 @@ def cmd_resolve(args) -> int:
                              "resolved_utc": fv1.now_utc(), "git_commit": commit})
         book = (pd.concat(daily, axis=1).sum(axis=1) / N_TRANCHE) if daily else pd.Series(dtype=float)
         batch = preds[preds["as_of_date"] == a_s]
-        fwd = adj.reindex(columns=batch["ticker"]).pipe(lambda x: x.asof(b) / x.loc[a] - 1 if a in x.index else pd.Series(dtype=float))
+        # 每檔各自取 b 以前最後一個價格（DataFrame.asof 會整列退回到「所有股票都有值」的日期，2026-10-14 修正）
+        fwd = adj.reindex(columns=batch["ticker"]).pipe(lambda x: x.ffill().loc[b] / x.loc[a] - 1 if a in x.index else pd.Series(dtype=float))
         g = batch.assign(fwd=batch["ticker"].map(fwd))
         ic = lp.within_ic(g.set_index("ticker")["score"], g.set_index("ticker")["fwd"], g.set_index("ticker")["sector"])
         fv1.append_csv(SEGMENTS, pd.DataFrame(seg_rows), SEGMENT_COLUMNS)
@@ -423,6 +425,14 @@ def cmd_report(args) -> None:
     spec = load_spec()
     preds = fv1.read_csv(PREDICTIONS, PRED_COLUMNS)
     per = fv1.read_csv(PERIODS, PERIOD_COLUMNS)
+    corrected = set()
+    if CORRECTIONS.exists() and len(per):
+        cor = pd.read_csv(CORRECTIONS, dtype={"seg_start": str})
+        for c in cor.itertuples():
+            m = per["seg_start"] == c.seg_start
+            if m.any() and c.field in per.columns:
+                per.loc[m, c.field] = float(c.corrected)
+                corrected.add(c.seg_start)
     exp = spec["preregistration"]["backtest_expectation"]
     lines = ["# 前瞻驗證報告 fv5：月營收驚奇等權多空，市值前 500 檔（自動產生）", "",
              f"- 規格：`fv5`（凍結於 {spec['frozen_utc']}，git `{spec['frozen_git_commit'][:8]}`）；產生時間 {fv1.now_utc()}",
@@ -438,11 +448,14 @@ def cmd_report(args) -> None:
             lines.append(f"| {label} | 尚無資料 | | |")
     lines += ["", "## 各段", "", "| 段落 | mode | 在場資金份數 | 組合淨報酬 | 產業內 IC | 0050 |", "|---|---|---|---|---|---|"]
     for r in per.itertuples():
-        lines.append(f"| {r.seg_start} → {r.seg_end} | {r.mode} | {int(r.n_active)} | {r.book_net * 100:+.2f}% | {r.ic:+.3f} | {r.b0050 * 100:+.2f}% |")
+        lines.append(f"| {r.seg_start} → {r.seg_end} | {r.mode} | {int(r.n_active)} | {r.book_net * 100:+.2f}% | {r.ic:+.3f}{'（已更正）' if r.seg_start in corrected else ''} | {r.b0050 * 100:+.2f}% |")
     lines += ["", "## 各預測日", "", "| 預測日 | mode | 資金份 | 做多檔數 | 放空檔數 | 可借比例（全部成員） | β |", "|---|---|---|---|---|---|---|"]
     for a, bt in preds.groupby("as_of_date"):
         lines.append(f"| {a} | {bt['mode'].iloc[0]} | {int(bt['tranche'].iloc[0]) + 1} | {(bt['weight'] > 0).sum()} | {(bt['weight'] < 0).sum()} | "
                      f"{bt['shortable'].mean():.0%} | {bt['tranche_beta'].iloc[0]:+.2f} |")
+    if corrected:
+        lines += ["", f"註：標示「已更正」的產業內 IC 原紀錄有誤（結算程式用 DataFrame.asof 取期末價，遇停牌股會整列退回較早日期），"
+                  f"更正值見 `{CORRECTIONS.name}`；原紀錄保留不改。主要指標（每段淨報酬）不受影響。"]
     lines += ["", "## 事先登錄的評估方式", ""] + [f"- {e}" for e in spec["preregistration"]["evaluation"]]
     REPORT.write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(f"fv5 報告 → {REPORT}")
