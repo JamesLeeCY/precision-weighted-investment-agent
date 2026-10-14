@@ -121,7 +121,7 @@
 
 ### 二、待使用者決定
 4. **每週累積集保股權分散資料**：FinMind 為付費、集保開放資料只有最新一週，無法回測；可新增每週排程自行累積，1–2 年後才能測（docs/max_rec_robust_report.md）。
-5. **擴大到前 1000 檔**（也可用來獨立驗證處置股做多，docs/event_study_report.md）：前 500 檔時 SUE 更強（1.45 / 1.87），可檢查是否持續；約 4,000 次以上 FinMind（docs/top500_report.md）。
+5. **擴大到前 1000 檔**：前 500 檔時 SUE 更強（1.45 / 1.87），可檢查是否持續；約 4,000 次以上 FinMind（docs/top500_report.md）。
 6. **對沖方式或主要指標**：以中型股 ETF 對沖，或主要指標回到「相對 0050」。
 7. **追蹤「0050 長期持有 + SUE 多空」混合**：多空部分已由 fv3 / fv5 記錄，可直接在前瞻報告中合成（回測 50/50：1.01 / 2.13，0050 0.73 / 1.90；docs/blend_longonly_report.md）。
 
@@ -135,7 +135,7 @@
 - **組合建構**：台指期對沖的等權做多有結構差（docs/leg_pool_report.md）；市值加權稀釋選股（docs/hedge_construction_report.md）；等權多空 + 可借量（docs/borrow_capacity_report.md）；每 3 個月換倉與起點穩健性（docs/ls_turnover_report.md、docs/ls_offsets_top300.md）；前 500 檔（docs/top500_report.md）；做多每 3 個月換手減半（docs/blend_longonly_report.md）。
 - **前瞻規格**：fv3、fv4、fv5 凍結與回填（docs/forward_validation.md）。
 - **未採用**：腿池 10 條價量／籌碼腿、連漲進場／連跌出場與漲幅加權（高波動傾斜）、隔夜／盤中、殘差反轉、季節性動能、持續性動能、MAX 濾網、借券腿（docs/lending_legs_report.md）、依公告日提早進場（扣成本前 +2%／年、扣成本後略輸，docs/sue_event_entry_report.md）、庫藏股買回（隔日開盤即反映，docs/event_study_report.md）。
-- **候選（待驗證）**：處置股做多——處置後 20 日 +5.3%（t 4.4，兩段顯著），但為事後發現、由投機熱潮主導、波動約 50%；建議在市值第 501–1000 名重做並前瞻記錄（docs/event_study_report.md）。
+- **處置股做多**：前 500 名處置後 20 日 +5.3%（t 4.4），但為事後發現；在市值第 501–1000 名獨立驗證未通過（+2.8%，2019–2022 t 1.7），不採用（docs/event_study_report.md、docs/disposition_replication.md）。
 - **擇時**：均線擇時樣本外無優勢（docs/timing_oos_report.md）；景氣燈號（docs/business_cycle_timing_report.md）、台指 VIX（docs/vix_timing_report.md）皆不顯著；改用台指期執行成本降到約 0.1%／年，仍無規則勝過同曝險固定比例，可用於降低回撤（docs/timing_futures_report.md）。
 - **其他**：2026 第四季模型排名與產業營收趨勢（docs/outlook_2026q4.md）；回測中延後申報金控的營收時點有輕微前視（docs/effective_signals.md）。
 
