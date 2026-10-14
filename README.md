@@ -299,6 +299,8 @@ notebooks/              校準分析 notebook
 
 ## 文件
 
+- **[目前有效的訊號總覽](docs/effective_signals.md)** — 有效（月營收驚奇、營收創新高）、部分有效、無效的訊號與前瞻驗證狀態（2026-10-14）
+
 - **[研究網站（公開版）](https://jamesleecy.github.io/precision-weighted-investment-agent/)**（GitHub Pages，`main` 分支根目錄的 `index.html`）。
   原始檔 [site/research-dashboard.html](site/research-dashboard.html) 為單一 HTML（下載後用瀏覽器開啟）：目前股票池、
   Agent 架構圖、2026 前瞻股票池 100 檔的財報特徵與預測、前瞻驗證 IC。
