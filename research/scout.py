@@ -237,9 +237,9 @@ def cmd_data(a):
 
         dotenv.load_dotenv(ROOT / ".env")
         tok = os.environ.get("FINMIND_API_TOKEN", "")
-        params = {"dataset": a.probe, "start_date": (dt.date.today() - dt.timedelta(days=10)).isoformat()}
-        if a.data_id:
-            params["data_id"] = a.data_id
+        # 非每日資料（股利、財報）在短期間內可能 0 筆：預設往回 400 天，並建議帶 --data-id（例如 2330）
+        params = {"dataset": a.probe, "start_date": (dt.date.today() - dt.timedelta(days=a.days)).isoformat(),
+                  "data_id": a.data_id or "2330"}
         r = requests.get("https://api.finmindtrade.com/api/v4/data", params=params,
                          headers={"Authorization": f"Bearer {tok}"}, timeout=60)
         j = r.json() if r.headers.get("content-type", "").startswith("application/json") else {}
@@ -305,7 +305,7 @@ def main(argv=None):
     s = sub.add_parser("blogs"); s.add_argument("--q", default=""); s.add_argument("--n", type=int, default=30)
     s = sub.add_parser("ptt"); s.add_argument("query"); s.add_argument("--board", default="Stock"); s.add_argument("--pages", type=int, default=1)
     s = sub.add_parser("dedup"); s.add_argument("text")
-    s = sub.add_parser("data"); s.add_argument("keyword", nargs="?"); s.add_argument("--probe"); s.add_argument("--data-id")
+    s = sub.add_parser("data"); s.add_argument("keyword", nargs="?"); s.add_argument("--probe"); s.add_argument("--data-id"); s.add_argument("--days", type=int, default=400)
     s = sub.add_parser("card"); s.add_argument("json")
     a = p.parse_args(argv)
     {"lit": cmd_lit, "blogs": cmd_blogs, "ptt": cmd_ptt, "dedup": cmd_dedup, "data": cmd_data, "card": cmd_card}[a.cmd](a)
