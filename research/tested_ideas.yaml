@@ -42,6 +42,11 @@ ideas:
     status: candidate
     keywords: [除息, ex-dividend, dividend capture, 填息, post-ex-dividend, dividend drift, 高殖利率]
     report: docs/dividend_events_report.md
+  - id: dividend_surprise
+    name: 股利政策公告驚奇（董事會決議日）
+    status: failed
+    keywords: [股利驚奇, dividend surprise, dividend change, dividend initiation, dividend omission, 加配, 減配, 停配, 股利政策]
+    report: docs/dividend_surprise_report.md
   - id: sue_attention
     name: 月營收驚奇 × 低法人關注（條件分組與加權）
     status: failed
