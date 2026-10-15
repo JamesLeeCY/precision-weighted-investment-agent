@@ -16,7 +16,10 @@ datasets:
   - {name: TaiwanFuturesDaily, source: FinMind, access: free, used: true, note: 期貨日資料（台指期）}
   - {name: TaiwanOptionDaily, source: FinMind, access: free, used: true, note: 選擇權日資料（自算台指 VIX）}
   - {name: TaiwanFuturesInstitutionalInvestors, source: FinMind, access: free, used: false, note: 期貨三大法人未平倉（未驗證是否免費）}
-  - {name: TaiwanStockDayTrading, source: FinMind, access: free, used: false, note: 當沖成交（未驗證是否免費）}
+  - {name: TaiwanStockDayTrading, source: FinMind, access: free, used: false, note: 當沖成交股數與買賣金額；免費但只能逐檔查（不帶代號回 400）；2014-01 起，部分上櫃股有缺日}
+  - {name: 當日沖銷交易標的及統計（上市）, source: "證交所 /rwd/zh/dayTrading/TWTB4U?date=YYYYMMDD&selectType=All&response=json", access: free, used: false, note: 一天一次請求取得全部上市股票，2014-01-06 起；只有上市}
+  - {name: 法人說明會一覽表, source: "公開資訊觀測站 ajax_t100sb02_1（經 /mops/api/redirectToOld，每市場每年一次）", access: free, used: false, note: 召開日期、時間、地點、擇要訊息、簡報檔名；沒有公告日期欄位；2019 年起申報較完整}
+  - {name: 重大訊息全文檢索, source: "公開資訊觀測站 ajax_t51sb10（POST 舊站，可依關鍵字、市場、全年查詢，一頁 100 筆；結果列為大寫 <TR>）", access: free, used: false, note: 含發言日期與時間；可取得現金增資、可轉債董事會決議等事件（主旨需事前固定的分類規則），也可補法說會公告日}
   - {name: TaiwanStockNews, source: FinMind, access: free, used: true, note: 新聞標題}
   - {name: TaiwanStockHoldingSharesPer, source: FinMind, access: paid, used: false, note: 集保股權分散；集保開放資料只有最新一週}
   - {name: TaiwanStockDispositionSecuritiesPeriod, source: FinMind, access: paid, used: false, note: 改用證交所／櫃買公開查詢}
@@ -31,4 +34,5 @@ datasets:
   - {name: TIP 自編指數（含 00919 指數）成分異動, source: "臺灣指數公司 backend.taiwanindex.com.tw/api/downloads/technical_notices?per_page=100&page=N", access: free, used: false, note: 公告 PDF 列出納入／刪除；FTSE TWSE 系列（臺灣50、高股息）只到 2019-01}
   - {name: 臺灣50／0056 成分異動（2019 以後）, source: "新聞、PTT「[情報] 成分股調整」", access: manual, used: false, note: 需手動整理；臺灣50可用市值排名規則事前預測（正式編製規則待確認）}
   - {name: 股利分派情形彙總表（董事會決議日）, used: true, source: "公開資訊觀測站 mopsov.twse.com.tw/server-java/t05st09sub?YEAR=<民國年>&qryType=1&TYPEK=<sii|otc>&step=1（cp950）", access: free, note: analysis/dividend_surprise.py；每年每市場一次請求約 1,000 列；含董事會決議日、股東會日、期別（年度／季）、本期淨利、每股現金股利、現金股利總額；108 年（2019）起決議日才有值，107 年為 0；欄位為最新一次決議，修正案的日期可能晚於首次公告}
-  - {name: 董監持股與申報轉讓, source: 公開資訊觀測站, access: manual, used: false, note: 可試同一 redirectToOld 方式}
+  - {name: 董監事／內部人持股轉讓事前申報, source: "公開資訊觀測站 POST mopsov.twse.com.tw/mops/web/ajax_t56sb21（TYPEK=sii|otc, year=民國年, smonth=01, emonth=12, sstep=1）", access: free, used: false, note: 每市場每年一次請求；申報日、身分、轉讓方式（一般交易／鉅額／盤後定價／贈與／信託）、預定股數、有效轉讓期間；只含轉讓，不含增持}
+  - {name: 公告明細（重大訊息內文）, source: "公開資訊觀測站 ajax_t05st01", access: free, used: false, note: 可子取發行總額、承銷方式等；逐則查詢}
