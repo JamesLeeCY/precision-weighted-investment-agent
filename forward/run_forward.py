@@ -459,6 +459,21 @@ def run_fv5_auto() -> tuple[bool, list[str]]:
     return False, []
 
 
+def run_msci_auto() -> tuple[bool, list[str]]:
+    """前瞻記錄 msci（MSCI 臺灣指數季度調整，forward/run_forward_msci.py）：結算生效日已過的審核；失敗只記錄。"""
+    try:
+        from forward import run_forward_msci as msci
+
+        if not msci.SPEC_PATH.exists():
+            return False, []
+        return msci.auto(), msci.PUBLISH_FILES
+    except SystemExit as exc:
+        print(f"[auto] msci 略過：{exc}")
+    except Exception as exc:  # noqa: BLE001
+        print(f"[auto] msci 失敗（其他規格照常）：{type(exc).__name__}: {str(exc)[:200]}")
+    return False, []
+
+
 def git_publish(message: str, push: bool, extra_files: list[str] | None = None) -> None:
     """只 commit 前瞻紀錄（與網站）檔案，不動工作區其他修改，並在本機領先時 push。"""
     files = PUBLISH_FILES + (extra_files or [])
@@ -518,7 +533,10 @@ def cmd_auto(args) -> None:
     fv5_changed, fv5_files = run_fv5_auto()
     if fv5_changed:
         git_publish(f"forward fv5: auto update {today}", push=args.push, extra_files=fv5_files)
-    any_change = changed or fv2_changed or fv3_changed or fv4_changed or fv5_changed
+    msci_changed, msci_files = run_msci_auto()
+    if msci_changed:
+        git_publish(f"forward msci: auto update {today}", push=args.push, extra_files=msci_files)
+    any_change = changed or fv2_changed or fv3_changed or fv4_changed or fv5_changed or msci_changed
     print(f"[auto] {now_utc()} 結束（{'有更新' if any_change else '無更新'}）")
 
 
