@@ -42,6 +42,11 @@ ideas:
     status: partial
     keywords: [除息, ex-dividend, dividend capture, 填息, post-ex-dividend, dividend drift, 高殖利率]
     report: docs/exdiv_followup_report.md
+  - id: put_call_ratio
+    name: 台指選擇權 Put/Call 比逆向擇時
+    status: candidate
+    keywords: [put/call, put call ratio, 選擇權, 賣權, 買權, 未平倉, txo, 情緒, sentiment, 擇時]
+    report: docs/pcr_timing_report.md
   - id: investor_conference
     name: 法人說明會（券商受邀、自辦、首次召開）
     status: failed

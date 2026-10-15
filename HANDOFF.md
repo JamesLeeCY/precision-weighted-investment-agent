@@ -122,7 +122,7 @@
 ### 二、進行中與待使用者決定
 5. **除息後偏弱凍結為 fv6**：已檢查可借量，不建議凍結（2 億時只有 63% 可借、限制後 Sharpe 0.77 / 0.27）；1,000 萬時 79% 可借、Sharpe 0.82 / 0.75，若要用小資金前瞻記錄需使用者決定（docs/exdiv_followup_report.md）。
 6. **MSCI 季度調整前瞻記錄**（已建立，forward/msci/，`forward/run_forward_msci.py`）：規格凍結；2026-05、2026-08 已回填（淨 +1.68%、−2.06%）；每日 auto 自動結算。**每季公布當天要人工登錄名單**：`fetch --review YYYY-MM` 下載 MSCI PDF 看臺灣段落 → 對應代號 → `add --review ... --announce ... --effective ... --add ... --delete ...`。下一次：2026-11 審核（約 11/11 公布、11/30 收盤生效）；已設 Claude 桌面 App 一次性排程 `msci-review-2026-11`（11/12 09:00）自動下載、對應代號、登錄並 commit／push，不確定的代號會先回報不登錄。8 次 live 時警訊檢查、12 次（約 3 年）正式檢定。
-7. **strategy-scout 後續點子**：A 群 I004–I007 已測完（皆未通過）；I008（季報實際公告日）暫緩；B 群 I011（內部人轉讓）、I012（現金增資／可轉債）已測、皆未通過（docs/corp_events_report.md）；I010（法說會）已測、未通過（會後負報酬只是一般股票落後加權指數，docs/conference_report.md）；I009（當沖比，約 1,800 次 FinMind）待決定是否測。
+7. **strategy-scout 後續點子**：A 群 I004–I007 已測完（皆未通過）；I008（季報實際公告日）暫緩；B 群 I011（內部人轉讓）、I012（現金增資／可轉債）已測、皆未通過（docs/corp_events_report.md）；I010（法說會）已測、未通過（會後負報酬只是一般股票落後加權指數，docs/conference_report.md）；I009（當沖比，約 1,800 次 FinMind）待決定是否測。第三批 I013–I016：I014 Put/Call 比擇時已測、接近通過（樣本外 t 1.4，滾動前進 t 2.0），**建議凍結為前瞻記錄，待使用者決定**（docs/pcr_timing_report.md）；I016 進行中；I015 資料抓取中（analysis/fetch_self_earnings.py，可中斷續抓）；I013 待決定。
    - **方法提醒**：只看單邊「事件 CAR 相對加權指數」的研究在 2023 年後會混入「一般股票落後指數」（40 日約 −1.8%）；**建議用 corp_event_study.matched 重做除息後偏弱**（目前唯一 partial 的事件型發現）。
 8. **每週累積集保股權分散資料**：FinMind 為付費、集保開放資料只有最新一週，無法回測；可新增每週排程自行累積，1–2 年後才能測（docs/max_rec_robust_report.md）。
 9. **擴大到前 1000 檔**：前 500 檔時 SUE 更強（1.45 / 1.87），可檢查是否持續；約 4,000 次以上 FinMind（docs/top500_report.md）。
