@@ -103,7 +103,7 @@
 - 已凍結 fv5（前 500 檔）。
 - 下一步選項（待使用者決定）：每週累積集保股權分散資料、前 1000 檔、以中型股 ETF 對沖或主要指標回到相對 0050。
 - 長時間下載的經驗：工作階段結束會連帶結束 Claude 啟動的背景程式，需用 `Invoke-CimMethod Win32_Process Create` 啟動獨立行程；重開機曾留下寫一半的快取檔（已改原子寫入、壞檔自動重抓）；使用者要求長時間執行時監控 CPU / RAM（≥ 90% 即停止）並持續記錄進度（`logs/leg_pipeline/status.log`）。
-## 待辦（2026-10-14 整理）
+## 待辦（2026-10-15 整理）
 
 ### 一、自動執行中（定期查看即可）
 1. **前瞻驗證**：Windows 工作排程器每個平日 18:30 執行 `forward/run_forward.py auto --push`，依序 fv1 → fv2 → 發佈 → fv3 → fv4 → 發佈 → fv5 → 發佈（含研究網站 `site/` 重建；線上網站由 Claude 桌面 App 排程工作 `republish-research-site` 每個平日 19:15 依雜湊變動重新發佈，需 App 開著）。查看 `logs/forward_auto.log` 與各 `forward/fv*/REPORT.md`；說明見 docs/forward_validation.md。
@@ -116,21 +116,29 @@
    | fv5 | SUE 等權多空（前 500） | 第一個 live 2026-10-13；回填 −0.47%（IC +0.018） | 12 段警訊、24 段檢定 |
    - 下次預測日約 2026-11-11（10 月營收公告後）；fv3 + fv5 預測日約 3,500 次 FinMind、數小時。
    - fv3 / fv4 / fv5 的產業內 IC 曾有結算取價錯誤（已修正，原紀錄不改，更正值在各 `corrections.csv`）。
-2. **2026-10-15 20:30 一次性排程**（Claude 桌面 App `fin-holding-revenue-2026-09`）：抓 10 家延後申報（15 日前）金控的 9 月營收，產生 docs/fin_supplement_2026-09.md 並 commit / push（analysis/fin_revenue_supplement.py，只作補充參考，不改前瞻紀錄）。
+2. **延後申報金控的月營收補充**：每月 15 日前申報的 10 家金控（具保險子公司）不在前瞻預測內；`analysis/fin_revenue_supplement.py <營收月份>` 會在 FinMind 尚未收錄時改向公開資訊觀測站即時查詢。2026-09 已於 10/15 全部完成（docs/fin_supplement_2026-09.md）；之後每月要用時手動執行或另設排程。
 3. **2027 年 1 月（手動）**：fv1 / fv2 的電子股池由 auto 自動建立；**fv3 / fv4 / fv5 的市值股票池須手動執行 `analysis/build_universe_mcap.py`**（約 4,300 次 FinMind），否則三者略過。
 
-### 二、待使用者決定
-4. **每週累積集保股權分散資料**：FinMind 為付費、集保開放資料只有最新一週，無法回測；可新增每週排程自行累積，1–2 年後才能測（docs/max_rec_robust_report.md）。
-5. **擴大到前 1000 檔**：前 500 檔時 SUE 更強（1.45 / 1.87），可檢查是否持續；約 4,000 次以上 FinMind（docs/top500_report.md）。
-6. **對沖方式或主要指標**：以中型股 ETF 對沖，或主要指標回到「相對 0050」。
-7. **追蹤「0050 長期持有 + SUE 多空」混合**：多空部分已由 fv3 / fv5 記錄，可直接在前瞻報告中合成（回測 50/50：1.01 / 2.13，0050 0.73 / 1.90；docs/blend_longonly_report.md）。
+### 二、進行中與待使用者決定
+4. **除息後偏弱當作 SUE 做多濾網**（進行中）：SUE 做多名單排除剛除息的高殖利率股，用現有資料回測（docs/dividend_events_report.md）。
+5. **除息後偏弱凍結為 fv6**（進行中，接在 4 之後）：先依 borrow_capacity 的條件檢查放空高殖利率除息股的可借量，再決定是否凍結（事後追加的策略 D 兩樣本 Sharpe 1.0–1.4）。
+6. **MSCI 季度調整前瞻記錄**：公告到生效納入減刪除 +5.5%（t 2.1）勉強通過、只有 23 次審核；每季 MSCI 公布後記錄名單與到生效日的報酬，2–3 年後判斷（docs/index_rebalance_report.md）。
+7. **strategy-scout 後續點子**：A 群 I004–I007 已測完（皆未通過）；I008（季報實際公告日，約 4 小時爬取）暫緩；B 群尚未做卡：董監申報轉讓、現金增資／可轉債發行、當沖比、法說會公告（research/ideas.csv）。
+8. **每週累積集保股權分散資料**：FinMind 為付費、集保開放資料只有最新一週，無法回測；可新增每週排程自行累積，1–2 年後才能測（docs/max_rec_robust_report.md）。
+9. **擴大到前 1000 檔**：前 500 檔時 SUE 更強（1.45 / 1.87），可檢查是否持續；約 4,000 次以上 FinMind（docs/top500_report.md）。
+10. **對沖方式或主要指標**：以中型股 ETF 對沖，或主要指標回到「相對 0050」。
+11. **追蹤「0050 長期持有 + SUE 多空」混合**：多空部分已由 fv3 / fv5 記錄，可直接在前瞻報告中合成（回測 50/50：1.01 / 2.13，0050 0.73 / 1.90；docs/blend_longonly_report.md）。
 
 ### 三、優先度低
-8. **供應鏈 Agent**：台股客戶多以代號揭露、可靠供應關係資料不足，產業領先落後已失敗。
-9. **其他 Agent 的資訊量**：新聞內文已試過（都變差）；需更好的來源或更強的 LLM。
-10. **Agent 架構**：各 Agent 個別指定模型；合併機率的中性稀釋（中性 Agent 棄權或對數意見池）；合併後再校準；規格第 9 節待人工決策（新聞可信度分級、MOPS 爬蟲頻率）；報酬評估延伸（機率加權部位、相對 0050 的 outcome）；總經／籌碼 Agent 延伸（主力分點、借券）。
+12. **供應鏈 Agent**：台股客戶多以代號揭露、可靠供應關係資料不足，產業領先落後已失敗。
+13. **其他 Agent 的資訊量**：新聞內文已試過（都變差）；需更好的來源或更強的 LLM。
+14. **Agent 架構**：各 Agent 個別指定模型；合併機率的中性稀釋（中性 Agent 棄權或對數意見池）；合併後再校準；規格第 9 節待人工決策（新聞可信度分級、MOPS 爬蟲頻率）；報酬評估延伸（機率加權部位、相對 0050 的 outcome）；總經／籌碼 Agent 延伸（主力分點、借券）。
 
-### 近期完成（2026-10-12 ~ 14；總覽見 docs/effective_signals.md）
+### 新工具（2026-10-14 ~ 15）
+- **strategy-scout**（`.claude/agents/strategy-scout.md`、`research/`）：從文獻、量化部落格、PTT 找點子，比對 `research/tested_ideas.yaml` 去重、查 `research/data_catalog.yaml`，產出事前固定檢定計畫的點子卡；**每完成一項研究要補登 tested_ideas.yaml**。
+- **公開資訊觀測站資料**：股利分派彙總表（董事會決議日，16–18 次請求整批取得，analysis/dividend_surprise.py）、庫藏股與處置（analysis/fetch_events.py）、單月營收即時查詢（analysis/fin_revenue_supplement.py）、指數成分異動（config/index_changes/）。
+
+### 近期完成（2026-10-12 ~ 15；總覽見 docs/effective_signals.md）
 - **有效訊號**：月營收驚奇 SUE（兩段顯著，前 500 檔更強）、營收創新高（單獨兩段顯著；與 SUE 合成在前 300 檔通過、前 500 檔不穩健）。
 - **組合建構**：台指期對沖的等權做多有結構差（docs/leg_pool_report.md）；市值加權稀釋選股（docs/hedge_construction_report.md）；等權多空 + 可借量（docs/borrow_capacity_report.md）；每 3 個月換倉與起點穩健性（docs/ls_turnover_report.md、docs/ls_offsets_top300.md）；前 500 檔（docs/top500_report.md）；做多每 3 個月換手減半（docs/blend_longonly_report.md）。
 - **前瞻規格**：fv3、fv4、fv5 凍結與回填（docs/forward_validation.md）。
