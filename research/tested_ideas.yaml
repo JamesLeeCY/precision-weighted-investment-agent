@@ -38,8 +38,8 @@ ideas:
     keywords: [景氣燈號, business cycle indicator, monitoring indicator, 景氣對策信號]
     report: docs/business_cycle_timing_report.md
   - id: post_ex_dividend
-    name: 除息後偏弱（高殖利率）
-    status: candidate
+    name: 除息後偏弱（高殖利率）；SUE 濾網未通過、放空受可借量限制
+    status: partial
     keywords: [除息, ex-dividend, dividend capture, 填息, post-ex-dividend, dividend drift, 高殖利率]
     report: docs/dividend_events_report.md
   - id: earnings_board_date

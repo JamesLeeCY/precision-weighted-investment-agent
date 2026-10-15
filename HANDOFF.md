@@ -120,8 +120,8 @@
 3. **2027 年 1 月（手動）**：fv1 / fv2 的電子股池由 auto 自動建立；**fv3 / fv4 / fv5 的市值股票池須手動執行 `analysis/build_universe_mcap.py`**（約 4,300 次 FinMind），否則三者略過。
 
 ### 二、進行中與待使用者決定
-4. **除息後偏弱當作 SUE 做多濾網**（進行中）：SUE 做多名單排除剛除息的高殖利率股，用現有資料回測（docs/dividend_events_report.md）。
-5. **除息後偏弱凍結為 fv6**（進行中，接在 4 之後）：先依 borrow_capacity 的條件檢查放空高殖利率除息股的可借量，再決定是否凍結（事後追加的策略 D 兩樣本 Sharpe 1.0–1.4）。
+4. **除息後偏弱當作 SUE 做多濾網**：已測，未通過（濾網只排除約 3.5% 做多權重，Sharpe 略降；docs/exdiv_followup_report.md）。
+5. **除息後偏弱凍結為 fv6**：已檢查可借量，不建議凍結（2 億時只有 63% 可借、限制後 Sharpe 0.77 / 0.27）；1,000 萬時 79% 可借、Sharpe 0.82 / 0.75，若要用小資金前瞻記錄需使用者決定（docs/exdiv_followup_report.md）。
 6. **MSCI 季度調整前瞻記錄**：公告到生效納入減刪除 +5.5%（t 2.1）勉強通過、只有 23 次審核；每季 MSCI 公布後記錄名單與到生效日的報酬，2–3 年後判斷（docs/index_rebalance_report.md）。
 7. **strategy-scout 後續點子**：A 群 I004–I007 已測完（皆未通過）；I008（季報實際公告日，約 4 小時爬取）暫緩；B 群尚未做卡：董監申報轉讓、現金增資／可轉債發行、當沖比、法說會公告（research/ideas.csv）。
 8. **每週累積集保股權分散資料**：FinMind 為付費、集保開放資料只有最新一週，無法回測；可新增每週排程自行累積，1–2 年後才能測（docs/max_rec_robust_report.md）。
