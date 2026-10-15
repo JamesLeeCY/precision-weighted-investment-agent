@@ -30,4 +30,5 @@ datasets:
   - {name: MSCI 台股權重調整結果, source: "證交所新聞列表 /rwd/zh/news/newsList?response=json&startDate=&endDate=（keyword 參數無效，需帶日期）", access: free, used: false, note: 2019 起每季新聞稿；內文格式待驗證}
   - {name: TIP 自編指數（含 00919 指數）成分異動, source: "臺灣指數公司 backend.taiwanindex.com.tw/api/downloads/technical_notices?per_page=100&page=N", access: free, used: false, note: 公告 PDF 列出納入／刪除；FTSE TWSE 系列（臺灣50、高股息）只到 2019-01}
   - {name: 臺灣50／0056 成分異動（2019 以後）, source: "新聞、PTT「[情報] 成分股調整」", access: manual, used: false, note: 需手動整理；臺灣50可用市值排名規則事前預測（正式編製規則待確認）}
+  - {name: 股利分派情形彙總表（董事會決議日）, source: "公開資訊觀測站 mopsov.twse.com.tw/server-java/t05st09sub?YEAR=<民國年>&qryType=1&TYPEK=<sii|otc>&step=1（cp950）", access: free, used: false, note: 每年每市場一次請求約 1,000 列；含董事會決議日、股東會日、期別（年度／季）、本期淨利、每股現金股利、現金股利總額；108 年（2019）起決議日才有值，107 年為 0；欄位為最新一次決議，修正案的日期可能晚於首次公告}
   - {name: 董監持股與申報轉讓, source: 公開資訊觀測站, access: manual, used: false, note: 可試同一 redirectToOld 方式}
