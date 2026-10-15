@@ -41,7 +41,7 @@ ideas:
     name: 除息後偏弱（高殖利率）；SUE 濾網未通過、放空受可借量限制
     status: partial
     keywords: [除息, ex-dividend, dividend capture, 填息, post-ex-dividend, dividend drift, 高殖利率]
-    report: docs/dividend_events_report.md
+    report: docs/exdiv_followup_report.md
   - id: earnings_board_date
     name: 年度盈餘驚奇改用實際董事會決議日
     status: failed
