@@ -42,6 +42,11 @@ ideas:
     status: partial
     keywords: [除息, ex-dividend, dividend capture, 填息, post-ex-dividend, dividend drift, 高殖利率]
     report: docs/exdiv_followup_report.md
+  - id: investor_conference
+    name: 法人說明會（券商受邀、自辦、首次召開）
+    status: failed
+    keywords: [法說會, 法人說明會, investor conference, conference call, 受邀, broker conference, voluntary disclosure]
+    report: docs/conference_report.md
   - id: seo_cb
     name: 現金增資與可轉債發行公告
     status: failed

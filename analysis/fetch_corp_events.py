@@ -9,6 +9,8 @@
 - 重大訊息：POST mopsov.twse.com.tw/mops/web/ajax_t51sb10（主旨全文檢索），keyWord ∈ {轉換公司債, 現金增資}、keyWord2 = 董事會、
   KIND = L（上市）／O（上櫃）、year = 西元年、全年，每頁 100 筆翻頁；欄位：代號、簡稱、發言日期、序號、主旨、發言時間。
 - 內部人轉讓：POST ajax_t56sb21（董監事持股轉讓事前申報彙總），TYPEK = sii／otc、year = 民國年、1–12 月，一次一年。
+- 法說會：公開資訊觀測站「法人說明會一覽表」（ajax_t100sb02_1，經 /mops/api/redirectToOld），TYPEK = sii／otc、year = 民國年、全年；
+  2016 起（判斷「首次召開」需要前 3 年）；欄位：代號、名稱、召開日期（可能為區間）、時間、地點、擇要訊息、中英文簡報檔名。
 - 每次請求間隔 2.5 秒；已快取的頁面不重抓。
 """
 import html
@@ -139,9 +141,58 @@ def fetch_insider() -> pd.DataFrame:
     return pd.DataFrame(rows).sort_values("date")
 
 
+def fetch_conferences() -> pd.DataFrame:
+    s = requests.Session()
+    s.headers.update({"User-Agent": UA, "Origin": "https://mops.twse.com.tw", "Referer": "https://mops.twse.com.tw/mops/",
+                      "Accept": "application/json, text/plain, */*"})
+
+    def get(typek, y):
+        def fetch():
+            for k in range(4):
+                wait = 2.5 - (time.time() - _last[0])
+                if wait > 0:
+                    time.sleep(wait)
+                try:
+                    body = {"apiName": "ajax_t100sb02_1", "parameters": {"TYPEK": typek, "year": str(y), "month": "all",
+                                                                          "encodeURIComponent": 1, "step": 1, "firstin": 1, "off": 1}}
+                    url = s.post("https://mops.twse.com.tw/mops/api/redirectToOld", json=body, timeout=60).json()["result"]["url"]
+                    time.sleep(2.5)
+                    h = s.get(url, timeout=120, headers={"Accept": "text/html"})
+                    _last[0] = time.time()
+                    h.encoding = "utf-8"
+                    if h.status_code == 200 and len(h.content) > 1000:
+                        return h.text
+                except (requests.RequestException, KeyError, ValueError) as e:
+                    _last[0] = time.time()
+                    print(f"  {type(e).__name__}，重試", flush=True)
+                time.sleep(15 * (k + 1))
+            raise RuntimeError(f"法說會 {typek} {y} 多次失敗")
+        return cached(f"t100_{typek}_{y}.html", fetch)
+
+    rows = []
+    for y in range(105, 116):
+        for typek in ("sii", "otc"):
+            t = get(typek, y)
+            if "資料筆數過多" in t:
+                raise RuntimeError(f"法說會 {typek} {y} 資料過多")
+            for tr in re.findall(r"<tr[^>]*>(.*?)</tr>", t, flags=re.S | re.I):
+                c = [re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", " ", x))).strip() for x in re.findall(r"<td[^>]*>(.*?)</td>", tr, flags=re.S | re.I)]
+                if len(c) < 10 or not re.fullmatch(r"\d{4}", c[0] or ""):
+                    continue
+                ds = re.findall(r"\d{2,3}/\d{1,2}/\d{1,2}", c[2])
+                rows.append({"stock_id": c[0], "name": c[1], "date": roc(ds[0]) if ds else pd.NaT, "date_end": roc(ds[-1]) if ds else pd.NaT,
+                             "time": c[3], "place": c[4], "summary": c[5], "slide_zh": c[6], "slide_en": c[7], "market": typek})
+            print(f"法說會 {typek} {y}：累計 {len(rows)} 筆", flush=True)
+    return pd.DataFrame(rows).dropna(subset=["date"]).sort_values("date")
+
+
 def main():
     RAW.mkdir(parents=True, exist_ok=True)
     what = sys.argv[1:] or ["headlines", "insider"]
+    if "conference" in what:
+        c = fetch_conferences()
+        c.to_csv(OUT / "conferences.csv", index=False)
+        print(f"法說會：{len(c)} 筆", flush=True)
     if "insider" in what:
         d = fetch_insider()
         d.to_csv(OUT / "insider_transfers.csv", index=False)

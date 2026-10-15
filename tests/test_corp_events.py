@@ -33,3 +33,11 @@ def test_terciles_respect_mask():
     assert list(t) == [0, 0, 0, 1, 1, 1, 2, 2, 2]
     mask[0] = False
     assert ce.terciles(x, mask)[0] == -1
+
+
+def test_conference_invited_rule():
+    import conference_events as cf
+    assert cf.is_invited("受邀參加兆豐證券線上法人說明會，說明本公司營運概況。")
+    assert cf.is_invited("參加凱基證券舉辦之投資論壇")
+    assert not cf.is_invited("公司簡介、所屬產業概況、營運成果及未來展望說明")
+    assert not cf.is_invited("說明本公司2024年第2季財務報告及營運概況（元大證券）")
