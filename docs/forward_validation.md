@@ -227,3 +227,14 @@ git add forward/ && git commit -m "forward: YYYY-MM prediction" && git push
 - **共用資料**：讀 fv3 的快照快取，由 auto 在 fv3 / fv4 之後執行；預測日只多約 200 檔 × 7 ≈ 1,400 次 FinMind。
 - **注意**：前 500 檔是看過前 300 檔結果後才測的，回測數字已含選擇偏誤。
 - 回填 2026-05 ~ 09（backfill）與 2026-10-13（live）；回填期間 `forward/fv5/BACKFILL_PENDING` 存在時 auto 略過 fv5。
+
+## 前瞻記錄 msci：MSCI 臺灣指數季度調整（2026-10-15 建立）
+
+- 程式：`forward/run_forward_msci.py`；紀錄：`forward/msci/`（spec.yaml、events.csv、records.csv、REPORT.md）。
+- 研究依據：docs/index_rebalance_report.md（23 次審核，公告到生效的納入 − 刪除 +5.5%、t 2.1，兩段各自不顯著）。
+- 規則：MSCI 臺灣（標準型）新增與刪除名單；公布日收盤進場、生效日收盤出場；含息報酬 − 加權指數含息報酬；
+  每次審核的「納入 − 刪除」，淨值另扣每邊一買一賣 2 × 0.29625%（不計借券費）。
+- 名單登錄：每季公布當天由人工（或排程中的 Claude）用 `fetch` 讀 MSCI PDF、對應代號後以 `add` 登錄；登錄後不得修改。
+- 回填：2026-05（淨 +1.68%）、2026-08（淨 −2.06%）在研究期間之後，另列為 backfill。
+- 檢定：8 次 live 審核時平均淨報酬 < 0 為警訊；12 次 live 審核（約 3 年）時平均 > 0 且 t > 2 才算確認。
+- 每日 `forward/run_forward.py auto` 會呼叫 `run_forward_msci.auto()` 結算生效日已過的審核。

@@ -122,7 +122,7 @@
 ### 二、進行中與待使用者決定
 4. **除息後偏弱當作 SUE 做多濾網**：已測，未通過（濾網只排除約 3.5% 做多權重，Sharpe 略降；docs/exdiv_followup_report.md）。
 5. **除息後偏弱凍結為 fv6**：已檢查可借量，不建議凍結（2 億時只有 63% 可借、限制後 Sharpe 0.77 / 0.27）；1,000 萬時 79% 可借、Sharpe 0.82 / 0.75，若要用小資金前瞻記錄需使用者決定（docs/exdiv_followup_report.md）。
-6. **MSCI 季度調整前瞻記錄**：公告到生效納入減刪除 +5.5%（t 2.1）勉強通過、只有 23 次審核；每季 MSCI 公布後記錄名單與到生效日的報酬，2–3 年後判斷（docs/index_rebalance_report.md）。
+6. **MSCI 季度調整前瞻記錄**（已建立，forward/msci/，`forward/run_forward_msci.py`）：規格凍結；2026-05、2026-08 已回填（淨 +1.68%、−2.06%）；每日 auto 自動結算。**每季公布當天要人工登錄名單**：`fetch --review YYYY-MM` 下載 MSCI PDF 看臺灣段落 → 對應代號 → `add --review ... --announce ... --effective ... --add ... --delete ...`。下一次：2026-11 審核（約 11/11 公布、11/30 收盤生效）。8 次 live 時警訊檢查、12 次（約 3 年）正式檢定。
 7. **strategy-scout 後續點子**：A 群 I004–I007 已測完（皆未通過）；I008（季報實際公告日，約 4 小時爬取）暫緩；B 群尚未做卡：董監申報轉讓、現金增資／可轉債發行、當沖比、法說會公告（research/ideas.csv）。
 8. **每週累積集保股權分散資料**：FinMind 為付費、集保開放資料只有最新一週，無法回測；可新增每週排程自行累積，1–2 年後才能測（docs/max_rec_robust_report.md）。
 9. **擴大到前 1000 檔**：前 500 檔時 SUE 更強（1.45 / 1.87），可檢查是否持續；約 4,000 次以上 FinMind（docs/top500_report.md）。

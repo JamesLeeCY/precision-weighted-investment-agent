@@ -1,0 +1,27 @@
+spec_version: msci-v1
+frozen_utc: '2026-10-15T14:13:44Z'
+frozen_git_commit: a0556e25dddde700fc7d12b587d14319628debad
+rules:
+  events: MSCI 季度審核（2／5／8／11 月）MSCI 臺灣指數（標準型）的新增與刪除名單，來源為 MSCI 官方 STPublicList PDF
+  entry: 公布日（台灣時間清晨公布）收盤；非交易日取下一個交易日
+  exit: 生效日（as of the close of；遇台灣休市取之前最後交易日）收盤
+  return: 每檔含息報酬 − 加權指數含息報酬（β = 1）；納入、刪除各自等權平均
+  metric: 每次審核的納入 − 刪除（只有一邊時取該邊，刪除取負號）；淨值另扣每邊一買一賣 2 × 0.29625%，不計借券費
+  backfill_start: 2026-05
+preregistration:
+  hypothesis: 每次審核的淨報酬長期平均 > 0
+  backtest_expectation:
+    mean_spread: 0.0545
+    t: 2.1
+    n_reviews: 23
+    source: docs/index_rebalance_report.md
+  evaluation:
+  - 只把 mode = live 算入正式檢定，backfill 另列
+  - 8 次 live 審核時：平均淨報酬 < 0 視為失效警訊
+  - 12 次 live 審核（約 3 年）時正式檢定：平均淨報酬 > 0 且 t > 2 才算確認
+  notes: 名單需在公布當天由人工（或排程中的 Claude）從 MSCI PDF 對應代號後以 add 登錄；登錄後不得修改，錯誤只能在 REPORT 註記。
+frozen_source_sha256:
+  msci.trade_dates: 4578dec7a2c88571c9f76782a1e7a2fb050fd648c6a0632ad89a0a1ea207adcd
+  msci.review_return: cd83421a44f908119fce5c7c3855fe80cb748fcd236adb64686f63128b4d0e32
+  fetch_financials.total_return_index: c956a972279bc2327e877fe1463368540ad6323b371f664d26ae102092591265
+  msci.constants: cfc8602ec3209572e7a5f6022be301bbcc07e653ece5d452e032027467c88598
