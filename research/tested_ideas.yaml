@@ -42,6 +42,11 @@ ideas:
     status: partial
     keywords: [除息, ex-dividend, dividend capture, 填息, post-ex-dividend, dividend drift, 高殖利率]
     report: docs/exdiv_followup_report.md
+  - id: us_earnings_link
+    name: 美股大型科技公司財報 → 台股連結股（報酬共動連結度）
+    status: failed
+    keywords: [美股財報, us earnings, cross-market, 跨市場, economic links, customer, supplier, 客戶, nvidia, apple, lead-lag]
+    report: docs/us_earnings_link_report.md
   - id: put_call_ratio
     name: 台指選擇權 Put/Call 比逆向擇時
     status: candidate

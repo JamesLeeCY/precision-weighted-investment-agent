@@ -21,7 +21,7 @@ datasets:
   - {name: 臺指選擇權 Put/Call 比, source: "期交所 pcRatio", access: free, used: false, note: 週與月契約合併；也可用快取的 TaiwanOptionDaily（2007 起）自算}
   - {name: 自結損益公告（重大訊息）, source: "公開資訊觀測站 ajax_t51sb10（keyWord=自結、keyWord2=損益／盈餘）＋內文 ajax_t05st01", access: manual, used: false, note: 2025 年約 38 家按月公告、約一半為金融業；數字需逐則抓內文解析；兆豐金、第一金等需擴充關鍵字}
   - {name: USStockPrice, source: FinMind, access: free, used: true, note: 美股日價格，2010 起；data/fetch_supply_chain.py 已使用}
-  - {name: SEC EDGAR submissions, source: "data.sec.gov/submissions/CIK##########.json", access: free, used: false, note: 8-K items（2.02 財報）與 acceptanceDateTime；SEC 要求請求標頭附聯絡資訊}
+  - {name: SEC EDGAR submissions, source: "data.sec.gov/submissions/CIK##########.json", access: free, used: true, note: analysis/us_earnings_link.py；8-K items（2.02 財報）與 acceptanceDateTime（UTC，常晚於新聞稿數小時）；SEC 要求請求標頭附聯絡資訊（使用者同意使用其學校信箱）}
   - {name: Apple Supplier List, source: Apple 官方 PDF, access: manual, used: false, note: 缺 2019、2020 年版本}
   - {name: TaiwanStockDayTrading, source: FinMind, access: free, used: false, note: 當沖成交股數與買賣金額；免費但只能逐檔查（不帶代號回 400）；2014-01 起，部分上櫃股有缺日}
   - {name: 當日沖銷交易標的及統計（上市）, source: "證交所 /rwd/zh/dayTrading/TWTB4U?date=YYYYMMDD&selectType=All&response=json", access: free, used: false, note: 一天一次請求取得全部上市股票，2014-01-06 起；只有上市}
