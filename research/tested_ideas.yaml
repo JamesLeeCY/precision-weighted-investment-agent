@@ -42,6 +42,11 @@ ideas:
     status: candidate
     keywords: [除息, ex-dividend, dividend capture, 填息, post-ex-dividend, dividend drift, 高殖利率]
     report: docs/dividend_events_report.md
+  - id: earnings_board_date
+    name: 年度盈餘驚奇改用實際董事會決議日
+    status: failed
+    keywords: [盈餘驚奇, earnings surprise, pead, 實際公告日, actual announcement date, 年報, annual earnings, 董事會決議日]
+    report: docs/earnings_board_date_report.md
   - id: dividend_surprise
     name: 股利政策公告驚奇（董事會決議日）
     status: failed
