@@ -42,6 +42,16 @@ ideas:
     status: partial
     keywords: [除息, ex-dividend, dividend capture, 填息, post-ex-dividend, dividend drift, 高殖利率]
     report: docs/exdiv_followup_report.md
+  - id: seo_cb
+    name: 現金增資與可轉債發行公告
+    status: failed
+    keywords: [現金增資, 可轉債, 轉換公司債, seo, seasoned equity offering, convertible bond, cbas, 增資, long-run underperformance]
+    report: docs/corp_events_report.md
+  - id: insider_transfer
+    name: 董監事／內部人持股轉讓事前申報
+    status: failed
+    keywords: [內部人, 董監, insider, insider trading, insider sales, 持股轉讓, 申報轉讓, 大股東]
+    report: docs/corp_events_report.md
   - id: earnings_board_date
     name: 年度盈餘驚奇改用實際董事會決議日
     status: failed
