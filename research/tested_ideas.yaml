@@ -42,6 +42,16 @@ ideas:
     status: candidate
     keywords: [除息, ex-dividend, dividend capture, 填息, post-ex-dividend, dividend drift, 高殖利率]
     report: docs/dividend_events_report.md
+  - id: sue_attention
+    name: 月營收驚奇 × 低法人關注（條件分組與加權）
+    status: failed
+    keywords: [低關注, limited attention, investor attention, institutional ownership, 法人關注, 外資持股水準, information diffusion]
+    report: docs/sue_attention_industry_report.md
+  - id: industry_sue
+    name: 產業層級營收驚奇（產業輪動）
+    status: failed
+    keywords: [產業輪動, industry momentum, industry rotation, 產業平均營收驚奇, industry revenue surprise, 族群輪動]
+    report: docs/sue_attention_industry_report.md
   - id: index_tw50
     name: 臺灣50 季度換股（實際與事前預測名單）
     status: failed
