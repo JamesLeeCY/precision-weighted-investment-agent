@@ -15,7 +15,14 @@ datasets:
   - {name: TaiwanStockTotalReturnIndex, source: FinMind, access: free, used: true, note: 加權指數含息}
   - {name: TaiwanFuturesDaily, source: FinMind, access: free, used: true, note: 期貨日資料（台指期）}
   - {name: TaiwanOptionDaily, source: FinMind, access: free, used: true, note: 選擇權日資料（自算台指 VIX）}
-  - {name: TaiwanFuturesInstitutionalInvestors, source: FinMind, access: free, used: false, note: 期貨三大法人未平倉（未驗證是否免費）}
+  - {name: TaiwanFuturesInstitutionalInvestors, source: FinMind, access: free, used: false, note: 期貨三大法人買賣與未平倉（data_id 為 TX、MTX 等）；已驗證免費；2018-06-05 起}
+  - {name: TaiwanOptionInstitutionalInvestors, source: FinMind, access: free, used: false, note: TXO 買權／賣權 × 三大法人；2018-06-05 起}
+  - {name: 三大法人區分各期貨契約, source: "期交所 futContractsDateView", access: paid, used: false, note: 資料起日 2008-04-07，但只免費提供近三年，更早需付費申請}
+  - {name: 臺指選擇權 Put/Call 比, source: "期交所 pcRatio", access: free, used: false, note: 週與月契約合併；也可用快取的 TaiwanOptionDaily（2007 起）自算}
+  - {name: 自結損益公告（重大訊息）, source: "公開資訊觀測站 ajax_t51sb10（keyWord=自結、keyWord2=損益／盈餘）＋內文 ajax_t05st01", access: manual, used: false, note: 2025 年約 38 家按月公告、約一半為金融業；數字需逐則抓內文解析；兆豐金、第一金等需擴充關鍵字}
+  - {name: USStockPrice, source: FinMind, access: free, used: true, note: 美股日價格，2010 起；data/fetch_supply_chain.py 已使用}
+  - {name: SEC EDGAR submissions, source: "data.sec.gov/submissions/CIK##########.json", access: free, used: false, note: 8-K items（2.02 財報）與 acceptanceDateTime；SEC 要求請求標頭附聯絡資訊}
+  - {name: Apple Supplier List, source: Apple 官方 PDF, access: manual, used: false, note: 缺 2019、2020 年版本}
   - {name: TaiwanStockDayTrading, source: FinMind, access: free, used: false, note: 當沖成交股數與買賣金額；免費但只能逐檔查（不帶代號回 400）；2014-01 起，部分上櫃股有缺日}
   - {name: 當日沖銷交易標的及統計（上市）, source: "證交所 /rwd/zh/dayTrading/TWTB4U?date=YYYYMMDD&selectType=All&response=json", access: free, used: false, note: 一天一次請求取得全部上市股票，2014-01-06 起；只有上市}
   - {name: 法人說明會一覽表, source: "公開資訊觀測站 ajax_t100sb02_1（經 /mops/api/redirectToOld，每市場每年一次）", access: free, used: false, note: 召開日期、時間、地點、擇要訊息、簡報檔名；沒有公告日期欄位；2019 年起申報較完整}
