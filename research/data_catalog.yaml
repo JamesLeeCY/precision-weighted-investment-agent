@@ -15,8 +15,8 @@ datasets:
   - {name: TaiwanStockTotalReturnIndex, source: FinMind, access: free, used: true, note: 加權指數含息}
   - {name: TaiwanFuturesDaily, source: FinMind, access: free, used: true, note: 期貨日資料（台指期）}
   - {name: TaiwanOptionDaily, source: FinMind, access: free, used: true, note: 選擇權日資料（自算台指 VIX）}
-  - {name: TaiwanFuturesInstitutionalInvestors, source: FinMind, access: free, used: false, note: 期貨三大法人買賣與未平倉（data_id 為 TX、MTX 等）；已驗證免費；2018-06-05 起}
-  - {name: TaiwanOptionInstitutionalInvestors, source: FinMind, access: free, used: false, note: TXO 買權／賣權 × 三大法人；2018-06-05 起}
+  - {name: TaiwanFuturesInstitutionalInvestors, source: FinMind, access: free, used: true, note: 期貨三大法人買賣與未平倉（data_id 為 TX、MTX 等）；已驗證免費；2018-06-05 起}
+  - {name: TaiwanOptionInstitutionalInvestors, source: FinMind, access: free, used: true, note: TXO 買權／賣權 × 三大法人；2018-06-05 起}
   - {name: 三大法人區分各期貨契約, source: "期交所 futContractsDateView", access: paid, used: false, note: 資料起日 2008-04-07，但只免費提供近三年，更早需付費申請}
   - {name: 臺指選擇權 Put/Call 比, source: "期交所 pcRatio", access: free, used: false, note: 週與月契約合併；也可用快取的 TaiwanOptionDaily（2007 起）自算}
   - {name: 自結損益公告（重大訊息）, source: "公開資訊觀測站 ajax_t51sb10（keyWord=自結、keyWord2=損益／盈餘）＋內文 ajax_t05st01", access: manual, used: true, note: analysis/fetch_self_earnings.py、self_earnings_parse.py；2017–2026 共 6,034 則、按月公告 48 家；2025 年約 38 家按月公告、約一半為金融業；數字需逐則抓內文解析；兆豐金、第一金等需擴充關鍵字}

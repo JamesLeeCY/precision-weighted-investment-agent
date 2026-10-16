@@ -62,6 +62,11 @@ ideas:
     status: candidate
     keywords: [fv5, 自結盈餘, 金融股, esue, score replacement]
     report: docs/fin_esue_followup_report.md
+  - id: foreign_futures_positions
+    name: 外資台指期／台指選擇權淨部位擇時
+    status: failed
+    keywords: [外資, 台指期, 未平倉, 三大法人, foreign investors, futures positions, open interest, 選擇權淨部位, 擇時, market timing]
+    report: docs/fut_inst_timing_report.md
   - id: put_call_ratio
     name: 台指選擇權 Put/Call 比逆向擇時
     status: candidate
