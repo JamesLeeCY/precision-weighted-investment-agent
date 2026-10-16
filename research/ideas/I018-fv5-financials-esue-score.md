@@ -48,6 +48,6 @@ I015 發現金融股內部 ESUE 前 − 後 +1.06%（t 4.9），且控制營收 
 
 ## 結果（2026-10-16）
 
-通過：1.51 / 1.88（全期 1.68）vs fv5 基準 1.45 / 1.87（1.64）；金融股部位年化貢獻 +0.42% → +0.62%。改善小，且事後設計，需與 fv5 平行前瞻記錄後才能取代。見 [docs/fin_esue_followup_report.md](../../docs/fin_esue_followup_report.md)。
+通過：1.51 / 1.88（全期 1.68）vs fv5 基準 1.45 / 1.87（1.64）；金融股部位年化貢獻 +0.42% → +0.62%。改善小，且事後設計，已另立前瞻規格 fv5e 與 fv5 平行記錄（forward/fv5e/）。見 [docs/fin_esue_followup_report.md](../../docs/fin_esue_followup_report.md)。
 
 研究點子，非投資建議。

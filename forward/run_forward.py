@@ -489,6 +489,21 @@ def run_se_auto() -> tuple[bool, list[str]]:
     return False, []
 
 
+def run_fv5e_auto() -> tuple[bool, list[str]]:
+    """前瞻規格 fv5e（fv5 的金融股改用自結盈餘驚奇排序，forward/run_forward_fv5e.py）：在 fv5、se 之後執行；失敗只記錄。"""
+    try:
+        from forward import run_forward_fv5e as fv5e
+
+        if not fv5e.SPEC_PATH.exists():
+            return False, []
+        return fv5e.auto(), fv5e.PUBLISH_FILES
+    except SystemExit as exc:
+        print(f"[auto] fv5e 略過：{exc}")
+    except Exception as exc:  # noqa: BLE001
+        print(f"[auto] fv5e 失敗（其他規格照常）：{type(exc).__name__}: {str(exc)[:200]}")
+    return False, []
+
+
 def git_publish(message: str, push: bool, extra_files: list[str] | None = None) -> None:
     """只 commit 前瞻紀錄（與網站）檔案，不動工作區其他修改，並在本機領先時 push。"""
     files = PUBLISH_FILES + (extra_files or [])
@@ -554,7 +569,10 @@ def cmd_auto(args) -> None:
     se_changed, se_files = run_se_auto()
     if se_changed:
         git_publish(f"forward se: auto update {today}", push=args.push, extra_files=se_files)
-    any_change = changed or fv2_changed or fv3_changed or fv4_changed or fv5_changed or msci_changed or se_changed
+    fv5e_changed, fv5e_files = run_fv5e_auto()
+    if fv5e_changed:
+        git_publish(f"forward fv5e: auto update {today}", push=args.push, extra_files=fv5e_files)
+    any_change = changed or fv2_changed or fv3_changed or fv4_changed or fv5_changed or msci_changed or se_changed or fv5e_changed
     print(f"[auto] {now_utc()} 結束（{'有更新' if any_change else '無更新'}）")
 
 

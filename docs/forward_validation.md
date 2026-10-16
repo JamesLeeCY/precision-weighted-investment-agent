@@ -249,3 +249,14 @@ git add forward/ && git commit -m "forward: YYYY-MM prediction" && git push
 - 回填：2026-05 ~ 2026-10 事件月份為 backfill（研究期間之後、凍結之前）；2026-05 ~ 08 平均 +1.29%（t 0.4，4 個月）。live 從 2026-11 起。
 - 檢定：12 個 live 月份時平均 < 0 為警訊；24 個 live 月份（約 2 年）時平均 > 0 且 t > 2 才算確認。
 - 每日 `forward/run_forward.py auto` 會呼叫 `run_forward_se.auto()`（公開資訊觀測站約 16 次請求；新公告另抓內文；月份結算時約 30 次 FinMind）。
+
+## 前瞻規格 fv5e：fv5 的金融股改用自結盈餘驚奇排序（2026-10-16 建立）
+
+- 程式：`forward/run_forward_fv5e.py`；紀錄：`forward/fv5e/`（spec.yaml、predictions.csv、segments.csv、periods.csv、REPORT.md）。
+- 研究依據：docs/fin_esue_followup_report.md（點子卡 I018；1.51 / 1.88、全期 1.68 vs fv5 1.45 / 1.87、全期 1.64；事後設計、改善小）。
+- 規則：直接讀 fv5 同一預測日的成員資料（不另外呼叫 FinMind）；金融股若有已知 ESUE（事件日 0 + 1 ≤ 預測日、45 個交易日內），
+  以 ESUE 在這些金融股間的百分位取全體 fv5 分數的同分位數值取代；其餘、權重、三份資金錯開、成本與結算都同 fv5。
+  不替換時可完全重現 fv5 權重（已驗證）。約一半金融股在 fv5 中原本沒有 SUE 分數，fv5e 讓它們以 ESUE 加入。
+- 回填：2026-05-12 ~ 2026-10-13 的 6 個預測日（凍結前，皆為 backfill）；5 段平均 fv5e −0.40%、fv5 −0.47%，差 +0.07%（t 0.9）。
+- 檢定：24 個 live 期數時，fv5e − fv5 平均差 ≤ 0 則維持 fv5；平均差 > 0 且 fv5e 本身 t > 2 才考慮取代 fv5。
+- 每日 `forward/run_forward.py auto` 在 fv5、se 之後呼叫 `run_forward_fv5e.auto()`。

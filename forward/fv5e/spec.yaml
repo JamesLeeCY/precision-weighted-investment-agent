@@ -1,0 +1,33 @@
+spec_version: fv5e
+frozen_utc: '2026-10-16T14:20:10Z'
+frozen_git_commit: d30b83631ca005de13b8a5531b25247c6c117a93
+rules:
+  base: 與 fv5 完全相同，直接讀 forward/fv5/predictions.csv 同一預測日的成員資料（產業、分數、可借、借券費、β）
+  override: 金融股（金融保險、金融業）若有已知 ESUE（事件日 0 + 1 ≤ 預測日、45 個交易日內，取最新），以 ESUE 在這些金融股間的百分位，取當日全體
+    fv5 分數同分位數值取代其分數
+  esue: analysis/self_earnings_parse.py（同 forward/se），只用預測日以前發言的公告
+  portfolio: ls_turnover.ew_ls_buffer（產業內前／後 1/3、只放空可借者、不含緩衝）；三份資金錯開、結算與成本同 fv5
+preregistration:
+  primary_metric: 組合每段淨報酬（同 fv5），以及同段 fv5e − fv5 的差
+  hypothesis: fv5e − fv5 每段差的長期平均 > 0
+  backtest_expectation:
+    sharpe_2019_2022: 1.51
+    sharpe_2023_2026: 1.88
+    sharpe_full: 1.68
+    fv5_sharpe_full: 1.64
+    source: docs/fin_esue_followup_report.md
+  evaluation:
+  - 只把 mode = live 的期數算入，backfill 另列
+  - 24 個 live 期數（約 2 年）時：fv5e − fv5 平均差 ≤ 0 則維持 fv5；平均差 > 0 且 fv5e 本身 t > 2 才考慮以 fv5e
+    取代 fv5
+  - 回測改善很小（全期 Sharpe +0.04），兩年的差預期不顯著；差的 t 值只作描述
+  notes: 事後設計（看過 I015 結果後才測），不得依前瞻結果回頭調整規則。
+frozen_source_sha256:
+  fv5e.known_esue: 10b3f4d1abcdc3639b8d46aa68e4331d29d1463420588a71e110bd018ac764a9
+  fv5e.override_scores: ed1ed16a2e5a14e2e650abb20d4ca1fea17beb0c47fd4dcb4b9ad1747780dc14
+  fv5e.tranche_weights: eacabe43e7ac172fd430f43858e4ee2474c5ad74b2eeb4234ae2a08f744efe84
+  ls_turnover.ew_ls_buffer: 5086df2b381ff0537c9343f6370459d95149f0aa39b1695e992190892967b3ac
+  fv5.segment_return: 290a507ef83209a1ea90159cd7a32ea10496f816f2cddc0dfc2691963db749e7
+  se.day0_of: abdfd0a51639d3807d736e21312960c4448be43edf04bb7a0259c40ae30026f1
+  self_earnings_parse.py: 6dd7508e015727f20733e7b5a27ff7655b27712ea635933ebbd4b62f721bb8db
+  fv5e.constants: 32f158c0a3d22cf170d3e1f8ae4836ea029db12489eecab54bcf6ae360585846
