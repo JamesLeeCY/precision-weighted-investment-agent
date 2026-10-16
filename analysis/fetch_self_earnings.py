@@ -54,7 +54,7 @@ def headlines() -> pd.DataFrame:
 
 def contents(h: pd.DataFrame) -> None:
     T05.mkdir(parents=True, exist_ok=True)
-    n_new = 0
+    n_new, failed = 0, []
     for i, r in enumerate(h.itertuples()):
         d = pd.Timestamp(r.date).strftime("%Y%m%d")
         name = f"{r.stock_id}_{d}_{r.seq}_{r.spoke_time}.html"
@@ -62,12 +62,18 @@ def contents(h: pd.DataFrame) -> None:
             continue
         data = {"encodeURIComponent": 1, "step": 2, "firstin": 1, "off": 1, "co_id": r.stock_id, "TYPEK": r.market or "sii",
                 "spoke_date": d, "spoke_time": str(r.spoke_time), "seq_no": str(r.seq)}
-        fc.cached(f"t05/{name}", lambda: fc.post("https://mopsov.twse.com.tw/mops/web/ajax_t05st01", data, "https://mopsov.twse.com.tw/mops/web/t05st01"))
+        try:
+            fc.cached(f"t05/{name}", lambda: fc.post("https://mopsov.twse.com.tw/mops/web/ajax_t05st01", data, "https://mopsov.twse.com.tw/mops/web/t05st01"))
+        except RuntimeError as e:                                   # 連線多次失敗：記錄後跳過，下次執行會重試
+            print(f"跳過 {name}：{e}", flush=True)
+            failed.append(name)
+            time.sleep(60)
+            continue
         n_new += 1
         if n_new % 50 == 0:
             print(f"內文 {i + 1}/{len(h)}（本次新抓 {n_new}）", flush=True)
         time.sleep(0.5)                                            # fc.post 已間隔 2.5 秒，再加 0.5 秒
-    print(f"內文完成：{len(h)} 則（本次新抓 {n_new}）", flush=True)
+    print(f"內文完成：{len(h)} 則（本次新抓 {n_new}，失敗 {len(failed)} 則；重新執行會重試失敗者）", flush=True)
 
 
 def main():
