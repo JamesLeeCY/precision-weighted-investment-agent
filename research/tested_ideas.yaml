@@ -52,6 +52,16 @@ ideas:
     status: candidate
     keywords: [自結損益, 自結盈餘, self-reported earnings, monthly earnings, unaudited earnings, 金控獲利, 銀行獲利, 自願性揭露]
     report: docs/self_earnings_report.md
+  - id: fin_esue_low_turnover
+    name: 金融股自結盈餘驚奇低換手多空（緩衝換倉）
+    status: failed
+    keywords: [自結盈餘, 金融股, 緩衝, 換手, low turnover, buffer]
+    report: docs/fin_esue_followup_report.md
+  - id: fv5_fin_esue
+    name: fv5 的金融股改用自結盈餘驚奇排序
+    status: candidate
+    keywords: [fv5, 自結盈餘, 金融股, esue, score replacement]
+    report: docs/fin_esue_followup_report.md
   - id: put_call_ratio
     name: 台指選擇權 Put/Call 比逆向擇時
     status: candidate
