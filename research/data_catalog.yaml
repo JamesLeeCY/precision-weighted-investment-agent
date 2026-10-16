@@ -19,7 +19,7 @@ datasets:
   - {name: TaiwanOptionInstitutionalInvestors, source: FinMind, access: free, used: false, note: TXO 買權／賣權 × 三大法人；2018-06-05 起}
   - {name: 三大法人區分各期貨契約, source: "期交所 futContractsDateView", access: paid, used: false, note: 資料起日 2008-04-07，但只免費提供近三年，更早需付費申請}
   - {name: 臺指選擇權 Put/Call 比, source: "期交所 pcRatio", access: free, used: false, note: 週與月契約合併；也可用快取的 TaiwanOptionDaily（2007 起）自算}
-  - {name: 自結損益公告（重大訊息）, source: "公開資訊觀測站 ajax_t51sb10（keyWord=自結、keyWord2=損益／盈餘）＋內文 ajax_t05st01", access: manual, used: false, note: 2025 年約 38 家按月公告、約一半為金融業；數字需逐則抓內文解析；兆豐金、第一金等需擴充關鍵字}
+  - {name: 自結損益公告（重大訊息）, source: "公開資訊觀測站 ajax_t51sb10（keyWord=自結、keyWord2=損益／盈餘）＋內文 ajax_t05st01", access: manual, used: true, note: analysis/fetch_self_earnings.py、self_earnings_parse.py；2017–2026 共 6,034 則、按月公告 48 家；2025 年約 38 家按月公告、約一半為金融業；數字需逐則抓內文解析；兆豐金、第一金等需擴充關鍵字}
   - {name: USStockPrice, source: FinMind, access: free, used: true, note: 美股日價格，2010 起；data/fetch_supply_chain.py 已使用}
   - {name: SEC EDGAR submissions, source: "data.sec.gov/submissions/CIK##########.json", access: free, used: true, note: analysis/us_earnings_link.py；8-K items（2.02 財報）與 acceptanceDateTime（UTC，常晚於新聞稿數小時）；SEC 要求請求標頭附聯絡資訊（使用者同意使用其學校信箱）}
   - {name: Apple Supplier List, source: Apple 官方 PDF, access: manual, used: false, note: 缺 2019、2020 年版本}
@@ -42,4 +42,4 @@ datasets:
   - {name: 臺灣50／0056 成分異動（2019 以後）, source: "新聞、PTT「[情報] 成分股調整」", access: manual, used: false, note: 需手動整理；臺灣50可用市值排名規則事前預測（正式編製規則待確認）}
   - {name: 股利分派情形彙總表（董事會決議日）, used: true, source: "公開資訊觀測站 mopsov.twse.com.tw/server-java/t05st09sub?YEAR=<民國年>&qryType=1&TYPEK=<sii|otc>&step=1（cp950）", access: free, note: analysis/dividend_surprise.py；每年每市場一次請求約 1,000 列；含董事會決議日、股東會日、期別（年度／季）、本期淨利、每股現金股利、現金股利總額；108 年（2019）起決議日才有值，107 年為 0；欄位為最新一次決議，修正案的日期可能晚於首次公告}
   - {name: 董監事／內部人持股轉讓事前申報, source: "公開資訊觀測站 POST mopsov.twse.com.tw/mops/web/ajax_t56sb21（TYPEK=sii|otc, year=民國年, smonth=01, emonth=12, sstep=1）", access: free, used: true, note: analysis/fetch_corp_events.py；每市場每年一次請求（2025 起上市太多筆需每季查詢）；申報日、身分、轉讓方式（一般交易／鉅額／盤後定價／贈與／信託）、預定股數、有效轉讓期間；只含轉讓，不含增持}
-  - {name: 公告明細（重大訊息內文）, source: "公開資訊觀測站 ajax_t05st01", access: free, used: false, note: 可子取發行總額、承銷方式等；逐則查詢}
+  - {name: 公告明細（重大訊息內文）, source: "公開資訊觀測站 ajax_t05st01", access: free, used: true, note: 可子取發行總額、承銷方式等；逐則查詢}

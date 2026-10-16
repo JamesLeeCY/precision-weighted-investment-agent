@@ -47,6 +47,11 @@ ideas:
     status: failed
     keywords: [美股財報, us earnings, cross-market, 跨市場, economic links, customer, supplier, 客戶, nvidia, apple, lead-lag]
     report: docs/us_earnings_link_report.md
+  - id: self_reported_earnings
+    name: 每月自結損益驚奇（金控、銀行與少數按月公告公司）
+    status: candidate
+    keywords: [自結損益, 自結盈餘, self-reported earnings, monthly earnings, unaudited earnings, 金控獲利, 銀行獲利, 自願性揭露]
+    report: docs/self_earnings_report.md
   - id: put_call_ratio
     name: 台指選擇權 Put/Call 比逆向擇時
     status: candidate
