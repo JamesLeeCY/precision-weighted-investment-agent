@@ -474,6 +474,21 @@ def run_msci_auto() -> tuple[bool, list[str]]:
     return False, []
 
 
+def run_se_auto() -> tuple[bool, list[str]]:
+    """前瞻記錄 se（每月自結損益驚奇，forward/run_forward_se.py）：抓新公告、結算視窗已結束的月份；失敗只記錄。"""
+    try:
+        from forward import run_forward_se as se
+
+        if not se.SPEC_PATH.exists():
+            return False, []
+        return se.auto(), se.PUBLISH_FILES
+    except SystemExit as exc:
+        print(f"[auto] se 略過：{exc}")
+    except Exception as exc:  # noqa: BLE001
+        print(f"[auto] se 失敗（其他規格照常）：{type(exc).__name__}: {str(exc)[:200]}")
+    return False, []
+
+
 def git_publish(message: str, push: bool, extra_files: list[str] | None = None) -> None:
     """只 commit 前瞻紀錄（與網站）檔案，不動工作區其他修改，並在本機領先時 push。"""
     files = PUBLISH_FILES + (extra_files or [])
@@ -536,7 +551,10 @@ def cmd_auto(args) -> None:
     msci_changed, msci_files = run_msci_auto()
     if msci_changed:
         git_publish(f"forward msci: auto update {today}", push=args.push, extra_files=msci_files)
-    any_change = changed or fv2_changed or fv3_changed or fv4_changed or fv5_changed or msci_changed
+    se_changed, se_files = run_se_auto()
+    if se_changed:
+        git_publish(f"forward se: auto update {today}", push=args.push, extra_files=se_files)
+    any_change = changed or fv2_changed or fv3_changed or fv4_changed or fv5_changed or msci_changed or se_changed
     print(f"[auto] {now_utc()} 結束（{'有更新' if any_change else '無更新'}）")
 
 

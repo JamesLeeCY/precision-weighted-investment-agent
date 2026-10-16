@@ -301,8 +301,8 @@ def write_check(chk: pd.DataFrame, s: pd.DataFrame) -> None:
     (ROOT / "docs" / "self_earnings_parse_check.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
-def main():
-    h = pd.read_csv(EV / "self_earnings_headlines.csv", dtype={"stock_id": str, "seq": str, "spoke_time": str}, parse_dates=["date"])
+def parse_all(h: pd.DataFrame) -> pd.DataFrame:
+    """主旨表 → 每則公告的解析數字（內文需已在 T05）。"""
     m = monthly_firms(h)
     m = m[~m["subject"].str.contains("代子公司|子公司.*銀行公告|關係人|資金貸與|更正|誤植|差異")]          # 更正以第一次公告為準
     recs = []
@@ -314,6 +314,30 @@ def main():
     jan = v["data_ym"].str.endswith("-01")
     for k in ("pre", "post"):                                       # 1 月的累計就是當月（部分公司 1 月第二欄是去年同月）
         v.loc[jan & v[f"m_{k}"].notna(), f"c_{k}"] = v.loc[jan & v[f"m_{k}"].notna(), f"m_{k}"]
+    return v
+
+
+def esue(s: pd.DataFrame) -> pd.DataFrame:
+    """series() 的輸出加上 esue：（本月 − 去年同月 − 過去年差平均）÷ 年差標準差（過去 24 個月、最少 12 個年差），
+    且往回 24 個月都有數字才計算（與營收 SUE 同一公式）。"""
+    out = []
+    for _, g in s.groupby("stock_id"):
+        g = g.assign(p=pd.PeriodIndex(g["data_ym"], freq="M")).set_index("p").sort_index()
+        idx = pd.period_range(g.index.min(), g.index.max(), freq="M")
+        x = g["x"].reindex(idx)
+        diff = x - x.shift(12)
+        mu = diff.shift(1).rolling(24, min_periods=12).mean()
+        sd = diff.shift(1).rolling(24, min_periods=12).std()
+        e = (diff - mu) / sd.where(sd > 0)
+        cont = x.notna().astype(int).rolling(24, min_periods=24).sum() == 24
+        g["esue"] = e.where(cont).reindex(g.index)
+        out.append(g.reset_index(drop=True))
+    return pd.concat(out, ignore_index=True)
+
+
+def main():
+    h = pd.read_csv(EV / "self_earnings_headlines.csv", dtype={"stock_id": str, "seq": str, "spoke_time": str}, parse_dates=["date"])
+    v = parse_all(h)
     v.to_csv(EV / "self_earnings_values.csv", index=False)
     chk = check(v)
     s = series(v)

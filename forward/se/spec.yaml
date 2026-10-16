@@ -1,0 +1,33 @@
+spec_version: se-v1
+frozen_utc: '2026-10-16T11:29:02Z'
+frozen_git_commit: 48455c28a2f3e4d0faec20095bcd01000e8d60ff
+rules:
+  data: 公開資訊觀測站重大訊息（主旨含自結與損益／盈餘／獲利／淨利），內文依 analysis/self_earnings_parse.py 解析
+  signal: ESUE =（本月 − 去年同月 − 過去 24 個月年差平均）÷ 年差標準差；稅後涵蓋率 ≥ 80% 的公司用稅後，否則稅前
+  event: 發言日期 2026-05-01 以後、有 ESUE 的公告；13:30 以後發言者事件日 0 為下一個交易日；第一次出現時登錄、之後不改
+  universe: 事件年度市值前 500 名（config/universe_mcap_membership.csv）
+  return: CAR[+2,+21] = Σ（個股含息 − β × 加權指數含息），β 為前一日以前 250 日迴歸
+  metric: 每個事件月份：ESUE 前三分之一 − 後三分之一的平均 CAR（至少 6 家）；另記金融股內部
+  mode: 事件月份在凍結月份以前為 backfill，之後為 live
+preregistration:
+  hypothesis: 每月前 − 後的 CAR 差長期平均 > 0
+  backtest_expectation:
+    mean_spread: 0.0119
+    t: 4.4
+    n_months: 87
+    fin_mean_spread: 0.0106
+    fin_t: 4.9
+    source: docs/self_earnings_report.md
+  evaluation:
+  - 只把 mode = live 的月份算入正式檢定，backfill 另列
+  - 12 個 live 月份時：主要指標平均 < 0 視為失效警訊
+  - 24 個 live 月份（約 2 年）時正式檢定：主要指標平均 > 0 且 t > 2 才算確認
+  notes: 只記錄訊號，不代表可交易（回測的金融股月度多空扣成本後 Sharpe 只有 0.04 / 0.51）。
+frozen_source_sha256:
+  se.day0_of: abdfd0a51639d3807d736e21312960c4448be43edf04bb7a0259c40ae30026f1
+  se.terciles: f3a6884da34b481c11a8c5ec1d37fd35cdb0c2d27f25be44735c3ae3b15a5935
+  se.car: 75a2b29dfe8e8d191553e0a9856666f5d8360ac27c3e1775b242c70e3a183bc6
+  se.month_spread: 04c80d0623c113188ee5f2efd525bd518fa0f04aec9557f4cd84cda8fdac1eb9
+  self_earnings_parse.py: 6dd7508e015727f20733e7b5a27ff7655b27712ea635933ebbd4b62f721bb8db
+  fetch_financials.total_return_index: c956a972279bc2327e877fe1463368540ad6323b371f664d26ae102092591265
+  se.constants: 9669c0ba0a8431f86ea941b397a47284e7bcb04c7b07f8873cba7fa3a0b8a559

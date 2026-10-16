@@ -27,29 +27,38 @@ KW2 = ("損益", "盈餘", "獲利", "淨利")
 KEEP = re.compile(r"自結.*(損益|盈餘|獲利|淨利|EPS)|(損益|盈餘|獲利|淨利|EPS).*自結")
 
 
+def year_rows(kw2: str, kind: str, y: int, cache: bool = True) -> list[dict]:
+    """一組關鍵字、一個市場、一年的主旨（翻頁）；cache=False 時不讀寫快取（前瞻記錄用，當年資料每天會增加）。"""
+    rows, page = [], 1
+    while True:
+        data = {"pagenum": str(page), "Stp": "4", "r1": "1", "KIND": kind, "CODE": "", "month1": "0", "begin_day": "1", "end_day": "31",
+                "keyWord": "自結", "Condition2": "1", "keyWord2": kw2, "Orderby": "", "step": "2", "colorchg": "1", "co_id": "",
+                "TYPEK": "", "off": "1", "firstin": "1", "i": "", "year": str(y), "month": "0", "spoke_date": "", "spoke_time": "",
+                "seq_no": "", "b_date": "1", "e_date": "31", "PCount": "100"}
+        fetch = lambda: fc.post("https://mopsov.twse.com.tw/mops/web/ajax_t51sb10", data, "https://mopsov.twse.com.tw/mops/web/t51sb10_q1")  # noqa: E731
+        t = fc.cached(f"t51_self_{kw2}_{kind}_{y}_p{page}.html", fetch) if cache else fetch()
+        got = fc.parse_headlines(t)
+        rows += got
+        pages = [int(x) for x in re.findall(r"pagenum\.value='(\d+)'", t)]
+        if len(got) < 100 or not pages or page >= max(pages):
+            return rows
+        page += 1
+
+
+def clean(rows: list[dict]) -> pd.DataFrame:
+    h = pd.DataFrame(rows).drop_duplicates(["stock_id", "date", "seq", "subject"])
+    h = h[h["subject"].astype(str).str.contains(KEEP) & h["stock_id"].astype(str).str.fullmatch(r"\d{4}")]
+    return h.sort_values("date").reset_index(drop=True)
+
+
 def headlines() -> pd.DataFrame:
     rows = []
     for kw2 in KW2:
         for kind in ("L", "O"):
             for y in range(2017, 2027):
-                page = 1
-                while True:
-                    data = {"pagenum": str(page), "Stp": "4", "r1": "1", "KIND": kind, "CODE": "", "month1": "0", "begin_day": "1", "end_day": "31",
-                            "keyWord": "自結", "Condition2": "1", "keyWord2": kw2, "Orderby": "", "step": "2", "colorchg": "1", "co_id": "",
-                            "TYPEK": "", "off": "1", "firstin": "1", "i": "", "year": str(y), "month": "0", "spoke_date": "", "spoke_time": "",
-                            "seq_no": "", "b_date": "1", "e_date": "31", "PCount": "100"}
-                    t = fc.cached(f"t51_self_{kw2}_{kind}_{y}_p{page}.html",
-                                  lambda: fc.post("https://mopsov.twse.com.tw/mops/web/ajax_t51sb10", data, "https://mopsov.twse.com.tw/mops/web/t51sb10_q1"))
-                    got = fc.parse_headlines(t)
-                    rows += got
-                    pages = [int(x) for x in re.findall(r"pagenum\.value='(\d+)'", t)]
-                    if len(got) < 100 or not pages or page >= max(pages):
-                        break
-                    page += 1
+                rows += year_rows(kw2, kind, y)
             print(f"主旨 {kw2} {kind}：累計 {len(rows)} 筆", flush=True)
-    h = pd.DataFrame(rows).drop_duplicates(["stock_id", "date", "seq", "subject"])
-    h = h[h["subject"].astype(str).str.contains(KEEP) & h["stock_id"].astype(str).str.fullmatch(r"\d{4}")]
-    return h.sort_values("date").reset_index(drop=True)
+    return clean(rows)
 
 
 def contents(h: pd.DataFrame) -> None:

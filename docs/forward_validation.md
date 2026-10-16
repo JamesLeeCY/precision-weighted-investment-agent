@@ -238,3 +238,14 @@ git add forward/ && git commit -m "forward: YYYY-MM prediction" && git push
 - 回填：2026-05（淨 +1.68%）、2026-08（淨 −2.06%）在研究期間之後，另列為 backfill。
 - 檢定：8 次 live 審核時平均淨報酬 < 0 為警訊；12 次 live 審核（約 3 年）時平均 > 0 且 t > 2 才算確認。
 - 每日 `forward/run_forward.py auto` 會呼叫 `run_forward_msci.auto()` 結算生效日已過的審核。
+
+## 前瞻記錄 se：每月自結損益驚奇（2026-10-16 建立）
+
+- 程式：`forward/run_forward_se.py`；紀錄：`forward/se/`（spec.yaml、events.csv、records.csv、REPORT.md）。
+- 研究依據：docs/self_earnings_report.md（點子卡 I015；87 個月，同月 ESUE 前三分之一 − 後三分之一 CAR[+2,+21] +1.19%、t 4.4；金融股內部 +1.06%、t 4.9）。
+- 規則：每天重抓當年公開資訊觀測站「自結」重大訊息主旨與新公告內文，依 analysis/self_earnings_parse.py（整個檔案雜湊凍結）解析並計算 ESUE；
+  事件第一次出現時登錄、之後不改；13:30 以後發言者事件日為下一個交易日；市值前 500 名中每月依 ESUE 分三組，記錄前 − 後的平均 CAR，另記金融股內部。
+- 只記錄訊號，不是可交易規格（回測的金融股月度多空扣成本後 Sharpe 0.04 / 0.51）。
+- 回填：2026-05 ~ 2026-10 事件月份為 backfill（研究期間之後、凍結之前）；2026-05 ~ 08 平均 +1.29%（t 0.4，4 個月）。live 從 2026-11 起。
+- 檢定：12 個 live 月份時平均 < 0 為警訊；24 個 live 月份（約 2 年）時平均 > 0 且 t > 2 才算確認。
+- 每日 `forward/run_forward.py auto` 會呼叫 `run_forward_se.auto()`（公開資訊觀測站約 16 次請求；新公告另抓內文；月份結算時約 30 次 FinMind）。

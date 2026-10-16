@@ -41,6 +41,7 @@ import corp_event_study as ce  # noqa: E402
 import dividend_surprise as dsu  # noqa: E402
 import hedge_construction as hc  # noqa: E402
 import leg_probe as lp  # noqa: E402
+import self_earnings_parse as sp  # noqa: E402
 from data.fetch_financials import FinMindClient  # noqa: E402
 from data.revenue_signal import revenue_surprise  # noqa: E402
 
@@ -53,16 +54,8 @@ K_SHORT = 2e8
 def esue_table(client) -> pd.DataFrame:
     s = pd.read_csv(EV / "self_earnings_series.csv", dtype={"stock_id": str, "spoke_time": str}, parse_dates=["date"])
     out = []
-    for sid, g in s.groupby("stock_id"):
+    for sid, g in sp.esue(s).groupby("stock_id"):
         g = g.assign(p=pd.PeriodIndex(g["data_ym"], freq="M")).set_index("p").sort_index()
-        idx = pd.period_range(g.index.min(), g.index.max(), freq="M")
-        x = g["x"].reindex(idx)
-        diff = x - x.shift(12)
-        mu = diff.shift(1).rolling(24, min_periods=12).mean()
-        sd = diff.shift(1).rolling(24, min_periods=12).std()
-        esue = (diff - mu) / sd.where(sd > 0)
-        cont = x.notna().astype(int).rolling(24, min_periods=24).sum() == 24        # 往回 24 個月都有數字
-        g["esue"] = esue.where(cont).reindex(g.index)
         rev = client.get("TaiwanStockMonthRevenue", sid, "2015-01-01")
         if not rev.empty:
             rs = revenue_surprise(rev).set_index("avail_month")["sue"]
