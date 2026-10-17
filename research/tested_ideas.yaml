@@ -92,6 +92,11 @@ ideas:
     status: failed
     keywords: [連串, streak, 連續驚奇, earnings surprise streaks, 賭徒謬誤, gambler's fallacy, sue]
     report: docs/sue_streak_report.md
+  - id: hiring_rate
+    name: 員工人數成長（雇用率）
+    status: failed
+    keywords: [員工人數, 雇用, hiring rate, employee growth, labor, 薪資, 員工薪資]
+    report: docs/hiring_rate_report.md
   - id: put_call_ratio
     name: 台指選擇權 Put/Call 比逆向擇時
     status: candidate
