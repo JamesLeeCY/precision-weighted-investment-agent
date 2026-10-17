@@ -67,6 +67,11 @@ ideas:
     status: failed
     keywords: [外資, 台指期, 未平倉, 三大法人, foreign investors, futures positions, open interest, 選擇權淨部位, 擇時, market timing]
     report: docs/fut_inst_timing_report.md
+  - id: day_trading_ratio
+    name: 當沖比（dt20、dtjump）
+    status: failed
+    keywords: [當沖, 當沖比, day trading, retail speculation, 散戶投機, 注意力, attention, turnover]
+    report: docs/daytrading_report.md
   - id: put_call_ratio
     name: 台指選擇權 Put/Call 比逆向擇時
     status: candidate

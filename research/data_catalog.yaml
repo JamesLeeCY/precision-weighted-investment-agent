@@ -23,7 +23,7 @@ datasets:
   - {name: USStockPrice, source: FinMind, access: free, used: true, note: 美股日價格，2010 起；data/fetch_supply_chain.py 已使用}
   - {name: SEC EDGAR submissions, source: "data.sec.gov/submissions/CIK##########.json", access: free, used: true, note: analysis/us_earnings_link.py；8-K items（2.02 財報）與 acceptanceDateTime（UTC，常晚於新聞稿數小時）；SEC 要求請求標頭附聯絡資訊（使用者同意使用其學校信箱）}
   - {name: Apple Supplier List, source: Apple 官方 PDF, access: manual, used: false, note: 缺 2019、2020 年版本}
-  - {name: TaiwanStockDayTrading, source: FinMind, access: free, used: false, note: 當沖成交股數與買賣金額；免費但只能逐檔查（不帶代號回 400）；2014-01 起，部分上櫃股有缺日}
+  - {name: TaiwanStockDayTrading, source: FinMind, access: free, used: true, note: 當沖成交股數與買賣金額；免費但只能逐檔查（不帶代號回 400）；2014-01 起，部分上櫃股有缺日}
   - {name: 當日沖銷交易標的及統計（上市）, source: "證交所 /rwd/zh/dayTrading/TWTB4U?date=YYYYMMDD&selectType=All&response=json", access: free, used: false, note: 一天一次請求取得全部上市股票，2014-01-06 起；只有上市}
   - {name: 法人說明會一覽表, source: "公開資訊觀測站 ajax_t100sb02_1（經 /mops/api/redirectToOld，每市場每年一次）", access: free, used: false, note: 召開日期、時間、地點、擇要訊息、簡報檔名；沒有公告日期欄位；2019 年起申報較完整}
   - {name: 重大訊息全文檢索, source: "公開資訊觀測站 ajax_t51sb10（POST 舊站，可依關鍵字、市場、全年查詢，一頁 100 筆；結果列為大寫 <TR>）", access: free, used: true, note: analysis/fetch_corp_events.py；含發言日期與時間；可取得現金增資、可轉債董事會決議等事件（主旨需事前固定的分類規則），也可補法說會公告日}
