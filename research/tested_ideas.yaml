@@ -72,6 +72,21 @@ ideas:
     status: failed
     keywords: [當沖, 當沖比, day trading, retail speculation, 散戶投機, 注意力, attention, turnover]
     report: docs/daytrading_report.md
+  - id: fx_shock
+    name: 匯率衝擊延遲反應（營收匯率彈性 × 匯率變動，FOREXS）
+    status: failed
+    keywords: [匯率, 新台幣, exchange rate, fx exposure, forexs, 出口, 匯兌]
+    report: docs/fx_shock_report.md
+  - id: asset_growth
+    name: 資產成長（投資）異常
+    status: failed
+    keywords: [資產成長, asset growth, investment anomaly, 投資異常, total assets]
+    report: docs/asset_growth_report.md
+  - id: related_party_loans
+    name: 關係人資金往來（其他應收款—關係人）
+    status: failed
+    keywords: [關係人, related party, tunneling, 掏空, 資金貸與, other receivables]
+    report: docs/asset_growth_report.md
   - id: put_call_ratio
     name: 台指選擇權 Put/Call 比逆向擇時
     status: candidate
