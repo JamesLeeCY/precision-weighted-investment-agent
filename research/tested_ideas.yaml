@@ -87,6 +87,11 @@ ideas:
     status: failed
     keywords: [關係人, related party, tunneling, 掏空, 資金貸與, other receivables]
     report: docs/asset_growth_report.md
+  - id: sue_streak
+    name: 月營收驚奇的連續性（延續 vs 中斷連串）
+    status: failed
+    keywords: [連串, streak, 連續驚奇, earnings surprise streaks, 賭徒謬誤, gambler's fallacy, sue]
+    report: docs/sue_streak_report.md
   - id: put_call_ratio
     name: 台指選擇權 Put/Call 比逆向擇時
     status: candidate
