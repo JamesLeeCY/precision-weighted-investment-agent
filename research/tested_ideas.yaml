@@ -97,6 +97,11 @@ ideas:
     status: failed
     keywords: [員工人數, 雇用, hiring rate, employee growth, labor, 薪資, 員工薪資]
     report: docs/hiring_rate_report.md
+  - id: director_pledging
+    name: 董監事持股設質比率（大型股樣本不足）
+    status: failed
+    keywords: [設質, 質押, share pledging, insider pledging, 董監持股, 崩跌風險, crash risk]
+    report: docs/pledge_report.md
   - id: put_call_ratio
     name: 台指選擇權 Put/Call 比逆向擇時
     status: candidate
