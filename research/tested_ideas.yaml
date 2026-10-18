@@ -102,6 +102,16 @@ ideas:
     status: failed
     keywords: [設質, 質押, share pledging, insider pledging, 董監持股, 崩跌風險, crash risk]
     report: docs/pledge_report.md
+  - id: revenue_remarks
+    name: 月營收變動原因（備註）：併購／一次性造成的營收驚奇漂移較弱
+    status: partial
+    keywords: [營收備註, 變動原因, 一次性, 併購, 交屋, transitory, revenue remark, special items]
+    report: docs/revenue_remarks_report.md
+  - id: sue_workday
+    name: 工作日（交易日）調整的月營收驚奇
+    status: failed
+    keywords: [工作日, 交易日, 春節, 連假, calendar, workday adjustment, 季節調整]
+    report: docs/sue_workday_report.md
   - id: put_call_ratio
     name: 台指選擇權 Put/Call 比逆向擇時
     status: candidate
