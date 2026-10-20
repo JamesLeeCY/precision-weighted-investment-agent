@@ -122,6 +122,16 @@ ideas:
     status: failed
     keywords: [應收帳款, 存貨, 營運資金, accruals, working capital, 營收品質, 塞貨, inventory]
     report: docs/revenue_quality_report.md
+  - id: smallcap_sue
+    name: 小型股版月營收驚奇（第 501–1000 名）
+    status: failed
+    keywords: [小型股, small cap, 501-1000, sue, 月營收驚奇, liquidity]
+    report: docs/smallcap_invvol_report.md
+  - id: fv5_invvol
+    name: fv5 腿內逆變異數／逆標準差權重
+    status: candidate
+    keywords: [逆變異數, inverse volatility, volatility timing, 權重, risk parity, fv5]
+    report: docs/smallcap_invvol_report.md
   - id: put_call_ratio
     name: 台指選擇權 Put/Call 比逆向擇時
     status: candidate
