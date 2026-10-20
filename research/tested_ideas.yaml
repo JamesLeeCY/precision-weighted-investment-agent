@@ -142,6 +142,16 @@ ideas:
     status: failed
     keywords: [資訊移轉, information transfer, 同業, peer, 公告順序, intra-industry, 先公告, 後公告]
     report: docs/peer_transfer_report.md
+  - id: clarification_announcements
+    name: 媒體報導法人財測的澄清公告後反轉
+    status: failed
+    keywords: [澄清, 媒體報導, 傳聞, rumor, clarification, 法人預估, 財測, media]
+    report: docs/clarification_inst_report.md
+  - id: institutional_anticipation
+    name: 法人公告前交易預告營收驚奇
+    status: failed
+    keywords: [法人, 外資, 投信, 公告前, anticipation, informed trading, 預先交易]
+    report: docs/clarification_inst_report.md
   - id: put_call_ratio
     name: 台指選擇權 Put/Call 比逆向擇時
     status: candidate
