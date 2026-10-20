@@ -45,4 +45,5 @@ datasets:
   - {name: 非擔任主管職務之全時員工薪資（員工人數）, source: "公開資訊觀測站 ajax_t100sb15（經 /mops/api/redirectToOld，TYPEK=sii|otc、RYEAR=year=民國年）", access: free, used: true, note: analysis/hiring_rate.py；每年每市場一次請求取得全部公司；107 年度（2018）起，106 年度無資料；母公司（個體）員工人數、薪資總額、平均與中位數薪資}
   - {name: 董監事持股與設質明細, source: "公開資訊觀測站 POST mopsov.twse.com.tw/mops/web/ajax_stapap1（co_id、TYPEK=all、year=民國年、month）", access: free, used: true, note: analysis/pledge.py；逐家逐月查詢，沒有整批端點；已快取 2018–2025 每年 6 月、各年前 300 名共 2,400 頁（data_cache/events/corp_raw/stapap1/）}
   - {name: 營收彙總表（含變動原因備註）, source: "公開資訊觀測站 mopsov.twse.com.tw/nas/t21/{sii|otc}/t21sc03_{民國年}_{月}_{0|1}.html（big5；0 本國、1 外國公司）", access: free, used: true, note: analysis/revenue_remarks.py；每月每市場一頁含全部公司；2018-12 ~ 2026-03 已快取（data_cache/events/corp_raw/t21/）；備註約 22% 非空白}
+  - {name: 股票期貨日資料與標的清單, source: "FinMind TaiwanFuturesDaily（期貨代號 = 期交所商品代碼 + F）；期交所 /cht/2/stockLists（標的對照）", access: free, used: true, note: analysis/futures_exec.py；標準型股票期貨 249 檔（目前上市中），前 500 名有資料 245 檔已快取 2019–2026；含各月份契約與價差單，用 contract_date 6 碼篩月契約}
   - {name: 公告明細（重大訊息內文）, source: "公開資訊觀測站 ajax_t05st01", access: free, used: true, note: 可子取發行總額、承銷方式等；逐則查詢}

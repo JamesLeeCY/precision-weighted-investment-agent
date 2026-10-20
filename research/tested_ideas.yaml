@@ -132,6 +132,11 @@ ideas:
     status: candidate
     keywords: [逆變異數, inverse volatility, volatility timing, 權重, risk parity, fv5]
     report: docs/smallcap_invvol_report.md
+  - id: futures_execution
+    name: 用股票期貨執行 fv5（前置追蹤誤差檢查未過）
+    status: failed
+    keywords: [股票期貨, single stock futures, 期交稅, 執行成本, execution, fv5]
+    report: docs/futures_exec_report.md
   - id: put_call_ratio
     name: 台指選擇權 Put/Call 比逆向擇時
     status: candidate
