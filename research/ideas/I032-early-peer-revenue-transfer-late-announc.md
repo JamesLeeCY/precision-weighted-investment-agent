@@ -2,7 +2,7 @@
 
 | 狀態 | 優先度 | 檢定方式 | 資料可得性 | 預估 FinMind 請求 | 建立 |
 |---|---|---|---|---|---|
-| 待確認 | B | 事件研究（每月窗口）＋Fama-MacBeth | free | 約 0（月營收、create_time、價格皆已快取；第 501–1000 名 create_time 已確認 499 檔有 2026-05 起的值）；選做：子產業分類已有 config/subindustry_pit.csv | 2026-10-20 |
+| 已測：未通過 | B | 事件研究（每月窗口）＋Fama-MacBeth | free | 約 0（月營收、create_time、價格皆已快取；第 501–1000 名 create_time 已確認 499 檔有 2026-05 起的值）；選做：子產業分類已有 config/subindustry_pit.csv | 2026-10-20 |
 
 ## 假設
 
@@ -51,5 +51,10 @@
 - fv5 的金融股改用自結盈餘驚奇排序（card:已測：通過（改善小），research/ideas/I018-fv5-financials-esue-score.md）：命中 SUE
 - 工作日（交易日）調整的月營收驚奇：去除春節與連假造成的年增率雜訊（card:已測：未通過，research/ideas/I026-workday-adjusted-sue.md）：命中 sue
 - 補充：與已測點子的差別：I005 產業層級營收驚奇是在所有公司都公告後，用整個產業的平均 SUE 做月度產業輪動；本卡只看 1–10 日之間『先公告 → 尚未公告』的窗口，預測對象是後公告者自身的營收與公告反應。sue_event_entry 用的是公司自己的 SUE；short_term_reversal 的領先落後用的是價格；I016 是跨市場的價格連結。這次可能不同的理由：本專案已確認漂移集中在公告當下（sue_event_entry），而這張卡正是試著在後公告者公告前，用已公開的同業營收預先站位。限制：歷史公告日只能用 2026 年習慣代表，且窗口短、成本高，所以列 B。
+
+
+## 結果（2026-10-21）
+
+未通過：(1) 後公告者 SUE 對 PeerSUE 係數 +0.716 / +0.113（全期 t 1.4），驗證樣本為負；PeerSUE 對窗口報酬無擴散（前後三分之一 +0.06%）；PeerReact 迴歸係數 t −8.6 但與前 20 日報酬共線，直接分組差只有 −0.09%。見 [docs/peer_transfer_report.md](../../docs/peer_transfer_report.md)。
 
 研究點子，非投資建議。

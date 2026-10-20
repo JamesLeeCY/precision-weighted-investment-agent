@@ -137,6 +137,11 @@ ideas:
     status: failed
     keywords: [股票期貨, single stock futures, 期交稅, 執行成本, execution, fv5]
     report: docs/futures_exec_report.md
+  - id: peer_revenue_transfer
+    name: 先公告同業營收驚奇對後公告者的預測（資訊移轉）
+    status: failed
+    keywords: [資訊移轉, information transfer, 同業, peer, 公告順序, intra-industry, 先公告, 後公告]
+    report: docs/peer_transfer_report.md
   - id: put_call_ratio
     name: 台指選擇權 Put/Call 比逆向擇時
     status: candidate
