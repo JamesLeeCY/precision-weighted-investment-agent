@@ -117,6 +117,11 @@ ideas:
     status: failed
     keywords: [董監改選, 改選行情, board election, proxy contest, 最後過戶日, 股東會, 經營權]
     report: docs/board_election_report.md
+  - id: revenue_quality
+    name: 營收品質濾網（應收＋存貨成長超過營收成長）
+    status: failed
+    keywords: [應收帳款, 存貨, 營運資金, accruals, working capital, 營收品質, 塞貨, inventory]
+    report: docs/revenue_quality_report.md
   - id: put_call_ratio
     name: 台指選擇權 Put/Call 比逆向擇時
     status: candidate

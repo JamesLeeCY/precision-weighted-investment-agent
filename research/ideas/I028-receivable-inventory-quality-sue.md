@@ -2,7 +2,7 @@
 
 | 狀態 | 優先度 | 檢定方式 | 資料可得性 | 預估 FinMind 請求 | 建立 |
 |---|---|---|---|---|---|
-| 待確認 | B | 濾網或加權（SUE 條件分組＋交互項） | free（已快取） | FinMind 約 0（TaiwanStockBalanceSheet 已快取 2,159 檔，含 AccountsReceivableNet、Inventories、TotalAssets；季營收以已快取的月營收加總，不需 TaiwanStockFinancialStatements）；缺額估計 < 100 次；公開資訊觀測站 0 次 | 2026-10-18 |
+| 已測：未通過 | B | 濾網或加權（SUE 條件分組＋交互項） | free（已快取） | FinMind 約 0（TaiwanStockBalanceSheet 已快取 2,159 檔，含 AccountsReceivableNet、Inventories、TotalAssets；季營收以已快取的月營收加總，不需 TaiwanStockFinancialStatements）；缺額估計 < 100 次；公開資訊觀測站 0 次 | 2026-10-18 |
 
 ## 假設
 
@@ -56,5 +56,10 @@
 - 月營收變動原因說明（備註）：併購、一次性認列造成的營收驚奇漂移較弱（card:待確認，research/ideas/I025-revenue-remark-transitory-sue.md）：命中 SUE interaction
 - 工作日（交易日）調整的月營收驚奇：去除春節與連假造成的年增率雜訊（card:待確認，research/ideas/I026-workday-adjusted-sue.md）：命中 sue
 - 補充：命中財報 Agent（部分有效：營收、毛利、存貨、應收）。差別：財報 Agent 把存貨與應收週轉天數年增率放進無條件的綜合分數、只在電子股 100 檔；本卡只檢定『同一個高 SUE 的品質差異』（交互作用），並用月營收加總的季營收算超額成長。與資產成長（失敗）的差別：AG 是總資產成長、單獨當因子；本卡控制 AG，只看營運資金相對營收的超額累積，且只當 SUE 的條件。若 (1)(2) 不成立就停止，不再單獨做應計因子。
+
+
+## 結果（2026-10-20）
+
+未通過：SUE 前 30% 組 EWC 低 − 高 +0.39% / +0.37%（全期 t 1.4）；SUE × EWC 交互項 t −0.4、兩段方向相反；驗證樣本 +0.72%（t 2.5）。見 [docs/revenue_quality_report.md](../../docs/revenue_quality_report.md)。
 
 研究點子，非投資建議。
