@@ -152,6 +152,16 @@ ideas:
     status: failed
     keywords: [法人, 外資, 投信, 公告前, anticipation, informed trading, 預先交易]
     report: docs/clarification_inst_report.md
+  - id: ts_rank_sbl
+    name: 借券賣出餘額比相對自身歷史（ts_rank）——與 SUE 合成
+    status: effective
+    keywords: [ts_rank, 相對自身歷史, 借券賣出餘額, short interest, 借券, time series rank, own history]
+    report: docs/ts_rank_report.md
+  - id: ts_rank_margin_foreign
+    name: 融資餘額比、外資持股比例的 ts_rank
+    status: failed
+    keywords: [融資, 外資持股, ts_rank, margin, foreign ownership]
+    report: docs/ts_rank_report.md
   - id: put_call_ratio
     name: 台指選擇權 Put/Call 比逆向擇時
     status: candidate
