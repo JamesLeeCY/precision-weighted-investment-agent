@@ -1,0 +1,151 @@
+<title>營收驚奇快報</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* 版面：上方是本月結論（入選檔數與公告進度），下方是可篩選的名單表；台股慣例紅漲綠跌 */
+:root {
+  --paper: #f3f4f1; --surface: #ffffff; --ink: #1d2327; --ink-2: #4f5a60; --ink-3: #7c868b;
+  --rule: #d9ddd8; --up: #c2362b; --down: #227a52; --accent: #23506b; --accent-soft: #e2ebf0; --bar: #c2362b;
+  --display: "Noto Serif TC", "Songti TC", serif;
+  --body: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper: #14191c; --surface: #1b2226; --ink: #e8ebe9; --ink-2: #b3bcbf; --ink-3: #87929a;
+  --rule: #2e383d; --up: #ef6b5f; --down: #4fbf8a; --accent: #8fbcd6; --accent-soft: #22323b; --bar: #ef6b5f; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --paper: #14191c; --surface: #1b2226; --ink: #e8ebe9; --ink-2: #b3bcbf; --ink-3: #87929a;
+  --rule: #2e383d; --up: #ef6b5f; --down: #4fbf8a; --accent: #8fbcd6; --accent-soft: #22323b; --bar: #ef6b5f; color-scheme: dark }
+* { box-sizing: border-box }
+body { background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 15px; line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 28px 48px }
+.wrap { max-width: 1080px; margin: 0 auto; display: grid; gap: 22px }
+header { display: grid; gap: 4px }
+h1 { font-family: var(--display); font-size: clamp(26px, 4vw, 34px); margin: 0; letter-spacing: .02em; text-wrap: balance }
+.sub { color: var(--ink-2); margin: 0 }
+.stamp { font-family: var(--mono); font-size: 12px; color: var(--ink-3) }
+.summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px }
+.stat { background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; padding: 14px 16px; display: grid; gap: 2px }
+.stat .k { font-size: 12px; color: var(--ink-3); letter-spacing: .06em }
+.stat .v { font-family: var(--mono); font-size: 26px; font-weight: 500; font-variant-numeric: tabular-nums }
+.stat .v.hot { color: var(--up) }
+.stat .n { font-size: 12.5px; color: var(--ink-2) }
+.progress { height: 6px; background: var(--rule); border-radius: 3px; overflow: hidden; margin-top: 6px }
+.progress i { display: block; height: 100%; background: var(--accent) }
+.controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: end }
+.controls label { display: grid; gap: 4px; font-size: 12px; color: var(--ink-3) }
+select, input { font: inherit; font-size: 14px; color: var(--ink); background: var(--surface); border: 1px solid var(--rule); border-radius: 5px; padding: 7px 10px; min-width: 0 }
+input { width: 200px; max-width: 100% }
+select:focus-visible, input:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
+.count { margin-left: auto; font-size: 13px; color: var(--ink-2) }
+.tablebox { background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; overflow-x: auto }
+table { width: 100%; border-collapse: collapse; min-width: 760px }
+th, td { padding: 9px 12px; text-align: left; border-bottom: 1px solid var(--rule); vertical-align: top }
+th { font-size: 12px; font-weight: 500; color: var(--ink-3); letter-spacing: .04em; background: var(--surface); position: sticky; top: 0 }
+tr:last-child td { border-bottom: 0 }
+td.num, th.num { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap }
+.code { font-family: var(--mono); color: var(--accent); font-weight: 500 }
+.name { font-weight: 500 }
+.sec { display: inline-block; font-size: 12px; color: var(--ink-2); background: var(--accent-soft); border-radius: 3px; padding: 0 6px; white-space: nowrap }
+.sue { display: grid; grid-template-columns: 44px 70px; gap: 8px; align-items: center; justify-content: end }
+.sue b { font-weight: 500; text-align: right }
+.sue .track { height: 6px; background: var(--rule); border-radius: 3px; overflow: hidden }
+.sue .track i { display: block; height: 100%; background: var(--bar) }
+.up { color: var(--up) } .down { color: var(--down) }
+.remark { font-size: 12.5px; color: var(--ink-2); max-width: 320px }
+.new { font-size: 11px; color: var(--up); border: 1px solid var(--up); border-radius: 3px; padding: 0 4px; margin-left: 6px; white-space: nowrap }
+.empty { padding: 28px 16px; color: var(--ink-2); text-align: center }
+.notes { font-size: 13px; color: var(--ink-2); display: grid; gap: 6px; max-width: 72ch }
+.notes p { margin: 0 }
+@media (max-width: 560px) { .count { margin-left: 0; width: 100% } input { width: 100% } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important } }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>營收驚奇快報</h1>
+    <p class="sub">每月營收公告期間，自動列出市值前 500 名中月營收驚奇（SUE）≥ 2 的股票。</p>
+    <span class="stamp" id="stamp"></span>
+  </header>
+
+  <section class="summary" aria-label="本月摘要">
+    <div class="stat"><span class="k">最新營收月份</span><span class="v" id="s-month">—</span><span class="n" id="s-month-n"></span></div>
+    <div class="stat"><span class="k">本月入選（SUE ≥ 2）</span><span class="v hot" id="s-hits">—</span><span class="n" id="s-hits-n"></span></div>
+    <div class="stat"><span class="k">前 500 名公告進度</span><span class="v" id="s-rep">—</span><div class="progress"><i id="s-bar" style="width:0%"></i></div></div>
+  </section>
+
+  <section class="controls" aria-label="篩選">
+    <label for="f-month">營收月份<select id="f-month"></select></label>
+    <label for="f-sector">產業<select id="f-sector"><option value="">全部產業</option></select></label>
+    <label for="f-q">搜尋代號或名稱<input id="f-q" type="search" placeholder="例如 2330 或 台積電"></label>
+    <span class="count" id="count"></span>
+  </section>
+
+  <div class="tablebox">
+    <table>
+      <thead><tr>
+        <th>代號</th><th>名稱</th><th>產業</th><th class="num">SUE</th><th class="num">年增率</th><th class="num">月增率</th>
+        <th class="num">營收（億元）</th><th>首次列入</th><th>公司說明</th>
+      </tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </div>
+
+  <section class="notes">
+    <p><strong>SUE</strong> =（本月營收 − 去年同月 − 過去 24 個月年增額平均）÷ 年增額標準差，數值是「比過去的年增幅度多出幾個標準差」。前 500 名中 SUE ≥ 2 的比例，2020–2025 年平均約 6%，2026 年營收普遍強勁時約 16%（每月約 80–120 檔）。</p>
+    <p>資料來源：公開資訊觀測站營收彙總表，每天 18:30 後更新；年增率、月增率依台股慣例紅色為增加、綠色為減少。「首次列入」是本系統第一次抓到該筆營收的時間，不一定是公司公告的時刻。</p>
+    <p>研究用途，非投資建議。本專案回測中，月營收驚奇是以產業內排序、多空對沖使用，單一股票的報酬波動很大。</p>
+  </section>
+</div>
+
+<script>
+const DATA = __DATA__;
+const META = __META__;
+const $ = (id) => document.getElementById(id);
+const pct = (x) => x == null ? "—" : (x >= 0 ? "+" : "") + (x * 100).toFixed(1) + "%";
+const cls = (x) => x == null ? "" : (x >= 0 ? "up" : "down");
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const months = [...new Set(DATA.map((r) => r.rev_month))].sort().reverse();
+if (!months.includes(META.latest)) months.unshift(META.latest);
+const latestHits = DATA.filter((r) => r.rev_month === META.latest);
+const [y, m] = META.latest.split("-");
+$("stamp").textContent = "更新時間 " + META.updated;
+$("s-month").textContent = `${y} 年 ${Number(m)} 月`;
+$("s-month-n").textContent = `於 ${Number(m) === 12 ? Number(y) + 1 : y} 年 ${Number(m) % 12 + 1} 月 10 日前公告`;
+$("s-hits").textContent = latestHits.length + " 檔";
+$("s-hits-n").textContent = latestHits.length ? "最高 SUE " + Math.max(...latestHits.map((r) => r.sue)).toFixed(2) : "尚無入選";
+$("s-rep").textContent = `${META.reported} / ${META.universe_reported}`;
+$("s-bar").style.width = Math.min(100, (META.reported / Math.max(1, META.universe_reported)) * 100).toFixed(0) + "%";
+let saved = {};
+try { saved = JSON.parse(localStorage.getItem("ra-filter") || "{}"); } catch (e) {}
+$("f-month").innerHTML = months.map((x) => `<option value="${x}">${x.replace("-", " 年 ")} 月</option>`).join("");
+$("f-month").value = months.includes(saved.month) ? saved.month : META.latest;
+const sectors = [...new Set(DATA.map((r) => r.sector))].sort();
+$("f-sector").innerHTML += sectors.map((s) => `<option>${esc(s)}</option>`).join("");
+if (saved.sector && sectors.includes(saved.sector)) $("f-sector").value = saved.sector;
+const maxSue = Math.max(4, ...DATA.map((r) => r.sue || 0));
+const today = META.updated.slice(0, 10);
+function draw() {
+  const mo = $("f-month").value, sec = $("f-sector").value, q = $("f-q").value.trim();
+  try { localStorage.setItem("ra-filter", JSON.stringify({ month: mo, sector: sec })); } catch (e) {}
+  const rows = DATA.filter((r) => r.rev_month === mo && (!sec || r.sector === sec) && (!q || r.stock_id.includes(q) || String(r.name).includes(q)))
+    .sort((a, b) => b.sue - a.sue);
+  $("count").textContent = `${rows.length} 檔`;
+  $("rows").innerHTML = rows.length ? rows.map((r) => `<tr>
+    <td class="code">${esc(r.stock_id)}</td>
+    <td class="name">${esc(r.name)}${String(r.first_seen).slice(0, 10) === today ? '<span class="new">今日新增</span>' : ""}</td>
+    <td><span class="sec">${esc(r.sector)}</span></td>
+    <td class="num"><div class="sue"><b>${r.sue.toFixed(2)}</b><span class="track"><i style="width:${Math.min(100, r.sue / maxSue * 100).toFixed(0)}%"></i></span></div></td>
+    <td class="num ${cls(r.yoy)}">${pct(r.yoy)}</td>
+    <td class="num ${cls(r.mom)}">${pct(r.mom)}</td>
+    <td class="num">${r.revenue == null ? "—" : (r.revenue / 1e5).toFixed(2)}</td>
+    <td class="num">${esc(String(r.first_seen).slice(5, 16))}</td>
+    <td class="remark">${esc(r.remark)}</td></tr>`).join("")
+    : `<tr><td colspan="9" class="empty">這個月份目前沒有符合條件的股票。營收在每月 1–10 日陸續公告，名單會每天更新。</td></tr>`;
+}
+["f-month", "f-sector"].forEach((id) => $(id).addEventListener("change", draw));
+$("f-q").addEventListener("input", draw);
+draw();
+</script>
