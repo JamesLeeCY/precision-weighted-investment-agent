@@ -260,3 +260,14 @@ git add forward/ && git commit -m "forward: YYYY-MM prediction" && git push
 - 回填：2026-05-12 ~ 2026-10-13 的 6 個預測日（凍結前，皆為 backfill）；5 段平均 fv5e −0.40%、fv5 −0.47%，差 +0.07%（t 0.9）。
 - 檢定：24 個 live 期數時，fv5e − fv5 平均差 ≤ 0 則維持 fv5；平均差 > 0 且 fv5e 本身 t > 2 才考慮取代 fv5。
 - 每日 `forward/run_forward.py auto` 在 fv5、se 之後呼叫 `run_forward_fv5e.auto()`。
+
+## 前瞻規格 fv5s：fv5 加入借券賣出餘額比相對自身歷史排名（2026-10-21 建立）
+
+- 程式：`forward/run_forward_fv5s.py`；紀錄：`forward/fv5s/`（spec.yaml、predictions.csv、segments.csv、periods.csv、REPORT.md）。
+- 研究依據：docs/ts_rank_report.md（點子卡 I040 S1；回測 1.48 / 2.15、全期 1.78 vs fv5 1.45 / 1.87、全期 1.64；改善集中在 2023 年後）。
+- 規則：S1 = −（借券賣出餘額 ÷ 股本 在自身過去 250 日（至少 120 日）的百分位排名，前一日值），產業與市值中性化；
+  合成分數 = 0.75 × SUE 產業內百分位 + 0.25 × S1 產業內百分位（S1 缺值以 0.5 代入）；其餘、權重、三份資金錯開、成本與結算都同 fv5。
+- 回填：2026-05-12 ~ 2026-10-13 的 6 個預測日（凍結後回填，皆為 backfill）；S1 有值約 470–481 檔，持股方向與 fv5 不同 35–56 檔；
+  5 段平均 fv5s −0.23%、fv5 −0.47%，差 +0.24%（t 1.8，只作描述）。
+- 檢定：24 個 live 期數時，fv5s − fv5 平均差 ≤ 0 則維持 fv5；平均差 > 0 且 fv5s 本身 t > 2 才考慮取代 fv5。
+- 每日 `forward/run_forward.py auto` 在 fv5e 之後呼叫 `run_forward_fv5s.auto()`（預測日約 1,500 次 FinMind）。

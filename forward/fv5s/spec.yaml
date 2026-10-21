@@ -1,0 +1,33 @@
+spec_version: fv5s
+frozen_utc: '2026-10-21T09:13:55Z'
+frozen_git_commit: 599aa82d90cec423f347e92eaebf456f31f681b1
+rules:
+  base: 與 fv5 完全相同，直接讀 forward/fv5/predictions.csv 同一預測日的成員資料（產業、分數、可借、借券費、β）
+  s1: 借券賣出餘額 ÷ 已發行股數在自身過去 250 個交易日（至少 120 日）中的百分位，往後移一日、取負號；wrap 與 neutralize 同 leg_probe
+  score: 0.75 × SUE 分數產業內百分位 ＋ 0.25 × S1 產業內百分位（S1 缺值 0.5）
+  portfolio: ls_turnover.ew_ls_buffer（產業內前／後 1/3、只放空可借者、不含緩衝）；三份資金錯開、結算與成本同 fv5
+preregistration:
+  primary_metric: 組合每段淨報酬（同 fv5），以及同段 fv5s − fv5 的差
+  hypothesis: fv5s − fv5 每段差的長期平均 > 0
+  backtest_expectation:
+    sharpe_2019_2022: 1.48
+    sharpe_2023_2026: 2.15
+    sharpe_full: 1.78
+    fv5_sharpe_full: 1.64
+    source: docs/ts_rank_report.md
+  evaluation:
+  - 只把 mode = live 的期數算入，backfill 另列
+  - 24 個 live 期數（約 2 年）時：fv5s − fv5 平均差 ≤ 0 則維持 fv5；平均差 > 0 且 fv5s 本身 t > 2 才考慮以 fv5s
+    取代 fv5
+  - 回測改善集中在 2023 年後（2019–2022 只多 0.03）；差的 t 值只作描述
+  notes: 點子卡 I040 事前固定權重 0.75 / 0.25；這是第 40 張點子卡，仍可能有多重測試的運氣成分，不得依前瞻結果回頭調整規則。
+frozen_source_sha256:
+  fv5s.s1_raw: d3f49a2f65a37ff8fba4bacb624d3b9b6d47e4386549a8c627adc504ef997890
+  fv5s.s1_score: 005ac4f1578649af3360adb23bcad9e05d2f494fcdbb90a71cc5154c92d2772f
+  fv5s.composite: 38dcee81957739978f38ccfc6d1d23e18e65d626b155edf9aa404f585afe7c63
+  fv5s.tranche_weights: eacabe43e7ac172fd430f43858e4ee2474c5ad74b2eeb4234ae2a08f744efe84
+  leg_probe.wrap: 35af0068582a04f2fec41850585369a0b60e13bf8da5692eefae3c4a11e07330
+  leg_probe.neutralize: a13dc31a440c474f823420f7822260f92eef831c4b293bec5ceff05b21a34465
+  ls_turnover.ew_ls_buffer: 5086df2b381ff0537c9343f6370459d95149f0aa39b1695e992190892967b3ac
+  fv5.segment_return: 290a507ef83209a1ea90159cd7a32ea10496f816f2cddc0dfc2691963db749e7
+  fv5s.constants: 79c2278dedcc6677c14cc1d3bee4f8ec13b3b1cb8d610ba31fb3af9879dc6b6e
