@@ -2,7 +2,7 @@
 
 | 狀態 | 優先度 | 檢定方式 | 資料可得性 | 預估 FinMind 請求 | 建立 |
 |---|---|---|---|---|---|
-| 待確認 | C | 橫斷面 IC（月頻）＋等權多空＋與 SUE 合成 | free（已快取） | FinMind 約 0–300（TaiwanStockShareholding 已快取 1,056 檔、TaiwanStockDividendResult／TaiwanStockSplitPrice 已快取 1,689 檔；第 501–1000 名缺額估計 < 300 次）；公開資訊觀測站 0 次 | 2026-10-18 |
+| 已測：未通過 | C | 橫斷面 IC（月頻）＋等權多空＋與 SUE 合成 | free（已快取） | FinMind 約 0–300（TaiwanStockShareholding 已快取 1,056 檔、TaiwanStockDividendResult／TaiwanStockSplitPrice 已快取 1,689 檔；第 501–1000 名缺額估計 < 300 次）；公開資訊觀測站 0 次 | 2026-10-18 |
 
 ## 假設
 

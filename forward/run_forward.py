@@ -519,6 +519,20 @@ def run_fv5s_auto() -> tuple[bool, list[str]]:
     return False, []
 
 
+def run_fv5v_auto() -> tuple[bool, list[str]]:
+    """前瞻規格 fv5v（fv5 各腿改用逆標準差權重，forward/run_forward_fv5v.py）：在 fv5s 之後執行；失敗只記錄。"""
+    try:
+        from forward import run_forward_fv5v as fv5v
+
+        if not fv5v.SPEC_PATH.exists():
+            return False, []
+        return fv5v.auto(), fv5v.PUBLISH_FILES
+    except SystemExit as exc:
+        print(f"[auto] fv5v 略過：{exc}")
+    except Exception as exc:  # noqa: BLE001
+        print(f"[auto] fv5v 失敗（其他規格照常）：{type(exc).__name__}: {str(exc)[:200]}")
+    return False, []
+
 def run_alerts_auto() -> tuple[bool, list[str]]:
     """月營收驚奇快報（forward/revenue_alerts.py）：更新 SUE ≥ 2 名單、網頁，並推送新出現的股票到 Telegram；失敗只記錄。"""
     try:
@@ -603,9 +617,12 @@ def cmd_auto(args) -> None:
     fv5s_changed, fv5s_files = run_fv5s_auto()
     if fv5s_changed:
         git_publish(f"forward fv5s: auto update {today}", push=args.push, extra_files=fv5s_files)
+    fv5v_changed, fv5v_files = run_fv5v_auto()
+    if fv5v_changed:
+        git_publish(f"forward fv5v: auto update {today}", push=args.push, extra_files=fv5v_files)
     alerts_changed, alerts_files = run_alerts_auto()
     git_publish(f"forward alerts: revenue surprise {today}", push=args.push, extra_files=alerts_files)
-    any_change = fv5s_changed or alerts_changed or changed or fv2_changed or fv3_changed or fv4_changed or fv5_changed or msci_changed or se_changed or fv5e_changed
+    any_change = fv5v_changed or fv5s_changed or alerts_changed or changed or fv2_changed or fv3_changed or fv4_changed or fv5_changed or msci_changed or se_changed or fv5e_changed
     print(f"[auto] {now_utc()} 結束（{'有更新' if any_change else '無更新'}）")
 
 

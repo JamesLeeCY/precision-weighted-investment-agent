@@ -271,3 +271,14 @@ git add forward/ && git commit -m "forward: YYYY-MM prediction" && git push
   5 段平均 fv5s −0.23%、fv5 −0.47%，差 +0.24%（t 1.8，只作描述）。
 - 檢定：24 個 live 期數時，fv5s − fv5 平均差 ≤ 0 則維持 fv5；平均差 > 0 且 fv5s 本身 t > 2 才考慮取代 fv5。
 - 每日 `forward/run_forward.py auto` 在 fv5e 之後呼叫 `run_forward_fv5s.auto()`（預測日約 1,500 次 FinMind）。
+
+## 前瞻規格 fv5v：fv5 各腿改用逆標準差權重（2026-10-21 建立）
+
+- 程式：`forward/run_forward_fv5v.py`；紀錄：`forward/fv5v/`（spec.yaml、predictions.csv、segments.csv、periods.csv、REPORT.md）。
+- 研究依據：docs/smallcap_invvol_report.md（點子卡 I033 W2；回測 1.80 / 1.87、全期 1.83、最大回撤 −5.4% vs fv5 1.45 / 1.87、全期 1.64、−6.9%；
+  2023 年後略低於 fv5，事前標準未通過，依使用者決定另立平行記錄）。
+- 規則：名單、β、借券費直接讀 fv5 同一預測日；各腿內 w ∝ 1/σ（σ = 預測日前 60 個交易日、至少 40 日的含息日報酬標準差，缺值用該腿中位數），
+  各腿總權重不變、單檔介於等權的 1/3 ~ 3 倍；放空端依新權重重算需借股數並重新檢查借券條件 D（剔除後重新正規化一次）。
+- 回填：2026-05-12 ~ 2026-10-13 的 6 個預測日（皆為 backfill）；放空檔數比 fv5 少 2–7 檔；5 段平均 fv5v −0.54%、fv5 −0.47%，差 −0.07%（t −0.4，只作描述）。
+- 檢定：24 個 live 期數時，fv5v − fv5 平均差 ≤ 0 則維持 fv5；平均差 > 0 且 fv5v 本身 t > 2 才考慮取代 fv5；另報告兩者的期間波動。
+- 每日 `forward/run_forward.py auto` 在 fv5s 之後呼叫 `run_forward_fv5v.auto()`（只抓放空股的借券資料，價格與 fv5 共用快取）。

@@ -1,0 +1,32 @@
+spec_version: fv5v
+frozen_utc: '2026-10-21T13:44:07Z'
+frozen_git_commit: 1ed2dba63f0ff440a969a7bdc20e13bbc3a52be5
+rules:
+  base: 名單、β、借券費與 fv5 完全相同，直接讀 forward/fv5/predictions.csv 同一預測日的權重
+  weights: 各腿內 w ∝ 1/σ，σ = 預測日前 60 個交易日（不含當日、至少 40 日）含息日報酬標準差，缺值用該腿中位數；各腿總權重 = fv5
+    該腿總和；單檔介於等權的 1/3 ~ 3 倍
+  short_recheck: 放空端需借股數 = 2 億 × 新權重 ÷ 預測日收盤價，重新檢查 fv5 借券條件 D，不通過者剔除後重新正規化（一輪）
+  portfolio: 三份資金錯開、結算與成本同 fv5
+preregistration:
+  primary_metric: 組合每段淨報酬（同 fv5），以及同段 fv5v − fv5 的差
+  hypothesis: fv5v − fv5 每段差的長期平均 > 0（主要改善在 2019–2022 與回撤）
+  backtest_expectation:
+    sharpe_2019_2022: 1.8
+    sharpe_2023_2026: 1.87
+    sharpe_full: 1.83
+    mdd: -0.054
+    fv5_sharpe_full: 1.64
+    fv5_mdd: -0.069
+    source: docs/smallcap_invvol_report.md
+  evaluation:
+  - 只把 mode = live 的期數算入，backfill 另列
+  - 24 個 live 期數（約 2 年）時：fv5v − fv5 平均差 ≤ 0 則維持 fv5；平均差 > 0 且 fv5v 本身 t > 2 才考慮以 fv5v
+    取代 fv5
+  - 回測的改善集中在 2019–2022，2023 年後與 fv5 相當，兩年的差預期不顯著；差的 t 值只作描述，另報告兩者的期間波動
+  notes: I033 事前標準未通過（2023 年後 Sharpe 低於 fv5 小數第三位），依使用者決定另立平行記錄；不得依前瞻結果回頭調整規則。
+frozen_source_sha256:
+  fv5v.capped: ccf42c8229b1fe3ca98ce359bb33aa11beadad6bf61a920faad94557a9029f97
+  fv5v.sigma_at: 6e81d2f1ec8593c3a64be535b97b89d06a9aaf9d6ecf83e18190b61ede7ab152
+  fv5v.reweight: 434bc2b5bc7dad56d49e23c2fc4529a1829496e251bbdc9d84f6f08f30617cd3
+  fv5.segment_return: 290a507ef83209a1ea90159cd7a32ea10496f816f2cddc0dfc2691963db749e7
+  fv5v.constants: ea9c8385f05acc20adfac8b0ea038c6cc3e3a79e248376903bbd656670519f25
