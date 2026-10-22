@@ -282,3 +282,12 @@ git add forward/ && git commit -m "forward: YYYY-MM prediction" && git push
 - 回填：2026-05-12 ~ 2026-10-13 的 6 個預測日（皆為 backfill）；放空檔數比 fv5 少 2–7 檔；5 段平均 fv5v −0.54%、fv5 −0.47%，差 −0.07%（t −0.4，只作描述）。
 - 檢定：24 個 live 期數時，fv5v − fv5 平均差 ≤ 0 則維持 fv5；平均差 > 0 且 fv5v 本身 t > 2 才考慮取代 fv5；另報告兩者的期間波動。
 - 每日 `forward/run_forward.py auto` 在 fv5s 之後呼叫 `run_forward_fv5v.auto()`（只抓放空股的借券資料，價格與 fv5 共用快取）。
+
+## 前瞻規格 fv5x：fv5e + fv5s + fv5v 合併規格（2026-10-22 建立）
+
+- 程式：`forward/run_forward_fv5x.py`；紀錄：`forward/fv5x/`。規則直接呼叫 fv5e.override_scores → fv5s.composite → fv5s.tranche_weights → fv5v.reweight，三者的原始碼雜湊一併凍結。
+- 研究依據：docs/fv5_family_report.md（點子卡 I051；回測 1.91 / 2.22、全期 2.05 vs fv5 1.64；三項修改都是看過結果後才定的）。
+- 回填：2026-05-12 ~ 2026-10-13 的 6 個預測日（皆為 backfill）；方向與 fv5 不同 48–65 檔；5 段平均 fv5x −0.37%、fv5 −0.47%，差 +0.10%（t 0.5，只作描述）。
+- 檢定力（I051）：以每段報酬差比較，fv5e、fv5s 達 80% 檢定力需 163、319 期；fv5v、fv5x 因波動較低、每段平均報酬差為負，無法以報酬差勝出。
+  24 期時只做警訊檢查（平均差 < 0 且 t < −1 者停止記錄）；是否改用波動調整後的比較方式待使用者決定。
+- 每日 `forward/run_forward.py auto` 在 fv5v 之後呼叫 `run_forward_fv5x.auto()`。

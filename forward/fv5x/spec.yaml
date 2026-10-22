@@ -1,0 +1,47 @@
+spec_version: fv5x
+frozen_utc: '2026-10-22T08:57:37Z'
+frozen_git_commit: e38781dc334e9feb1c62b0efe551ffbe5afa4cec
+rules:
+  base: 讀 forward/fv5/predictions.csv 同一預測日的成員資料（產業、SUE 分數、可借、借券費、β）
+  E: fv5e.override_scores：金融股有已知 ESUE 者，以 ESUE 百分位取全體分數同分位數值
+  S: fv5s.composite：0.75 × 分數產業內百分位 + 0.25 × S1（借券賣出餘額比 ts_rank）產業內百分位
+  list: fv5s.tranche_weights：產業內前／後 1/3 等權、只放空可借者
+  V: fv5v.reweight：各腿 1/σ（60 日）、單檔 1/3 ~ 3 倍等權，放空端重查條件 D
+  portfolio: 三份資金錯開、結算與成本同 fv5
+preregistration:
+  primary_metric: 組合每段淨報酬（同 fv5），以及同段 fv5x − fv5 的差
+  backtest_expectation:
+    sharpe_2019_2022: 1.91
+    sharpe_2023_2026: 2.22
+    sharpe_full: 2.05
+    fv5_sharpe_full: 1.64
+    source: docs/fv5_family_report.md
+  evaluation:
+  - 只把 mode = live 的期數算入，backfill 另列
+  - 與 fv5e、fv5s、fv5v 一起依 docs/forward_validation.md 的前瞻採用規則比較
+  - 回測每段報酬差的檢定力很低（fv5x 波動較低，每段平均報酬差為負），另報告兩者的期間 Sharpe 與波動
+  notes: 三項修改都是看過結果後才定的，回測含選擇偏誤；不得依前瞻結果回頭調整規則。
+frozen_source_sha256:
+  fv5e:fv5e.known_esue: 10b3f4d1abcdc3639b8d46aa68e4331d29d1463420588a71e110bd018ac764a9
+  fv5e:fv5e.override_scores: ed1ed16a2e5a14e2e650abb20d4ca1fea17beb0c47fd4dcb4b9ad1747780dc14
+  fv5e:fv5e.tranche_weights: eacabe43e7ac172fd430f43858e4ee2474c5ad74b2eeb4234ae2a08f744efe84
+  fv5e:ls_turnover.ew_ls_buffer: 5086df2b381ff0537c9343f6370459d95149f0aa39b1695e992190892967b3ac
+  fv5e:fv5.segment_return: 290a507ef83209a1ea90159cd7a32ea10496f816f2cddc0dfc2691963db749e7
+  fv5e:se.day0_of: abdfd0a51639d3807d736e21312960c4448be43edf04bb7a0259c40ae30026f1
+  fv5e:self_earnings_parse.py: 6dd7508e015727f20733e7b5a27ff7655b27712ea635933ebbd4b62f721bb8db
+  fv5e:fv5e.constants: 32f158c0a3d22cf170d3e1f8ae4836ea029db12489eecab54bcf6ae360585846
+  fv5s:fv5s.s1_raw: d3f49a2f65a37ff8fba4bacb624d3b9b6d47e4386549a8c627adc504ef997890
+  fv5s:fv5s.s1_score: 005ac4f1578649af3360adb23bcad9e05d2f494fcdbb90a71cc5154c92d2772f
+  fv5s:fv5s.composite: 38dcee81957739978f38ccfc6d1d23e18e65d626b155edf9aa404f585afe7c63
+  fv5s:fv5s.tranche_weights: eacabe43e7ac172fd430f43858e4ee2474c5ad74b2eeb4234ae2a08f744efe84
+  fv5s:leg_probe.wrap: 35af0068582a04f2fec41850585369a0b60e13bf8da5692eefae3c4a11e07330
+  fv5s:leg_probe.neutralize: a13dc31a440c474f823420f7822260f92eef831c4b293bec5ceff05b21a34465
+  fv5s:ls_turnover.ew_ls_buffer: 5086df2b381ff0537c9343f6370459d95149f0aa39b1695e992190892967b3ac
+  fv5s:fv5.segment_return: 290a507ef83209a1ea90159cd7a32ea10496f816f2cddc0dfc2691963db749e7
+  fv5s:fv5s.constants: 79c2278dedcc6677c14cc1d3bee4f8ec13b3b1cb8d610ba31fb3af9879dc6b6e
+  fv5v:fv5v.capped: ccf42c8229b1fe3ca98ce359bb33aa11beadad6bf61a920faad94557a9029f97
+  fv5v:fv5v.sigma_at: 6e81d2f1ec8593c3a64be535b97b89d06a9aaf9d6ecf83e18190b61ede7ab152
+  fv5v:fv5v.reweight: 434bc2b5bc7dad56d49e23c2fc4529a1829496e251bbdc9d84f6f08f30617cd3
+  fv5v:fv5.segment_return: 290a507ef83209a1ea90159cd7a32ea10496f816f2cddc0dfc2691963db749e7
+  fv5v:fv5v.constants: ea9c8385f05acc20adfac8b0ea038c6cc3e3a79e248376903bbd656670519f25
+  fv5x.combine: b25abce28e1887b5ddb872aef2967207d9634d8b2d9862be0440177cbbbbbffa
