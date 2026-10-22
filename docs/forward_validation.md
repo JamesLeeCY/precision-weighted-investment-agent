@@ -291,3 +291,15 @@ git add forward/ && git commit -m "forward: YYYY-MM prediction" && git push
 - 檢定力（I051）：以每段報酬差比較，fv5e、fv5s 達 80% 檢定力需 163、319 期；fv5v、fv5x 因波動較低、每段平均報酬差為負，無法以報酬差勝出。
   24 期時只做警訊檢查（平均差 < 0 且 t < −1 者停止記錄）；是否改用波動調整後的比較方式待使用者決定。
 - 每日 `forward/run_forward.py auto` 在 fv5v 之後呼叫 `run_forward_fv5x.auto()`。
+
+## fv5 家族的前瞻採用規則：波動調整後的報酬差（2026-10-22 使用者決定）
+
+取代 fv5e、fv5s、fv5v、fv5x 各自 spec.yaml 中「24 個 live 期數時比較每段報酬差」的評估方式（spec.yaml 不改動，以本節為準）。
+原因：I051 的檢定力分析顯示，fv5v、fv5x 的改善來自波動降低（年化 4.5% → 3.5%），每段報酬差平均為負，用報酬差比較時 Sharpe 較高的規格永遠不會勝出。
+
+- 程式：`forward/compare_family.py`（只讀各規格 periods.csv）；輸出 `forward/FAMILY_REPORT.md`；每日 auto 在 fv5x 之後呼叫。
+- 每段 d_k = c_k × 規格 k 的組合淨報酬 − fv5 的組合淨報酬；c_k = fv5 回測年化波動 ÷ 規格 k 回測年化波動，凍結於 `forward/family_scale.yaml`
+  （fv5e 0.997、fv5s 1.008、fv5v 1.287、fv5x 1.283；來源 analysis/fv5_family_voladj.py，docs/fv5_family_voladj.md）。
+- 只用 live 段；n < 24 累積中；24 ≤ n < N50 只做警訊檢查（平均 d < 0 且 Newey-West t < −1 → 停止記錄該規格）；
+  n ≥ N50 正式判定：Holm 校正（家族 10%）、單尾，且規格本身每段淨報酬 t > 2 才可取代 fv5，多個通過時選平均 d 最大者。
+- N50（回測估計達 50% 檢定力所需 live 段數）：fv5x 76、fv5e 105、fv5s 131、fv5v 302（約 6–25 年）。實務上前幾年只能做警訊檢查。

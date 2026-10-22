@@ -42,7 +42,8 @@ def phi(x: float) -> float:
     return 0.5 * (1 + math.erf(x / math.sqrt(2)))
 
 
-def main():
+def run_backtests():
+    """回傳（各規格日淨報酬 dict、換倉日）。"""
     c = lp.prepare(500)
     days, sched, sector = c.adj.index, c.schedule, c.sector
     sue = lp.leg_scores(c, "sue")
@@ -119,6 +120,11 @@ def main():
         R[k] = book(*map(bool, f))
         print(k, flush=True)
     R["資金四等分（fv5、fv5e、fv5s、fv5v）"] = pd.concat([R["fv5"], R["fv5e"], R["fv5s"], R["fv5v"]], axis=1).mean(axis=1)
+    return R, sched
+
+
+def main():
+    R, sched = run_backtests()
     st = {k: hc.stats(x) | {"full": lp.sharpe(x.dropna())} for k, x in R.items()}
     b, x = st["fv5"], st["fv5x（E+S+V）"]
     marg = {"E": x["full"] - st["S+V"]["full"], "S": x["full"] - st["E+V"]["full"], "V": x["full"] - st["E+S"]["full"]}

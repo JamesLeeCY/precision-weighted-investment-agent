@@ -1,0 +1,13 @@
+defined: '2026-10-22'
+source: analysis/fv5_family_voladj.py（回測 2019-03 ~ 2026-04 日報酬年化波動比）
+fv5_vol: 0.044903
+scale:
+  fv5e: 0.996594
+  fv5s: 1.008292
+  fv5v: 1.286879
+  fv5x: 1.283073
+power_50_periods:
+  fv5e: 105
+  fv5s: 131
+  fv5v: 302
+  fv5x: 76
