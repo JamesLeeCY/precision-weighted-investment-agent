@@ -2,7 +2,7 @@
 
 | 狀態 | 優先度 | 檢定方式 | 資料可得性 | 預估 FinMind 請求 | 建立 |
 |---|---|---|---|---|---|
-| 待確認 | A | 橫斷面 IC（季頻訊號、月頻評估）＋ Fama-MacBeth；通過後作為 I043 合成第二版的候選 | free | 約 520（第 501–1000 名 TaiwanStockFinancialStatements 缺 8 檔；第 1001–1500 名 FinancialStatements 511 檔，與 I043 共用，若 I043 已抓則為 0；資產負債表全部已快取） | 2026-10-22 |
+| 已測：未通過 | A | 橫斷面 IC（季頻訊號、月頻評估）＋ Fama-MacBeth；通過後作為 I043 合成第二版的候選 | free | 約 520（第 501–1000 名 TaiwanStockFinancialStatements 缺 8 檔；第 1001–1500 名 FinancialStatements 511 檔，與 I043 共用，若 I043 已抓則為 0；資產負債表全部已快取） | 2026-10-22 |
 
 ## 假設
 

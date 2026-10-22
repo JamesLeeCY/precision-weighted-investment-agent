@@ -27,6 +27,7 @@ import numpy as np
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parent.parent
+MEMBERSHIP = ROOT / "config" / "universe_mcap_membership.csv"   # 第 1001 名以後的樣本可改指 universe_mcap_membership_1500.csv
 sys.path.insert(0, str(ROOT / "analysis"))
 sys.path.insert(0, str(ROOT))
 import event_study as es  # noqa: E402
@@ -40,7 +41,7 @@ LEAD_SAMPLE = 80
 
 
 def load_sample(client, lo: int, hi: int):
-    mem = pd.read_csv(ROOT / "config" / "universe_mcap_membership.csv", dtype={"stock_id": str})
+    mem = pd.read_csv(MEMBERSHIP, dtype={"stock_id": str})
     mem = mem[(mem["rank"] >= lo) & (mem["rank"] <= hi)]
     ids = sorted(mem["stock_id"].unique())
     adj, close, divs = {}, {}, []

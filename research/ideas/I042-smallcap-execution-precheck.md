@@ -2,7 +2,7 @@
 
 | 狀態 | 優先度 | 檢定方式 | 資料可得性 | 預估 FinMind 請求 | 建立 |
 |---|---|---|---|---|---|
-| 待確認 | A | 前置檢查（可交易性門檻；不看任何訊號的報酬） | free | 約 615（TaiwanStockSecuritiesLending 第 501–1000 名 611 檔未快取；TaiwanFuturesDaily M1F、G2F、GTF 約 3 次；其餘已快取） | 2026-10-22 |
+| 已測：L2、S 未過（只做統計檢定） | A | 前置檢查（可交易性門檻；不看任何訊號的報酬） | free | 約 615（TaiwanStockSecuritiesLending 第 501–1000 名 611 檔未快取；TaiwanFuturesDaily M1F、G2F、GTF 約 3 次；其餘已快取） | 2026-10-22 |
 
 ## 假設
 

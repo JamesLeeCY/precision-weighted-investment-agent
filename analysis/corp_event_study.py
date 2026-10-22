@@ -22,6 +22,7 @@ import numpy as np
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parent.parent
+MEMBERSHIP = ROOT / "config" / "universe_mcap_membership.csv"   # 第 1001 名以後的樣本可改指 universe_mcap_membership_1500.csv
 sys.path.insert(0, str(ROOT / "analysis"))
 sys.path.insert(0, str(ROOT))
 import borrow_capacity as bc  # noqa: E402
@@ -69,7 +70,7 @@ class Sample:
         self.valid = np.vstack([np.zeros((1, ar.shape[1])), np.cumsum(np.isfinite(ar), axis=0)])
         self.col = {t: j for j, t in enumerate(adj.columns)}
         self.tickers = list(adj.columns)
-        mem = pd.read_csv(ROOT / "config" / "universe_mcap_membership.csv", dtype={"stock_id": str}, parse_dates=["rebalance_date"])
+        mem = pd.read_csv(MEMBERSHIP, dtype={"stock_id": str}, parse_dates=["rebalance_date"])
         self.sector = mem.drop_duplicates("stock_id", keep="last").set_index("stock_id")["sector"]
         self.sec_arr = np.array([self.sector.get(t.split(".")[0], "NA") for t in self.tickers])
         self.pre60 = (adj / adj.shift(60) - 1).shift(1)

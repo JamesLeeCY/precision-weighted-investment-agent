@@ -2,7 +2,7 @@
 
 | 狀態 | 優先度 | 檢定方式 | 資料可得性 | 預估 FinMind 請求 | 建立 |
 |---|---|---|---|---|---|
-| 待確認 | B | 橫斷面 IC＋Fama-MacBeth（新樣本確認）→ 可交易建構（依 I042 門檻）→ 前瞻 | free | 約 2,565（第 501–1000 名約 10 次：TaiwanStockFinancialStatements 缺 8 檔；第 1001–1500 名 511 檔 × 5 個資料集 ≈ 2,555 次：MonthRevenue、FinancialStatements、Shareholding、DividendResult、SplitPrice；價格與資產負債表已快取；免費每小時 600 次，約 4.5 小時，與 I044 共用） | 2026-10-22 |
+| 已測：未通過（階段 1 過、階段 2 t 2.8） | B | 橫斷面 IC＋Fama-MacBeth（新樣本確認）→ 可交易建構（依 I042 門檻）→ 前瞻 | free | 約 2,565（第 501–1000 名約 10 次：TaiwanStockFinancialStatements 缺 8 檔；第 1001–1500 名 511 檔 × 5 個資料集 ≈ 2,555 次：MonthRevenue、FinancialStatements、Shareholding、DividendResult、SplitPrice；價格與資產負債表已快取；免費每小時 600 次，約 4.5 小時，與 I044 共用） | 2026-10-22 |
 
 ## 假設
 
