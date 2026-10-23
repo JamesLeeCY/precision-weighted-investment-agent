@@ -2,7 +2,7 @@
 
 | 狀態 | 優先度 | 檢定方式 | 資料可得性 | 預估 FinMind 請求 | 建立 |
 |---|---|---|---|---|---|
-| 待確認 | B | 執行與成本比較（fv5 建構不變，只改放空工具） | free | 約 0（前 500 名 TaiwanDailyShortSaleBalances 含融券餘額與限額、TaiwanStockMarginPurchaseShortSale、借券費率、除權息日皆已快取）；證交所／櫃買停券公告核對約 20–50 次網頁請求（與 I050 共用） | 2026-10-23 |
+| 已測：未通過（保守情境 +0.41%） | B | 執行與成本比較（fv5 建構不變，只改放空工具） | free | 約 0（前 500 名 TaiwanDailyShortSaleBalances 含融券餘額與限額、TaiwanStockMarginPurchaseShortSale、借券費率、除權息日皆已快取）；證交所／櫃買停券公告核對約 20–50 次網頁請求（與 I050 共用） | 2026-10-23 |
 
 ## 假設
 

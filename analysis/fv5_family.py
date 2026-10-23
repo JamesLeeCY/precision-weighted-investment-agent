@@ -43,12 +43,15 @@ def phi(x: float) -> float:
     return 0.5 * (1 + math.erf(x / math.sqrt(2)))
 
 
-def run_backtests():
-    """回傳（各規格日淨報酬 dict、換倉日）。"""
-    c = lp.prepare(500)
+def run_backtests(membership: str | None = None, shadow: bool = False, extra_cost: float = 0.0):
+    """回傳（各規格日淨報酬 dict、換倉日）。shadow=True（I057 影子規格）：不限制可借、借券費一律 2%／年、
+    交易成本單邊另加 extra_cost；membership 可指向名次重編的股票池檔（例如第 501–1000 名改為 1–500）。"""
+    c = lp.prepare(500, membership)
     days, sched, sector = c.adj.index, c.schedule, c.sector
     sue = lp.leg_scores(c, "sue")
     fee = hc.lending_fees(c.client, c.tickers, days)
+    if shadow:
+        fee = pd.DataFrame(2.0, index=fee.index, columns=fee.columns)
     quota, lend60 = bc.load_short_data(c.client, c.tickers, days)
     close = bc.raw_close(c)
     vol = c.rets.rolling(60, min_periods=40).std().shift(1)
@@ -65,6 +68,8 @@ def run_backtests():
     s1 = {d: lp.neutralize(mwz.loc[d], c.sector, c.logcap.loc[d]) for d in sched}
 
     def shortable_at(d):
+        if shadow:
+            return pd.Series(True, index=c.tickers)
         n_short = max(1, int(c.member.loc[d].sum() / 3))
         need = lt.K_CAPITAL / n_short / close.loc[d]
         return (lend60.loc[d] > 0) & (quota.loc[d] >= need) & (need <= bc.DEPTH_FRAC * lend60.loc[d]) & (fee.loc[d] <= bc.FEE_MAX)
@@ -75,7 +80,7 @@ def run_backtests():
             kd = int(days.searchsorted(d))
             g = e[(e["k0"] + 1 <= kd) & (kd - e["k0"] <= LOOKBACK) & e["ticker"].isin(fin)]
             g = g.sort_values("k0").drop_duplicates("ticker", keep="last")
-            g = g[[bool(c.member.at[d, t]) for t in g["ticker"]]]
+            g = g[[bool(c.member.at[d, t]) for t in g["ticker"]] & g["ticker"].isin(s.index).to_numpy()]   # 沒有 SUE 分數者不替換（影子樣本才會發生）
             base = s.dropna()
             if len(g) >= 2 and len(base):
                 s.loc[g["ticker"].to_numpy()] = np.nanquantile(base.to_numpy(), g["esue"].rank(pct=True).to_numpy())
@@ -94,7 +99,7 @@ def run_backtests():
             sd = vol.loc[d].reindex(x.index)
             sd = sd.fillna(sd.median())
             nw = iv.capped(1 / sd, float(x.sum()))
-            if sign < 0:
+            if sign < 0 and not shadow:
                 need = lt.K_CAPITAL * nw / close.loc[d].reindex(nw.index)
                 ok = (lend60.loc[d].reindex(nw.index) > 0) & (quota.loc[d].reindex(nw.index) >= need) \
                     & (need <= bc.DEPTH_FRAC * lend60.loc[d].reindex(nw.index)) & (fee.loc[d].reindex(nw.index) <= bc.FEE_MAX)
@@ -110,7 +115,12 @@ def run_backtests():
             for d in sched[off::3]:
                 w = lt.ew_ls_buffer(score(d, use_e, use_s), sector, shortable_at(d), q_keep=None)
                 wd[d] = invvol(d, w) if use_v else w
-            parts.append(hc.simulate_weights(wd, c.rets, c.betas, c.tx, list(wd), fee=fee)["ret"])
+            sc0 = lp.STOCK_COST
+            lp.STOCK_COST = sc0 + extra_cost
+            try:
+                parts.append(hc.simulate_weights(wd, c.rets, c.betas, c.tx, list(wd), fee=fee)["ret"])
+            finally:
+                lp.STOCK_COST = sc0
         x = pd.concat(parts, axis=1).mean(axis=1)
         return x[x.index > sched[2]]
 
