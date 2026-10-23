@@ -36,6 +36,7 @@ import self_earnings_events as see  # noqa: E402
 import ts_rank_chips as trc  # noqa: E402
 
 LOOKBACK = 45
+LAST: dict = {}
 
 
 def phi(x: float) -> float:
@@ -120,6 +121,7 @@ def run_backtests():
         R[k] = book(*map(bool, f))
         print(k, flush=True)
     R["資金四等分（fv5、fv5e、fv5s、fv5v）"] = pd.concat([R["fv5"], R["fv5e"], R["fv5s"], R["fv5v"]], axis=1).mean(axis=1)
+    LAST.update(c=c, sue=sue, s1=s1, e=e, fin=fin)     # 供其他分析重用（analysis/fv5_mechanism_power.py）
     return R, sched
 
 
