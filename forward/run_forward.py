@@ -645,6 +645,14 @@ def cmd_auto(args) -> None:
         family_changed = False
     if family_changed:
         git_publish(f"forward family comparison: auto update {today}", push=args.push, extra_files=cf.PUBLISH_FILES)
+    try:
+        from forward import aux_family as af
+        aux_changed = af.auto()
+    except Exception as exc:  # noqa: BLE001
+        print(f"[auto] fv5 家族輔助判定失敗（其他規格照常）：{type(exc).__name__}: {str(exc)[:200]}")
+        aux_changed = False
+    if aux_changed:
+        git_publish(f"forward family auxiliary check: auto update {today}", push=args.push, extra_files=af.PUBLISH_FILES)
     alerts_changed, alerts_files = run_alerts_auto()
     git_publish(f"forward alerts: revenue surprise {today}", push=args.push, extra_files=alerts_files)
     any_change = fv5x_changed or fv5v_changed or fv5s_changed or alerts_changed or changed or fv2_changed or fv3_changed or fv4_changed or fv5_changed or msci_changed or se_changed or fv5e_changed

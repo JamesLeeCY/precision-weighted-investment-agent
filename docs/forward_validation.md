@@ -303,3 +303,12 @@ git add forward/ && git commit -m "forward: YYYY-MM prediction" && git push
 - 只用 live 段；n < 24 累積中；24 ≤ n < N50 只做警訊檢查（平均 d < 0 且 Newey-West t < −1 → 停止記錄該規格）；
   n ≥ N50 正式判定：Holm 校正（家族 10%）、單尾，且規格本身每段淨報酬 t > 2 才可取代 fv5，多個通過時選平均 d 最大者。
 - N50（回測估計達 50% 檢定力所需 live 段數）：fv5x 76、fv5e 105、fv5s 131、fv5v 302（約 6–25 年）。實務上前幾年只能做警訊檢查。
+
+## fv5 家族前瞻輔助判定：機制指標與非劣性（2026-10-24 使用者決定登錄）
+
+- 依據：點子卡 I053（docs/fv5_forward_power_execution_report.md）；登錄時 fv5s、fv5v、fv5x 都還沒有 live 段。
+- 程式：`forward/aux_family.py`，每日 auto 在 `compare_family` 之後執行，輸出 `forward/AUX_REPORT.md`。只作輔助，不取代上一節的正式規則。
+- M_s（fv5s、fv5x）：fv5s live 預測日中，60 日報酬產業內百分位對 SUE、S1 百分位迴歸的 S1 係數，單尾 t（Newey-West 落後 2）。
+- M_v（fv5v、fv5x）：live 段日淨報酬變異數比，區塊 bootstrap 標準誤，t = −ln ρ ÷ se。
+- 同一規格的機制指標做 Holm 校正（家族單尾 10%）；非劣性 = 波動調整後每段差的 90% 單尾下界 > −0.05%／段。
+- 機制通過且非劣性通過 →「機制確認、報酬非劣」，交由使用者決定是否提前採用；live 12 段以上任一機制指標 t < −1 →「機制失效」，建議停止記錄。
