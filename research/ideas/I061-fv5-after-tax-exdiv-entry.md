@@ -2,7 +2,7 @@
 
 | 狀態 | 優先度 | 檢定方式 | 資料可得性 | 預估 FinMind 請求 | 建立 |
 |---|---|---|---|---|---|
-| 待確認 | B | 濾網或加權（fv5 稅後核算＋多方建倉時點規則，與 fv5 建構配對比較） | free | 約 0（TaiwanStockDividendResult 除息日與金額已快取）；若要求 AnnouncementDate 判斷事前可知，用 TaiwanStockDividend，與 I058–I060 共用約 690 次 | 2026-10-24 |
+| 已測：R1 未通過（稅後績效已報告） | B | 濾網或加權（fv5 稅後核算＋多方建倉時點規則，與 fv5 建構配對比較） | free | 約 0（TaiwanStockDividendResult 除息日與金額已快取）；若要求 AnnouncementDate 判斷事前可知，用 TaiwanStockDividend，與 I058–I060 共用約 690 次 | 2026-10-24 |
 
 ## 假設
 

@@ -2,7 +2,7 @@
 
 | 狀態 | 優先度 | 檢定方式 | 資料可得性 | 預估 FinMind 請求 | 建立 |
 |---|---|---|---|---|---|
-| 待確認 | B | 事件研究（CAR＋日曆時間組合）＋ fv5 空方腿影響的附帶檢定 | free | 約 0（前 1000 名 TaiwanDailyShortSaleBalances 已快取，內含融券餘額 MarginShortSalesCurrentDayBalance 與借券餘額、額度）；若加第 1001–1500 名約 511；證交所／櫃買停券公告核對約 20–50 次網頁請求 | 2026-10-22 |
+| 以 I058 修訂版取代（已測，未通過） | B | 事件研究（CAR＋日曆時間組合）＋ fv5 空方腿影響的附帶檢定 | free | 約 0（前 1000 名 TaiwanDailyShortSaleBalances 已快取，內含融券餘額 MarginShortSalesCurrentDayBalance 與借券餘額、額度）；若加第 1001–1500 名約 511；證交所／櫃買停券公告核對約 20–50 次網頁請求 | 2026-10-22 |
 
 ## 假設
 

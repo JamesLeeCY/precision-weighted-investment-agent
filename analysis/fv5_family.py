@@ -110,11 +110,13 @@ def run_backtests(membership: str | None = None, shadow: bool = False, extra_cos
 
     def book(use_e, use_s, use_v):
         parts = []
+        LAST.setdefault("wd", {})[(use_e, use_s, use_v)] = []
         for off in range(3):
             wd = {}
             for d in sched[off::3]:
                 w = lt.ew_ls_buffer(score(d, use_e, use_s), sector, shortable_at(d), q_keep=None)
                 wd[d] = invvol(d, w) if use_v else w
+            LAST["wd"][(use_e, use_s, use_v)].append(wd)
             sc0 = lp.STOCK_COST
             lp.STOCK_COST = sc0 + extra_cost
             try:
