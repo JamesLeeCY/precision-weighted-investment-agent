@@ -372,6 +372,7 @@ notebooks/              校準分析 notebook
 - [中小型股影子前瞻](docs/fv5_shadow_universe_report.md) — 點子卡 I057
 - [融券回補、股利發放與稅後績效](docs/forced_covering_dividend_tax_report.md) — 點子卡 I058、I059、I060、I061
 - [公告期報酬與股票期貨稅後執行](docs/revenue_ear_ssf_report.md) — 點子卡 I063、I064
+- [EAR 獨立多空、季報公告價格反應與月底月初效應](docs/ear_quarterly_tom_report.md) — 點子卡 I068、I070、I071
 - [用股票期貨執行 fv5](docs/futures_exec_report.md) — 點子卡 I031（前置追蹤誤差檢查）
 - [同業營收資訊移轉](docs/peer_transfer_report.md) — 點子卡 I032：先公告同業的營收驚奇對後公告者
 - [澄清公告與法人公告前交易](docs/clarification_inst_report.md) — 點子卡 I035、I036
