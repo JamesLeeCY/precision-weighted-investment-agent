@@ -15,7 +15,7 @@
   <ul>
     <li><a href="#findings">重點結論</a></li>
     <li><a href="#scorecard">回測成績</a></li>
-    <li><a href="#signals">其他訊號</a></li>
+    <li><a href="#signals">訊號檢定</a></li>
     <li><a href="#architecture">Agent 架構</a></li>
     <li><a href="#universe">股票池</a></li>
     <li><a href="#stocks">逐股分析</a></li>
@@ -71,7 +71,7 @@
       <span class="verdict v-wait">… 累積中</span>
     </div>
   </div>
-  <details class="detail" open>
+  <details class="detail">
     <summary><h3 style="display:inline">怎麼讀這些數字</h3></summary>
     <div class="grid2" style="margin-top:10px">
       <div class="kv"><span class="k">產業內 IC</span><span class="small">同產業內，訊號排名與之後 20 個交易日報酬排名的 Spearman 相關係數，再依產業股票數加權平均。範圍 −1～1；0 代表沒有預測力；量化選股中 0.02～0.05 已算有用。</span></div>
@@ -110,10 +110,10 @@
 
 <section id="signals">
   <div class="eyebrow">03 · Signal tests</div>
-  <h2>其他訊號、月營收驚奇與配置研究</h2>
-  <p class="muted">為了找到能贏過大盤的訊號，另外測了估值、技術面、動能、反轉，以及技術面進出場濾網和 5 日短期反轉。2019–2022 對財報規則是樣本外；新訊號在兩段都必須有效才算數。<span class="small">（共測 8 個 20 日訊號、7 種濾網組合、6 個 5 日訊號，多重比較下單一好結果應打折看待）</span></p>
-  <div id="signalPanels" style="display:grid;gap:22px"></div>
-  <p class="small">結論：沒有新訊號在兩段都有效——技術面與動能只在 2023 年後的多頭有效、樣本外轉負；反轉剛好相反；產業內相對估值兩段都為負。大盤濾網把回撤降低約 40%，但樣本外 Sharpe 下降。5 日短期反轉在同一收盤成交時顯著（t 3.4），但扣掉 0.3% 證交稅後全部虧損；改用反轉延後賣出只讓換手降低約 10%，Sharpe 不變。個股技術面每日進出場讓換手升到 17–30 倍、樣本外報酬大減；7 種 0050 擇時規則的報酬都低於買進持有，200 日線 ±2% 緩衝帶樣本外 Sharpe 最高；0050 擇時部位與財報選股混合的 Sharpe 兩段都高於 0050。依台股文獻研究測試的月營收驚奇（SUE）是第一個兩段都顯著的訊號；加入季報盈餘驚奇或拉長持有都沒有更好。擴大到全市場市值前 300 檔後，月營收驚奇的選股能力重現，其餘 10 條價量／籌碼腿都沒有獨立價值（研究結果，非投資建議）。詳見 leg_pool_report.md、 docs/technical_timing_report.md、short_term_reversal_report.md、reversal_execution_report.md、fund_tech_daily_report.md、allocation_study_report.md、revenue_surprise_report.md、revenue_surprise_plus_report.md。</p>
+  <h2>訊號與策略檢定</h2>
+  <p class="muted">所有訊號都要在 2019–2022、2023–2026 兩段都有效才算數。總覽之外的表格依主題收合，點標題展開。</p>
+  <div id="signalPanels" style="display:grid;gap:14px"></div>
+  <p class="small">目前結論：月營收驚奇（SUE）是唯一在兩段、三個市值名次組都穩定的選股訊號，fv5／fv5x 以它為核心；其餘價量、籌碼、事件與擇時訊號，扣成本後或加入 fv5 後都沒有可靠改善。研究結果，非投資建議。</p>
 </section>
 
 <section id="architecture">
@@ -436,21 +436,31 @@ flowchart TD
     const pp = (v, d = 2) => v == null ? '<span class="na">—</span>' : (v > 0 ? '+' : '') + (v * 100).toFixed(d) + '%';
     const tbl = (head, rows) => `<div class="tablebox"><table><thead><tr>${head.map((h, k) => `<th class="${k ? 'n' : ''}">${h}</th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table></div>`;
     const tr = cells => `<tr style="cursor:default">${cells.map((c, k) => `<td class="${k ? 'n' : ''}">${c}</td>`).join('')}</tr>`;
-    $('#signalPanels').innerHTML = `
-      <div style="display:grid;gap:8px"><h3>產業內選股能力（20 日預測期）</h3><p class="small">${esc(ST.signals_20d.note)}</p>
-      ${tbl(['訊號', '產業內 IC 2019–2022（−1～1；為正起點）', '產業內 IC 2023–2026', '每期超額報酬：做多 − 等權 2019–2022（扣成本）', '同左 2023–2026', '每期換手（權重變動合計）'],
-        ST.signals_20d.rows.map(r => tr([esc(r.label), icCell(r.ic_oos, r.ic_oos_pos, 21), icCell(r.ic_is, r.ic_is_pos, 21), pp(r.ex_oos), pp(r.ex_is), r.to.toFixed(2)])))}</div>
-      <div style="display:grid;gap:8px"><h3>進出場濾網（Sharpe／最大回撤）</h3><p class="small">${esc(ST.timing.note)}</p>
-      ${tbl(['組合', 'Sharpe 2019–2022（年化報酬 ÷ 波動）', '最大回撤 2019–2022', 'Sharpe 2023–2026', '最大回撤 2023–2026', '平均持股比例 2019–2022'],
-        ST.timing.rows.map(r => tr([esc(r.label), r.sh_oos.toFixed(2), pp(r.mdd_oos, 0), r.sh_is.toFixed(2), pp(r.mdd_is, 0), (r.expo_oos * 100).toFixed(0) + '%'])))}</div>
-      <div style="display:grid;gap:8px"><h3>短期反轉、過度反應、領先落後（5 日預測期）</h3><p class="small">${esc(ST.reversal_5d.note)}</p>
-      ${tbl(['訊號', '產業內 IC 2019–2022（−1～1）', '產業內 IC 2023–2026', '每期超額報酬：做多 − 等權，未扣成本 2019–2022', '同左扣成本', '每期換手'],
-        ST.reversal_5d.rows.map(r => tr([esc(r.label), `${icCell(r.ic_oos)} <span class="small">t ${r.t_oos.toFixed(1)}</span>`, `${icCell(r.ic_is)} <span class="small">t ${r.t_is.toFixed(1)}</span>`, pp(r.gross_oos), pp(r.net_oos), r.to == null ? '<span class="na">—</span>' : r.to.toFixed(2)])))}</div>
-      ${ST.execution ? `<div style="display:grid;gap:8px"><h3>用短期反轉降低財報組合交易成本</h3><p class="small">${esc(ST.execution.note)}</p>
-      ${tbl(['組合', '每期超額報酬（相對等權、扣成本）2019–2022（為正起點）', '同左 2023–2026', '每期換手', 'Sharpe 2019–2022', 'Sharpe 2023–2026'],
-        ST.execution.rows.map(r => tr([esc(r.label), r.ex_oos == null ? '<span class="na">—</span>' : `${pp(r.ex_oos)} <span class="small">(${r.pos_oos}/21)</span>`, pp(r.ex_is), r.to == null ? '<span class="na">—</span>' : r.to.toFixed(2), r.sh_oos.toFixed(2), r.sh_is.toFixed(2)])))}</div>` : ''}
-      ${(ST.extra_tables || []).map(t => `<div style="display:grid;gap:8px"><h3>${esc(t.title)}</h3><p class="small">${esc(t.note)}</p>
-      ${tbl(t.headers.map(esc), t.rows.map(r => tr(r.map(esc))))}</div>`).join('')}`;
+    const card = (title, note, table) => `<div style="display:grid;gap:8px"><h3>${esc(title)}</h3><p class="small">${esc(note)}</p>${table}</div>`;
+    const fold = (title, note, table) => `<details class="sub"><summary>${esc(title)}</summary><div style="display:grid;gap:8px;margin-top:8px"><p class="small">${esc(note)}</p>${table}</div></details>`;
+    const extra = t => tbl(t.headers.map(esc), t.rows.map(r => tr(r.map(esc))));
+    const early = [
+      fold('產業內選股能力（20 日預測期）', ST.signals_20d.note, tbl(['訊號', '產業內 IC 2019–2022（−1～1；為正起點）', '產業內 IC 2023–2026', '每期超額報酬：做多 − 等權 2019–2022（扣成本）', '同左 2023–2026', '每期換手（權重變動合計）'],
+        ST.signals_20d.rows.map(r => tr([esc(r.label), icCell(r.ic_oos, r.ic_oos_pos, 21), icCell(r.ic_is, r.ic_is_pos, 21), pp(r.ex_oos), pp(r.ex_is), r.to.toFixed(2)])))),
+      fold('進出場濾網（Sharpe／最大回撤）', ST.timing.note, tbl(['組合', 'Sharpe 2019–2022（年化報酬 ÷ 波動）', '最大回撤 2019–2022', 'Sharpe 2023–2026', '最大回撤 2023–2026', '平均持股比例 2019–2022'],
+        ST.timing.rows.map(r => tr([esc(r.label), r.sh_oos.toFixed(2), pp(r.mdd_oos, 0), r.sh_is.toFixed(2), pp(r.mdd_is, 0), (r.expo_oos * 100).toFixed(0) + '%'])))),
+      fold('短期反轉、過度反應、領先落後（5 日預測期）', ST.reversal_5d.note, tbl(['訊號', '產業內 IC 2019–2022（−1～1）', '產業內 IC 2023–2026', '每期超額報酬：做多 − 等權，未扣成本 2019–2022', '同左扣成本', '每期換手'],
+        ST.reversal_5d.rows.map(r => tr([esc(r.label), `${icCell(r.ic_oos)} <span class="small">t ${r.t_oos.toFixed(1)}</span>`, `${icCell(r.ic_is)} <span class="small">t ${r.t_is.toFixed(1)}</span>`, pp(r.gross_oos), pp(r.net_oos), r.to == null ? '<span class="na">—</span>' : r.to.toFixed(2)])))),
+      ST.execution ? fold('用短期反轉降低財報組合交易成本', ST.execution.note, tbl(['組合', '每期超額報酬（相對等權、扣成本）2019–2022（為正起點）', '同左 2023–2026', '每期換手', 'Sharpe 2019–2022', 'Sharpe 2023–2026'],
+        ST.execution.rows.map(r => tr([esc(r.label), r.ex_oos == null ? '<span class="na">—</span>' : `${pp(r.ex_oos)} <span class="small">(${r.pos_oos}/21)</span>`, pp(r.ex_is), r.to == null ? '<span class="na">—</span>' : r.to.toFixed(2), r.sh_oos.toFixed(2), r.sh_is.toFixed(2)])))) : '',
+    ];
+    const ET = ST.extra_tables || [];
+    const group = (g, label, newestFirst) => {
+      const ts = ET.filter(t => (t.group || '點子卡檢定') === g);
+      const items = (newestFirst ? ts.slice().reverse() : ts).map(t => fold(t.title, t.note, extra(t)));
+      return `<details class="detail"><summary><h3 style="display:inline">${label}</h3> <span class="small">${ts.length} 張表</span></summary><div style="display:grid;gap:6px">${items.join('')}</div></details>`;
+    };
+    $('#signalPanels').innerHTML =
+      ET.filter(t => t.group === '總覽').map(t => card(t.title, t.note, extra(t))).join('') +
+      group('點子卡檢定', 'strategy-scout 點子卡檢定（I004 起，新到舊）', true) +
+      group('月營收驚奇與組合建構', '月營收驚奇、等權多空與 fv 系列建構', false) +
+      group('事件與指數研究', '事件研究與指數成分調整', false) +
+      `<details class="detail"><summary><h3 style="display:inline">早期訊號測試（財報 Agent 時期）</h3> <span class="small">${early.filter(Boolean).length} 張表</span></summary><div style="display:grid;gap:6px">${early.join('')}</div></details>`;
   }
 
   // Timeline
@@ -543,8 +553,11 @@ flowchart TD
     ['公告期與月底月初效應', '點子卡 I068、I070、I071：月營收與季報公告期間漲得多的股票之後持續較強（季報版三個名次組 t 皆 > 6），但單獨做多空扣成本後沒有報酬；月底月初效應 2023 年後反轉，皆未通過'],
     ['公告延遲與平滑 SUE', '點子卡 I075、I076：季報比去年同季晚公告的股票之後並沒有落後（方向相反）；fv5 改用 3 個月平滑 SUE 換手只降 9%、報酬少 1.2 個百分點，皆未通過'],
     ['反向季報出場與未實現獲利', '點子卡 I074、I077：fv5 持股遇到反向季報反應就出場，被賣掉的股票之後仍上漲，未通過；投資人帳面獲利愈多的股票之後愈強（控制動能後三個名次組皆顯著），但加入 fv5 只改善 2023 年後'],
+    ['持有期與指數避險', '點子卡 I078、I079：fv5 改持有 6 個月換手降 41% 但年化少 2.5 個百分點（SUE 漂移多在 60 日內）；不放空個股、改用台指期與 0051 避險則為負報酬，空方腿扣借券費後仍有貢獻，皆未通過'],
   ];
-  $('#tl').innerHTML = TL.map(([w, t]) => `<div class="tl"><span class="when">${w}</span><span>${esc(t)}</span></div>`).join('');
+  const tlRow = ([w, t]) => `<div class="tl"><span class="when">${w}</span><span>${esc(t)}</span></div>`;
+  const SHOW = 10;
+  $('#tl').innerHTML = `<details class="sub" style="margin:0 0 14px 18px"><summary>更早的 ${TL.length - SHOW} 項</summary><div style="margin-top:10px">${TL.slice(0, -SHOW).map(tlRow).join('')}</div></details>` + TL.slice(-SHOW).map(tlRow).join('');
 })();
 </script>
 <script>
