@@ -394,6 +394,7 @@ notebooks/              校準分析 notebook
 - [季報公告延遲與平滑 SUE](docs/report_delay_smoothed_sue_report.md) — 點子卡 I075、I076
 - [fv5 反向季報反應出場與未實現獲利](docs/qear_exit_cgo_report.md) — 點子卡 I074、I077
 - [fv5 延長持有期與多方腿指數避險](docs/hold6_index_hedge_report.md) — 點子卡 I078、I079
+- [台指期扣股息後的超額逆價差](docs/tx_basis_carry_report.md) — 點子卡 I080
 - [用股票期貨執行 fv5](docs/futures_exec_report.md) — 點子卡 I031（前置追蹤誤差檢查）
 - [同業營收資訊移轉](docs/peer_transfer_report.md) — 點子卡 I032：先公告同業的營收驚奇對後公告者
 - [澄清公告與法人公告前交易](docs/clarification_inst_report.md) — 點子卡 I035、I036
