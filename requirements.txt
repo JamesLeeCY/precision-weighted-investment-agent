@@ -16,3 +16,6 @@ pytest>=8.0
 
 # 選用：法說會逐字稿 PDF 擷取（Phase 2）
 # pdfplumber>=0.11
+
+# 選用：MCP server（mcp_server/server.py，官方 Python SDK 2.x）
+# mcp>=2.3

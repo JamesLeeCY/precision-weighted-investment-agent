@@ -259,6 +259,24 @@ python3.11 -m venv .venv
 | finmind 回測 | `FINMIND_API_TOKEN`（免費註冊） | 兩個 Agent 以真實財報/新聞驅動（規則式判斷）。免費額度 600 req/hr，客戶端內建逐日快取與額度自動等待；`data_cache/` 已隨 repo 提供，重跑既有範圍不消耗額度 |
 | + LLM 判讀 | `ANTHROPIC_API_KEY`，或地端 Ollama | Agent 改用 LLM 產出 signal/confidence/rationale，失敗時退回規則式。地端模型：`--llm-provider ollama --llm-model qwen3:8b`；與其他工作共用電腦時可用 `--llm-num-thread` 限制執行緒；回應快取於 `data_cache/llm/` |
 
+### MCP server
+
+[mcp_server/server.py](mcp_server/server.py) 用官方 Python SDK（`mcp>=2.3`）把系統包成 MCP 工具，讓 Claude 直接呼叫：
+
+| 工具 | 內容 |
+|---|---|
+| `analyze_stock(ticker, as_of_date)` | 財報、總經/籌碼、技術面 Agent 規則式判讀，再以仲裁層等精度合併 |
+| `forward_portfolio(spec, as_of_date)` | 前瞻規格（fv5、fv5x…）某預測日的多空持股 |
+| `forward_report(spec)` | 前瞻驗證報告 |
+| `list_ideas(status)` | 點子卡清單 |
+
+```bash
+.venv/bin/pip install "mcp>=2.3"
+claude mcp add tw-research -- /absolute/path/.venv/bin/python /absolute/path/mcp_server/server.py
+```
+
+`analyze_stock` 只是展示架構：上面的回測顯示規則式 Agent 沒有可靠的方向預測力。
+
 ## 系統設計
 
 - **Agent 共同介面**（[agents/base.py](agents/base.py)）：`analyze(ticker, as_of_date) → AgentOutput`，
