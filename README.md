@@ -44,7 +44,7 @@ EMA 的倒數，即「精度」）動態加權合成投資論點——可靠度�
 3. **做成可交易組合**：11 條價量／籌碼腿中只有 SUE 扣掉股票池基準後有選股能力；改成產業內等權多空、
    放空只用借得到的股票並扣實際借券費、台指期對沖、每 3 個月換倉，再擴大到市值前 500 名，即 **fv5**。
 4. **點子卡檢定**：strategy-scout 子代理從文獻與論壇產生 82 張附事前檢定計畫的點子卡（Holm 多重檢定校正），
-   大多拿 fv5 當基準；目前已測或停止 68 張，通過或部分通過的少數修改合併為 **fv5x**，其餘未通過（[總覽](research/README.md)）。
+   大多拿 fv5 當基準；目前已測或停止 69 張，通過或部分通過的少數修改合併為 **fv5x**，其餘未通過（[總覽](research/README.md)）。
 
 **fv5 回測**（市值前 500 名；扣交易成本單邊 0.29625% 與實際借券費、台指期對沖；Sharpe = 年化報酬 ÷ 年化波動，無風險利率 0）
 
@@ -442,6 +442,7 @@ notebooks/              校準分析 notebook
 - [fv5 延長持有期與多方腿指數避險](docs/hold6_index_hedge_report.md) — 點子卡 I078、I079
 - [台指期扣股息後的超額逆價差](docs/tx_basis_carry_report.md) — 點子卡 I080
 - [研發密度年度訊號](docs/rd_intensity_report.md) — 點子卡 I081
+- [現金公開收購套利](docs/tender_offer_report.md) — 點子卡 I082（全面收購只有 10 件，樣本不足停止）
 - [用股票期貨執行 fv5](docs/futures_exec_report.md) — 點子卡 I031（前置追蹤誤差檢查）
 - [同業營收資訊移轉](docs/peer_transfer_report.md) — 點子卡 I032：先公告同業的營收驚奇對後公告者
 - [澄清公告與法人公告前交易](docs/clarification_inst_report.md) — 點子卡 I035、I036
@@ -500,7 +501,7 @@ notebooks/              校準分析 notebook
 - [x] fv5 家族（fv5e、fv5s、fv5v、fv5x）平行前瞻記錄
 - [x] MCP server
 - [ ] 前瞻驗證：fv5 累積 24 個 live 段後正式檢定（約 2028 年秋）
-- [ ] 剩餘點子卡（I082 等 14 張）
+- [ ] 剩餘點子卡（13 張）
 
 ## 免責聲明
 
