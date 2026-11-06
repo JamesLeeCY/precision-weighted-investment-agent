@@ -3,7 +3,7 @@
 **Precision-Weighted Multi-Agent Investment Research System**
 
 ![Python](https://img.shields.io/badge/python-3.11+-blue)
-![Tests](https://img.shields.io/badge/tests-247%2F249%20passing-yellow)
+![Tests](https://img.shields.io/badge/tests-249%20passed-brightgreen)
 ![License](https://img.shields.io/badge/license-MIT-lightgrey)
 
 🔗 **研究紀錄網站：<https://jamesleecy.github.io/precision-weighted-investment-agent/>**（研究結果，非投資建議）

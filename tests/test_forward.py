@@ -37,7 +37,13 @@ def env(tmp_path, monkeypatch):
         monkeypatch.setattr(fw, name, path)
     monkeypatch.setattr(fw, "snapshot_client", lambda date: client)
     monkeypatch.setattr(fw, "git_state", lambda: ("abc123", False))
-    monkeypatch.setattr(fw, "run_fv2_auto", lambda: (False, []))  # fv2 另有測試（tests/test_forward_fv2.py）
+    # 其他規格與快報另有測試；auto 會依序呼叫它們，不隔離會用假日期跑真實流程、改到 repo 裡的紀錄檔
+    for name in [n for n in dir(fw) if n.startswith("run_") and n.endswith("_auto")]:
+        monkeypatch.setattr(fw, name, lambda: (False, []))
+    from forward import aux_family, compare_family
+
+    monkeypatch.setattr(compare_family, "auto", lambda: False)
+    monkeypatch.setattr(aux_family, "auto", lambda: False)
     return tmp_path
 
 

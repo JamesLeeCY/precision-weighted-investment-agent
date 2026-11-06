@@ -654,7 +654,8 @@ def cmd_auto(args) -> None:
     if aux_changed:
         git_publish(f"forward family auxiliary check: auto update {today}", push=args.push, extra_files=af.PUBLISH_FILES)
     alerts_changed, alerts_files = run_alerts_auto()
-    git_publish(f"forward alerts: revenue surprise {today}", push=args.push, extra_files=alerts_files)
+    if alerts_files:  # 沒有新股票時網頁與 SUE 值仍可能更新，所以只要快報有執行就交給 git_publish 判斷有無差異
+        git_publish(f"forward alerts: revenue surprise {today}", push=args.push, extra_files=alerts_files)
     any_change = fv5x_changed or fv5v_changed or fv5s_changed or alerts_changed or changed or fv2_changed or fv3_changed or fv4_changed or fv5_changed or msci_changed or se_changed or fv5e_changed
     print(f"[auto] {now_utc()} 結束（{'有更新' if any_change else '無更新'}）")
 
