@@ -3,7 +3,7 @@
 **Precision-Weighted Multi-Agent Investment Research System**
 
 ![Python](https://img.shields.io/badge/python-3.11+-blue)
-![Tests](https://img.shields.io/badge/tests-53%20passed-brightgreen)
+![Tests](https://img.shields.io/badge/tests-247%2F249%20passing-yellow)
 ![License](https://img.shields.io/badge/license-MIT-lightgrey)
 
 🔗 **研究紀錄網站：<https://jamesleecy.github.io/precision-weighted-investment-agent/>**（研究結果，非投資建議）
@@ -13,7 +13,7 @@ weighting 概念建構的多智能體投資研究系統：多個專家 Agent（�
 各自產出帶信心值的判斷，仲裁層依各 Agent 的**歷史準確度**（Brier score
 EMA 的倒數，即「精度」）動態加權合成投資論點——可靠度越高的來源權重越大，
 系統從均等權重（loose coupling）隨證據累積收斂到以可靠來源為主導
-（tight coupling）。鎖定台股 AI 供應鏈之被動元件族群。
+（tight coupling）。最初鎖定台股 AI 供應鏈的被動元件族群，之後擴大到無選股偏誤股票池與市值前 500 名。
 
 ```
  財報 Agent      新聞事件 Agent    總經/籌碼 Agent    供應鏈 Agent
@@ -28,7 +28,53 @@ EMA 的倒數，即「精度」）動態加權合成投資論點——可靠度�
      回測評估 → Brier score → 更新各 Agent 精度（EMA）→ 回饋仲裁層
 ```
 
-## 核心結果
+## 專案現況（2026-11）
+
+**一句話**：多代理系統本身沒有預測漲跌的能力，但它的嚴格評估找到「產業內選股」這個方向，
+最後發展出市場中性的月營收驚奇多空策略 fv5；fv5 已凍結規則、逐月前瞻記錄中。研究結果，非投資建議。
+
+**研究路徑**
+
+1. **多代理系統**：5 個 Agent（財報、新聞事件、總經／籌碼、供應鏈、技術面）＋ 精度加權仲裁層。
+   無選股偏誤股票池 8,475 筆 walk-forward 預測：所有 Agent 的方向準確率都低於「永遠猜上漲」，
+   各 Agent 精度相近，精度加權退化為等權；唯一穩健的是財報 Agent 的產業內排序能力
+   （產業內 Rank IC +0.029，t 2.16，85 期不重疊；範圍 −1 ~ 1）。
+2. **轉向產業內訊號**：依台股文獻測月營收驚奇（SUE），產業內 IC 約為財報 Agent 的 2 倍，
+   並發現財報 Agent 的月營收比實際公告晚約一個月使用。
+3. **做成可交易組合**：11 條價量／籌碼腿中只有 SUE 扣掉股票池基準後有選股能力；改成產業內等權多空、
+   放空只用借得到的股票並扣實際借券費、台指期對沖、每 3 個月換倉，再擴大到市值前 500 名，即 **fv5**。
+4. **點子卡檢定**：strategy-scout 子代理從文獻與論壇產生 82 張附事前檢定計畫的點子卡（Holm 多重檢定校正），
+   大多拿 fv5 當基準；目前已測或停止 68 張，通過或部分通過的少數修改合併為 **fv5x**，其餘未通過（[總覽](research/README.md)）。
+
+**fv5 回測**（市值前 500 名；扣交易成本單邊 0.29625% 與實際借券費、台指期對沖；Sharpe = 年化報酬 ÷ 年化波動，無風險利率 0）
+
+| 指標 | fv5 | fv5x（加上三項修改） | 0050 買進持有 |
+|---|---|---|---|
+| Sharpe 2019–2022 / 2023–2026/04 | 1.45 / 1.87 | 1.91 / 2.22 | 0.73 / 1.90 |
+| 全期 Sharpe | 1.64 | 2.05 | — |
+| 年化淨報酬 | +7.5% | +7.4% | — |
+| 年化波動 | 4.5% | 3.5% | — |
+| 最大回撤 | −6.9% | −6.0% | −34% |
+
+- 這是回測：設計細節（前 500 名、3 個月換倉、借券條件）是看過兩段資料後才決定的，不是樣本外。
+- 容量受放空端借券限制：回測假設資金 2 億元；10 億元時全期 Sharpe 1.57。
+- 個人投資人股利 28% 分開計稅下，fv5 全期 Sharpe 1.64 → 1.41。
+- 報告：[fv5 前 500 名](docs/top500_report.md)、[fv5x](docs/fv5_family_report.md)、[有效訊號總覽](docs/effective_signals.md)。
+
+**前瞻驗證**（規則凍結、紀錄只能新增；[說明](docs/forward_validation.md)）
+
+| 規格 | 凍結日 | 回填期間結果（凍結後、開發未用過） | 正式 live |
+|---|---|---|---|
+| fv1 財報 Agent | 2026-10-09 | 產業內 IC −0.007（5 期，t −0.13；回測預期 +0.029） | 2026-11 起累積 |
+| fv5 | 2026-10-14 | 每段淨報酬 −0.47%（5 期，t −1.06；回測預期 +0.61%、標準差 1.42%） | 2026-11 起累積 |
+| fv5x | 2026-10-22 | 每段淨報酬 −0.37%（5 期，t −0.79） | 2026-11 起累積 |
+
+回填期間的結果方向不佳，但還在正常波動範圍內；依事前規則，fv5 累積 24 個 live 段（約 2 年）才正式檢定。
+另有 fv2–fv4、fv5e、fv5s、fv5v、自結盈餘（se）與 MSCI 換股的前瞻紀錄，見 [forward/](forward/)。
+
+**工具**：[MCP server](#mcp-server) 讓 Claude 直接呼叫 Agent 判讀、查前瞻持股與點子卡；[研究網站](https://jamesleecy.github.io/precision-weighted-investment-agent/)每月自動更新。
+
+## 詳細結果（依研究順序）
 
 ### 回測成績單
 
@@ -306,7 +352,7 @@ agents/                 Agent 基底 + 財報/新聞/總經籌碼/供應鏈/技�
 arbitrator/             精度追蹤（Brier EMA）+ 合併公式 + Agent 層級重新校準 + 產業內 IC 加權
 data/                   FinMind 抓取（快取/節流/額度等待）、含息還原價、總經/籌碼、供應鏈、新聞內文、RSS 新聞、向量庫
 backtest/               walk-forward 回測 + 評估指標 + 報酬層級評估（vs 0050）
-tests/                  182 個單元測試
+tests/                  249 個單元測試
 forward/                前瞻驗證：凍結規格、預測 / 結算紀錄、自動報告
 analysis/               訊號穩定性分析（分期 IC、產業內 IC、取樣起點穩健性）
 site/                   研究網站（股票池、Agent 架構、逐股分析、前瞻驗證）；build_site.py 重新產生
@@ -448,6 +494,13 @@ notebooks/              校準分析 notebook
 - [x] Phase 2：總經/籌碼 Agent（規則式，見[報告](docs/phase2_macro_report.md)）
 - [x] Phase 2：供應鏈 Agent（知識圖譜，見[報告](docs/news_content_and_supply_chain_report.md)）
 - [x] 新聞內文抓取（直接連結來源，覆蓋率 36%）
+- [x] 無選股偏誤股票池（271 檔、含下市股）與產業內 IC 評估
+- [x] 月營收驚奇市場中性多空（fv3 → fv5），凍結前瞻規格
+- [x] strategy-scout 點子卡流程（I001–I082，事前檢定計畫 + Holm 校正）
+- [x] fv5 家族（fv5e、fv5s、fv5v、fv5x）平行前瞻記錄
+- [x] MCP server
+- [ ] 前瞻驗證：fv5 累積 24 個 live 段後正式檢定（約 2028 年秋）
+- [ ] 剩餘點子卡（I082 等 14 張）
 
 ## 免責聲明
 
