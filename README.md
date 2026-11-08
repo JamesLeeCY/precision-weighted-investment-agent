@@ -442,6 +442,7 @@ notebooks/              校準分析 notebook
 - [fv5 延長持有期與多方腿指數避險](docs/hold6_index_hedge_report.md) — 點子卡 I078、I079
 - [台指期扣股息後的超額逆價差](docs/tx_basis_carry_report.md) — 點子卡 I080
 - [研發密度年度訊號](docs/rd_intensity_report.md) — 點子卡 I081
+- [fv5／fv5x 基準比較：因子迴歸 alpha 與 Deflated Sharpe](docs/benchmark_alpha_report.md) — 扣 7 因子後 alpha fv5 +4.4%（t 3.0）、fv5x +4.8%（t 3.8）
 - [現金公開收購套利](docs/tender_offer_report.md) — 點子卡 I082（全面收購只有 10 件，樣本不足停止）
 - [用股票期貨執行 fv5](docs/futures_exec_report.md) — 點子卡 I031（前置追蹤誤差檢查）
 - [同業營收資訊移轉](docs/peer_transfer_report.md) — 點子卡 I032：先公告同業的營收驚奇對後公告者
